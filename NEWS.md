@@ -1,0 +1,3 @@
+# AirFireModeling 0.1.0
+
+Initial skeleton.

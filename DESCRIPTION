@@ -1,0 +1,35 @@
+Type: Package
+Package: AirFireModeling
+Version: 0.1.0
+Title: Utilities for Working with Monitoring Data and Smoke Model Output
+Authors@R: c(
+    person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")), 
+    person("Rohan", "Aras", email="rohana@uw.edu", role=c("aut")),
+    person("Zach", "Dingels", email="dingelsz@uw.edu", role=c("aut")),
+    person("Jimin", "Kim", email="jk55@uw.edu", role=c("aut")),
+    person("Jon", "Hagg", email="jhagg314@gmail.com", role=c("aut")),
+    person("Rex", "Thompson", email="rexs.thompson@gmail.com", role=c("aut"))
+    )
+Author: Jonathan Callahan [aut, cre],
+    Rohan Aras [aut],
+    Zach Dingels [aut],
+    Jimin Kim [aut],
+    Jon Hagg [aut],
+    Rex Thompson [aut]
+Maintainer: Jonathan Callahan <jonathan.s.callahan@gmail.com>
+Depends:
+    R (>= 3.5.0)
+Imports:
+    magrittr
+Suggests:
+    knitr,
+    testthat (>= 2.1.0)
+SystemRequirements: netcdf
+Description: Utilities for working with USFS BlueSky model output
+    and PM2.5 monitoring data available from AirNow, AIRSIS
+    WRCC and others.
+License: GPL-3
+VignetteBuilder: knitr
+Repository: CRAN
+LazyData: true
+RoxygenNote: 6.1.1
