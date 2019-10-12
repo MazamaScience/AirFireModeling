@@ -84,7 +84,7 @@ can be set with \code{setModelDataDir()}.
 \examples{
 \dontrun{
 setModelDataDir('~/Data/Bluesky')
-bs_grid <- bluesky_load(model = "PNW-1.33km", modelRun = 2016091000)
+bs_grid <- bluesky_load(model = "PNW-1.33km", modelRun = 2019090900)
 }
 }
 \seealso{

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • AirFireModeling</title>
+<title>Test for correct structure in a <em>bs_grid</em> object — grid_isGrid • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,7 +35,21 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Test for correct structure in a <em>bs_grid</em> object — grid_isGrid" />
+<meta property="og:description" content="The bs_grid is checked for the 'bs_grid' class name
+and presence of the following elements:
+longitude
+latitude
+elevation
+time
+data
+model
+modelRun
+deltaLon
+deltaLat
+
+" />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -54,7 +68,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -99,96 +113,53 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Test for correct structure in a <em>bs_grid</em> object</h1>
+    
+    <div class="hidden name"><code>grid_isGrid.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>The <code>bs_grid</code> is checked for the 'bs_grid' class name
+and presence of the following elements:</p><ul>
+<li><p>longitude</p></li>
+<li><p>latitude</p></li>
+<li><p>elevation</p></li>
+<li><p>time</p></li>
+<li><p>data</p></li>
+<li><p>model</p></li>
+<li><p>modelRun</p></li>
+<li><p>deltaLon</p></li>
+<li><p>deltaLat</p></li>
+</ul>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    </div>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="AirFireModeling.html">AirFireModelingEnv</a></code> </p>
-        </td>
-        <td><p>Utilities for working with USFS AirFire BlueSky model output</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="ModelDataDir.html">ModelDataDir</a></code> </p>
-        </td>
-        <td><p>Directory for Modeling Data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="bluesky_download.html">bluesky_download()</a></code> </p>
-        </td>
-        <td><p>Download BlueSky model data from AirFire</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="bluesky_load.html">bluesky_load()</a></code> </p>
-        </td>
-        <td><p>Load BlueSky NetCDF file and return contents as a bs_grid.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="bluesky_toV2.html">bluesky_toV2()</a></code> </p>
-        </td>
-        <td><p>Convert BlueSky NetCDF output to modernized NetCDF</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="getModelDataDir.html">getModelDataDir()</a></code> </p>
-        </td>
-        <td><p>Get Package Data Directory</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="grid_isGrid.html">grid_isGrid()</a></code> </p>
-        </td>
-        <td><p>Test for correct structure in a <em>bs_grid</em> object</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="grid_map.html">grid_map()</a></code> </p>
-        </td>
-        <td><p>Map gridded model data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="grid_subset.html">grid_subset()</a></code> </p>
-        </td>
-        <td><p>Subset <code>bs_grid</code> to create a smaller grid</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="setModelDataDir.html">setModelDataDir()</a></code> </p>
-        </td>
-        <td><p>Set Package Data Directory</p></td>
-      </tr>
-    </tbody>
+    <pre class="usage"><span class='fu'>grid_isGrid</span>(<span class='kw'>bs_grid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>bs_grid</th>
+      <td><p><em>bs_grid</em> object</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p><code>TRUE</code> if <code>bs_grid</code> has the correct structure, 
+<code>FALSE</code> otherwise.</p>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
     </ul>
+
   </div>
 </div>
 
