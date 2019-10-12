@@ -20,7 +20,11 @@ Maintainer: Jonathan Callahan <jonathan.s.callahan@gmail.com>
 Depends:
     R (>= 3.5.0)
 Imports:
-    magrittr
+    lubridate,
+    ncdf4,
+    magrittr,
+    MazamaCoreUtils (>= 0.3.11),
+    stringr
 Suggests:
     knitr,
     testthat (>= 2.1.0)
