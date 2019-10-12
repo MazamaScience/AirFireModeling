@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • AirFireModeling</title>
+<title>Create distance-from-targetgGrid — grid_distance • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,7 +35,12 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Create distance-from-targetgGrid — grid_distance" />
+<meta property="og:description" content="This function returns 2D matrix (aka 'grid'). Each cell in the 
+grid contains the distance in meters between the center of that cell and the 
+target location. This distance grid can be used to create a mask identifying 
+grid cells within a certain radius of the target location." />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -54,7 +59,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -99,127 +104,64 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Create distance-from-targetgGrid</h1>
+    
+    <div class="hidden name"><code>grid_distance.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>This function returns 2D matrix (aka 'grid'). Each cell in the 
+grid contains the distance in meters between the center of that cell and the 
+target location. This distance grid can be used to create a mask identifying 
+grid cells within a certain radius of the target location.</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>grid_distance</span>(<span class='kw'>bs_grid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>longitude</span>, <span class='no'>latitude</span>)</pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="AirFireModeling.html">AirFireModelingEnv</a></code> </p>
-        </td>
-        <td><p>Utilities for working with USFS AirFire BlueSky model output</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="ModelDataDir.html">ModelDataDir</a></code> </p>
-        </td>
-        <td><p>Directory for Modeling Data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="bluesky_download.html">bluesky_download()</a></code> </p>
-        </td>
-        <td><p>Download BlueSky model data from AirFire</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="bluesky_load.html">bluesky_load()</a></code> </p>
-        </td>
-        <td><p>Load BlueSky NetCDF file and return contents as a bs_grid.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="bluesky_toV2.html">bluesky_toV2()</a></code> </p>
-        </td>
-        <td><p>Convert BlueSky NetCDF output to modernized NetCDF</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="getModelDataDir.html">getModelDataDir()</a></code> </p>
-        </td>
-        <td><p>Get Package Data Directory</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="grid_createMonitor.html">grid_createMonitor()</a></code> </p>
-        </td>
-        <td><p>Collapse a <em>bs_grid</em> object into a <em>ws_monitor</em> object with
-a single monitor</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="grid_distance.html">grid_distance()</a></code> </p>
-        </td>
-        <td><p>Create distance-from-targetgGrid</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="grid_isGrid.html">grid_isGrid()</a></code> </p>
-        </td>
-        <td><p>Test for correct structure in a <em>bs_grid</em> object</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="grid_map.html">grid_map()</a></code> </p>
-        </td>
-        <td><p>Map gridded model data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="grid_subset.html">grid_subset()</a></code> </p>
-        </td>
-        <td><p>Subset <code>bs_grid</code> to create a smaller grid</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="grid_subsetByDistance.html">grid_subsetByDistance()</a></code> </p>
-        </td>
-        <td><p>Subset a <em>bs_grid</em> object by distance from a location</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="grid_subsetByHUC.html">grid_subsetByHUC()</a></code> </p>
-        </td>
-        <td><p>Subset a <em>bs_grid</em> objectt by hydrologic unit code</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="grid_subsetByMask.html">grid_subsetByMask()</a></code> </p>
-        </td>
-        <td><p>Subset a <em>bs_grid</em> with with a gridMask</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="setModelDataDir.html">setModelDataDir()</a></code> </p>
-        </td>
-        <td><p>Set Package Data Directory</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>bs_grid</th>
+      <td><p><em>bs_grid</em> object.</p></td>
+    </tr>
+    <tr>
+      <th>longitude</th>
+      <td><p>Longitude of the point from which distances are calculated
+in decimal degrees E.</p></td>
+    </tr>
+    <tr>
+      <th>latitude</th>
+      <td><p>Latitude of the point from which distances are calculated
+in decimal degrees N.</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>2d matrix of distances.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>"~/Data/Bluesky"</span>)
+<span class='no'>bs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='bluesky_load.html'>bluesky_load</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>, <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019090900</span>)
+<span class='no'>xlim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124</span>, -<span class='fl'>122</span>)
+<span class='no'>ylim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>46</span>, <span class='fl'>48</span>)
+<span class='no'>bs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='grid_subset.html'>grid_subset</a></span>(<span class='no'>bs</span>, <span class='kw'>xlim</span><span class='kw'>=</span><span class='no'>xlim</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='no'>ylim</span>)
+<span class='no'>distanceMatrix</span> <span class='kw'>&lt;-</span> <span class='fu'>grid_distance</span>(<span class='no'>bs</span>, -<span class='fl'>123.801</span>, <span class='fl'>47.704</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span>(<span class='no'>bs</span>$<span class='no'>longitude</span>, <span class='no'>bs</span>$<span class='no'>latitude</span>, <span class='no'>distanceMatrix</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>""</span>)</div><div class='img'><img src='grid_distance-1.png' alt='' width='700' height='433' /></div><div class='input'># }
+</div></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
+
   </div>
 </div>
 

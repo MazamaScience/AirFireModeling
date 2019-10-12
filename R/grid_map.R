@@ -63,13 +63,11 @@ grid_map <- function(
   MazamaCoreUtils::stopIfNull(slice)
   MazamaCoreUtils::stopIfNull(style)
   
-  if ( !("bs_grid" %in% class(bs_grid)) ) {
+  if ( !("bs_grid" %in% class(bs_grid)) )
     stop("bs_grid object is not of class 'bs_grid'.")
-  }
   
-  if ( !(length(dim(bs_grid$data[[1]])) == 3) ) {
+  if ( !(length(dim(bs_grid$data[[1]])) == 3) )
     stop("Currently, only 3-D grids are supported.")
-  }
   
   if ( !is.logical(addAxes) )
     addAxes <- TRUE

@@ -20,14 +20,19 @@ Maintainer: Jonathan Callahan <jonathan.s.callahan@gmail.com>
 Depends:
     R (>= 3.5.0)
 Imports:
+    geodist,
     lubridate,
     maps,
     mapproj,
     ncdf4,
     magrittr,
     MazamaCoreUtils (>= 0.3.11),
+    MazamaSpatialUtils,
+    PWFSLSmoke,
+    sp,
     stringr
 Suggests:
+    AirMonitorPlots,
     knitr,
     testthat (>= 2.1.0)
 SystemRequirements: netcdf
