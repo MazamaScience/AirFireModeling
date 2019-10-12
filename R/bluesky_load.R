@@ -88,6 +88,7 @@ bluesky_load <- function(
   MazamaCoreUtils::stopIfNull(model)
   MazamaCoreUtils::stopIfNull(subDir)
   MazamaCoreUtils::stopIfNull(baseUrl)
+  MazamaCoreUtils::stopIfNull(param)
   
   if ( is.null(modelRun) ) {
     now <- lubridate::now(tzone = "UTC")
