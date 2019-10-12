@@ -72,6 +72,13 @@ grid_map <- function(
   if ( !is.logical(addAxes) )
     addAxes <- TRUE
   
+  # maps package doesn't include states outside of CONUS
+  if ( xlim[1] > -65 ||
+       xlim[2] < -125 ||
+       ylim[1] > 50 ||
+       ylim[2] < 25)
+    stop("grid_map() can only create plots within the continental US")
+  
   # ----- Subset the grid ------------------------------------------------------
   
   bs_gridSub <- grid_subset(bs_grid, xlim, ylim)

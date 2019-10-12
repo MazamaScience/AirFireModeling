@@ -1,0 +1,94 @@
+---
+title: "Hysplit-pp"
+author: "Mazama Science"
+date: "10/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# hysplit-pp
+
+Can we work with Hysplit-pp model output as seen at URLs like this:
+
+https://haze.airfire.org/bluesky-daily/output/hysplit-pp/AK-12km/2019062800/combined/data/
+
+Let's try.
+
+Information on the Swan Lake fire is here:
+
+https://inciweb.nwcg.gov/incident/6387/
+
+The most useful monitor to look at is the "Garden" monitor in Anchorage.
+
+```{r Garden_monitor}
+ak <- monitor_load(20190615,20190715) %>% monitor_subset(stateCodes = "AK")
+Garden <- ak %>% monitor_subset(monitorIDs = "020200018_01")
+monitor_timeseriesPlot(Garden, shadedNight = TRUE, xlab = "2019")
+title("Anchorage (Garden)")
+```
+
+Now lets try to get HYSPLIT model output for June 28.
+
+```{r grid_setup}
+setModelDataDir("~/Data/Bluesky")
+bs <- bluesky_load(
+  dailyOutputDir = "hysplit-pp",
+  model = "AK-12km", 
+  modelRun = 2019062800,
+  subDir = "combined"
+)
+
+grid_map(bs, xlim=c(-153,-147), ylim = c(60,63))
+```
+
+OK. No **maps** package map. But can get get a staticmap?
+
+```{r grid_subsetByDistance}
+distanceMatrix <- grid_distance(
+  bs, 
+  Garden$meta$longitude, 
+  Garden$meta$latitude
+  )
+radius <- 20000
+gridMask <- distanceMatrix <= radius
+bs_monitors <- grid_subsetByMask(bs, gridMask)
+PWFSLSmoke::monitor_staticmap(bs_monitors, cex = 2, pch = 15)
+```
+
+How about a timeseries?
+
+```{r grid_createMonitor}
+# Next three lines required for bs_grid to ws_monitor conversion
+library(MazamaSpatialUtils)
+setSpatialDataDir("~/Data/Spatial")
+loadSpatialData("NaturalEarthAdm1")
+
+# Create a fake version using the 80'th percentile
+Garden_fake <- grid_createMonitor(
+  bs,
+  longitude = Garden$meta$longitude,
+  latitude = Garden$meta$latitude,
+  radius = 10000,
+  monitorID = "Model data",
+  FUN = quantile,
+  probs = 0.90,
+  na.rm = TRUE
+)
+
+# And some AirMonitorPlots magic
+# Combine them and use AirMonitorPlots to plot them
+Garden_combined <- 
+ PWFSLSmoke::monitor_combine(list(Garden, Garden_fake))
+   
+ library(AirMonitorPlots)
+ 
+ ggplot_pm25Timeseries(Garden_combined) +
+   geom_pm25Points(aes(color = monitorID)) + 
+   stat_nowcast(aes(color = monitorID)) +
+   ggtitle("husplit-pp 12km vs. Monitoring Data")
+```
+
+Looks like everything is working.
