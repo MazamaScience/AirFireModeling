@@ -2,19 +2,19 @@
 #' 
 #' @title Map gridded model data
 #' 
-#' @param bs_grid bs_grid data list
-#' @param param data parameter to plot
-#' @param xlim longitude range to be plotted
-#' @param ylim latitude range to be plotted
-#' @param tmask logical time mask to select specific times
-#' @param slice either a time index or a function used to collapse the time axis
-#' @param style custom styling, one of \code{'default'}
-#' @param breaks used by \code{image()} function to partition values into 
-#' different colors
-#' @param colors vector of colors to use
-#' @param addAxes logical specifying whether to add axes
-#' @param main title for the plot
-#' @param ... additional arguments passed to maps::map()
+#' @param bs_grid \emph{bs_grid} object
+#' @param parameter Data parameter to plot.
+#' @param xlim Longitude range to be plotted.
+#' @param ylim Latitude range to be plotted.
+#' @param tmask logical time mask to select specific times.
+#' @param slice Either a time index or a function used to collapse the time axis.
+#' @param style Custom styling, one of \code{'default'}.
+#' @param breaks A set of numeric breakpoints for colors. This is passed on
+#' to \code{graphics::image()} to partition values into different colors.
+#' @param colors Vector of colors to use.
+#' @param addAxes Logical specifying whether to add axes.
+#' @param main Title for the plot.
+#' @param ... Aadditional arguments passed to maps::map().
 #' 
 #' @description Use the \pkg{maps} package to plot a map of bluesky data in a 
 #' given area.
@@ -40,7 +40,7 @@
 
 grid_map <- function(
   bs_grid, 
-  param = "pm25",
+  parameter = "pm25",
   xlim = range(bs_grid$longitude), 
   ylim = range(bs_grid$latitude), 
   tmask = rep(TRUE, times = length(bs_grid$time)), 
@@ -56,7 +56,7 @@ grid_map <- function(
   # ----- Validate parameters --------------------------------------------------
   
   MazamaCoreUtils::stopIfNull(bs_grid)
-  MazamaCoreUtils::stopIfNull(param)
+  MazamaCoreUtils::stopIfNull(parameter)
   MazamaCoreUtils::stopIfNull(xlim)
   MazamaCoreUtils::stopIfNull(ylim)
   MazamaCoreUtils::stopIfNull(tmask)
@@ -84,7 +84,7 @@ grid_map <- function(
   bs_gridSub <- grid_subset(bs_grid, xlim, ylim)
   lon <- bs_gridSub$longitude
   lat <- bs_gridSub$latitude
-  dataGrid <- bs_gridSub$data[[param]][,,tmask]
+  dataGrid <- bs_gridSub$data[[parameter]][,,tmask]
   timeRange <- range(bs_grid$time[tmask])
   
   # specify which map slice to plot, or how to aggregate values across time

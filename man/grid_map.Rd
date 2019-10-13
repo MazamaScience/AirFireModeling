@@ -4,36 +4,36 @@
 \alias{grid_map}
 \title{Map gridded model data}
 \usage{
-grid_map(bs_grid, param = "pm25", xlim = range(bs_grid$longitude),
+grid_map(bs_grid, parameter = "pm25", xlim = range(bs_grid$longitude),
   ylim = range(bs_grid$latitude), tmask = rep(TRUE, times =
   length(bs_grid$time)), slice = max, style = "default",
   breaks = NULL, colors = NULL, addAxes = TRUE, main = NULL, ...)
 }
 \arguments{
-\item{bs_grid}{bs_grid data list}
+\item{bs_grid}{\emph{bs_grid} object}
 
-\item{param}{data parameter to plot}
+\item{parameter}{Data parameter to plot.}
 
-\item{xlim}{longitude range to be plotted}
+\item{xlim}{Longitude range to be plotted.}
 
-\item{ylim}{latitude range to be plotted}
+\item{ylim}{Latitude range to be plotted.}
 
-\item{tmask}{logical time mask to select specific times}
+\item{tmask}{logical time mask to select specific times.}
 
-\item{slice}{either a time index or a function used to collapse the time axis}
+\item{slice}{Either a time index or a function used to collapse the time axis.}
 
-\item{style}{custom styling, one of \code{'default'}}
+\item{style}{Custom styling, one of \code{'default'}.}
 
-\item{breaks}{used by \code{image()} function to partition values into 
-different colors}
+\item{breaks}{A set of numeric breakpoints for colors. This is passed on
+to \code{graphics::image()} to partition values into different colors.}
 
-\item{colors}{vector of colors to use}
+\item{colors}{Vector of colors to use.}
 
-\item{addAxes}{logical specifying whether to add axes}
+\item{addAxes}{Logical specifying whether to add axes.}
 
-\item{main}{title for the plot}
+\item{main}{Title for the plot.}
 
-\item{...}{additional arguments passed to maps::map()}
+\item{...}{Aadditional arguments passed to maps::map().}
 }
 \description{
 Use the \pkg{maps} package to plot a map of bluesky data in a 

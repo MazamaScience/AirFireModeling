@@ -20,6 +20,7 @@ Maintainer: Jonathan Callahan <jonathan.s.callahan@gmail.com>
 Depends:
     R (>= 3.5.0)
 Imports:
+    abind,
     geodist,
     lubridate,
     maps,

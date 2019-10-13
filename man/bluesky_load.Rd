@@ -5,7 +5,7 @@
 \title{Load BlueSky NetCDF file and return contents as a bs_grid.}
 \usage{
 bluesky_load(dailyOutputDir = "standard", model = "PNW-1.33km",
-  modelRun = NULL, subDir = "combined", param = "pm25",
+  modelRun = NULL, subDir = "combined", parameter = "pm25",
   download = TRUE, cleanup = TRUE, filePath = NULL,
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
   quiet = FALSE)
@@ -19,7 +19,7 @@ bluesky_load(dailyOutputDir = "standard", model = "PNW-1.33km",
 
 \item{subDir}{Subdirectory path containing netcdf data.}
 
-\item{param}{Parameter name.}
+\item{parameter}{Parameter name.}
 
 \item{download}{Logical specifying whether to download and convert data if it
 is not found locally.}

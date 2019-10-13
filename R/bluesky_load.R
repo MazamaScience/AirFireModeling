@@ -6,7 +6,7 @@
 #' @param model Model identifier.
 #' @param modelRun Date code as "YYYYMMDDHH" (integer or character).
 #' @param subDir Subdirectory path containing netcdf data.
-#' @param param Parameter name.
+#' @param parameter Parameter name.
 #' @param download Logical specifying whether to download and convert data if it
 #' is not found locally.
 #' @param cleanup Logical specifying whether to remove the original files.
@@ -74,7 +74,7 @@ bluesky_load <- function(
   model = "PNW-1.33km",
   modelRun = NULL,
   subDir = "combined",
-  param = "pm25",
+  parameter = "pm25",
   download = TRUE,
   cleanup = TRUE,
   filePath = NULL,
@@ -88,7 +88,7 @@ bluesky_load <- function(
   MazamaCoreUtils::stopIfNull(model)
   MazamaCoreUtils::stopIfNull(subDir)
   MazamaCoreUtils::stopIfNull(baseUrl)
-  MazamaCoreUtils::stopIfNull(param)
+  MazamaCoreUtils::stopIfNull(parameter)
   
   if ( is.null(modelRun) ) {
     now <- lubridate::now(tzone = "UTC")
@@ -209,10 +209,10 @@ bluesky_load <- function(
   # TODO:  Handle parameters other than "PM25"
   
   pm25 <- ncdf4::ncvar_get(nc, "PM25")
-  if ( param == 'pm25' ) {
+  if ( parameter == 'pm25' ) {
     data$pm25 <- pm25
   } else {
-    stop(paste0("bluesky_load: Parameter '", param, "' is not handled yet."))
+    stop(paste0("bluesky_load: Parameter '", parameter, "' is not handled yet."))
   }
   
   # Close the file now that everything is in memory
