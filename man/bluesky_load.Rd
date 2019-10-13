@@ -6,7 +6,8 @@
 \usage{
 bluesky_load(dailyOutputDir = "standard", model = "PNW-1.33km",
   modelRun = NULL, subDir = "combined", parameter = "pm25",
-  download = TRUE, cleanup = TRUE, filePath = NULL,
+  timesteps = NULL, download = TRUE, cleanup = TRUE,
+  filePath = NULL,
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
   quiet = FALSE)
 }
@@ -20,6 +21,9 @@ bluesky_load(dailyOutputDir = "standard", model = "PNW-1.33km",
 \item{subDir}{Subdirectory path containing netcdf data.}
 
 \item{parameter}{Parameter name.}
+
+\item{timesteps}{Optional vector of timesteps to be loaded. Defaults to all
+available timesteps in the file.}
 
 \item{download}{Logical specifying whether to download and convert data if it
 is not found locally.}
@@ -40,7 +44,7 @@ List of class \code{bs_grid} with the following elements:
   \item{lon -- 1D vector of longitudes (X)}
   \item{lat -- 1D vector of latitudes (Y)}
   \item{time -- 1D vector of POSIXct times (T)}
-  \item{pm25 -- 3D array of PM2.5 values (X-Y-T)}
+  \item{data -- list of 3D arrays of data values (X-Y-T)}
   \item{model -- character name of model used to generate the data}
   \item{modelRun -- character date + hour when the model was run}
   \item{deltaLon -- longitude axis grid cell spacing}
@@ -59,11 +63,16 @@ structure:
 \description{
 Reads in a "_V2" BlueSky output NetCDF file and ingests the 
 data, returning it in a list of class \code{bs_grid}.
+
+Data are searched for in the package internal \code{dataDir} which can be set 
+with \code{setModelDataDir()}. If no data are found in the \code{dataDir}, 
+and \code{download = TRUE} an attempt is made to download data.
+
+If \code{timesteps} are specified, the returned \emph{bs_grid} object will
+contain data associated with those timesteps. Data missing in the original
+model run will be replaced with NA values.
 }
 \details{
-Data are searched for in the package internal \code{dataDir} which 
-can be set with \code{setModelDataDir()}.
-
 #' On 2019-10-11, vailable model identifiers include the following:
 \itemize{
   \item{AK-12km}
@@ -84,7 +93,10 @@ can be set with \code{setModelDataDir()}.
 \examples{
 \dontrun{
 setModelDataDir('~/Data/Bluesky')
-bs_grid <- bluesky_load(model = "PNW-1.33km", modelRun = 2019090900)
+bs_grid <- bluesky_load(model = "PNW-1.33km", modelRun = 2019100900)
+xlim <- c(-118, -114)
+ylim <- c(45, 48)
+grid_map(bs_grid, xlim = xlim, ylim = ylim, tmask = (1:40))
 }
 }
 \seealso{

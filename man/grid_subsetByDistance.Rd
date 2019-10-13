@@ -41,7 +41,7 @@ loadSpatialData("NaturalEarthAdm1")
 
 # Now we can work as we normally would
 setModelDataDir("~/Data/Bluesky")
-bs <- bluesky_load(model = "PNW-1.33km", modelRun = 2019090900)
+bs <- bluesky_load(model = "PNW-1.33km", modelRun = 2019100900)
 bs_monitors <- grid_subsetByDistance(bs, -121.017092, 46.901512, 
                                      radius = 10000)
 

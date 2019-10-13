@@ -18,7 +18,7 @@
 #' @examples 
 #' \dontrun{
 #' setModelDataDir('~/Data/Bluesky')
-#' filePath <- bluesky_download(model = "PNW-4km", modelRun = 2019090900)
+#' filePath <- bluesky_download(model = "PNW-4km", modelRun = 2019100900)
 #' bluesky_toV2(filePath)
 #' }
 

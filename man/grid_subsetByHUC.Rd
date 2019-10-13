@@ -44,7 +44,7 @@ WA10 <- MazamaSpatialUtils::subsetHUC(WBDHU10, allStateCodes = "WA")
 HUC <- MazamaSpatialUtils::getHUC(longitude, latitude, "WA10")
 
 setModelDataDir("~/Data/Bluesky")
-bs <- bluesky_load(model = "PNW-1.33km", modelRun = 2019090900)
+bs <- bluesky_load(model = "PNW-1.33km", modelRun = 2019100900)
 
 QueetsRiver <- grid_subsetByHUC(bs, HUC)
 PWFSLSmoke::monitor_staticmap(QueetsRiver, cex = .5, pch = 15)

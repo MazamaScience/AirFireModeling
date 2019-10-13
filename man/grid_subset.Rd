@@ -24,11 +24,11 @@ The incoming gridded data list is subset according to the
 parameters passed in.
 }
 \examples{
-\dontrun{
+\donttest{
 setModelDataDir('~/Data/Bluesky')
-bs <- bluesky_load(model = "PNW-1.33km", modelRun = 2019090900)
+bs <- bluesky_load(model = "PNW-1.33km", modelRun = 2019100900)
 xlim <- c(-118, -114)
 ylim <- c(45, 48)
-grid_ap(bs, xlim = xlim, ylim = ylim, tMask = (1:24))
+grid_map(bs, xlim = xlim, ylim = ylim, tMask = (1:24))
 }
 }

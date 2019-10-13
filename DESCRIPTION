@@ -1,6 +1,6 @@
 Type: Package
 Package: AirFireModeling
-Version: 0.1.0
+Version: 0.1.1
 Title: Utilities for Working with Monitoring Data and Smoke Model Output
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")), 

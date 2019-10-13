@@ -63,11 +63,9 @@ structure:
 \examples{
 \dontrun{
 setModelDataDir("~/Data/Bluesky")
-bluesky_download(model = "PNW-4km", modelRun = 2019090900)
+bluesky_download(model = "PNW-4km", modelRun = 2019100900)
 }
 }
 \seealso{
-\link{bluesky_load}
-
 \link{setModelDataDir}
 }

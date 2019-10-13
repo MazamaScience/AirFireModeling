@@ -31,7 +31,7 @@
 #' 
 #' # Now we can work as we normally would
 #' setModelDataDir("~/Data/Bluesky")
-#' bs <- bluesky_load(model = "PNW-1.33km", modelRun = 2019090900)
+#' bs <- bluesky_load(model = "PNW-1.33km", modelRun = 2019100900)
 #' bs_monitors <- grid_subsetByDistance(bs, -121.017092, 46.901512, 
 #'                                      radius = 10000)
 #' 
@@ -52,20 +52,7 @@ grid_subsetByDistance <- function(
   count = NULL
 ) {
   
-  # ----- Validate parameters --------------------------------------------------
-  
-  MazamaCoreUtils::stopIfNull(bs_grid)
-  MazamaCoreUtils::stopIfNull(longitude)
-  MazamaCoreUtils::stopIfNull(latitude)
-  
-  if ( !("bs_grid" %in% class(bs_grid)) )
-    stop("bs_grid object is not of class 'bs_grid'.")
-  
-  if ( ! length(dim(bs_grid$data[[1]])) == 3 ) {
-    stop("Currently, only 3-D grids are supported.")
-  }
-  
-  # ----- Subset grid ----------------------------------------------------------
+class  # ----- Subset grid ----------------------------------------------------------
   
   distanceGrid <- grid_distance(bs_grid, longitude, latitude)
   

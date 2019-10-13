@@ -27,7 +27,7 @@ grid cells within a certain radius of the target location.
 \examples{
 \donttest{
 setModelDataDir("~/Data/Bluesky")
-bs <- bluesky_load(model = "PNW-4km", modelRun = 2019090900)
+bs <- bluesky_load(model = "PNW-4km", modelRun = 2019100900)
 xlim <- c(-124, -122)
 ylim <- c(46, 48)
 bs <- grid_subset(bs, xlim=xlim, ylim=ylim)

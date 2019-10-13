@@ -52,9 +52,9 @@ If \code{breaks} and \code{colors} are defined, they will override
 \examples{
 \donttest{
 setModelDataDir('~/Data/Bluesky')
-bs <- bluesky_load(model = "PNW-1.33km", modelRun = 2019090900)
+bs_grid <- bluesky_load(model = "PNW-1.33km", modelRun = 2019100900)
 xlim <- c(-118, -114)
 ylim <- c(45, 48)
-grid_map(bs, xlim = xlim, ylim = ylim, tmask = (1:40))
+grid_map(bs_grid, xlim = xlim, ylim = ylim, tmask = (1:40))
 }
 }

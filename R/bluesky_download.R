@@ -44,12 +44,11 @@
 #' 
 #' @return File path of downloaded data.
 #' 
-#' @seealso \link{bluesky_load}
 #' @seealso \link{setModelDataDir}
 #' @examples
 #' \dontrun{
 #' setModelDataDir("~/Data/Bluesky")
-#' bluesky_download(model = "PNW-4km", modelRun = 2019090900)
+#' bluesky_download(model = "PNW-4km", modelRun = 2019100900)
 #' }
 
 bluesky_download <- function(
