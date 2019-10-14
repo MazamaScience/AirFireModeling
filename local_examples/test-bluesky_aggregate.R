@@ -8,37 +8,28 @@ library(AirFireModeling)
 
 setModelDataDir("~/Data/Bluesky")
 
-# Aggregate a weeks worth of data
-bs_grid <- bluesky_aggregate(
-  model = "PNW-4km",
-  firstModelRun = 20191007,
-  lastModelRun = 20191013,
-  subDir = "combined",
-  chunk = 1
-)
+layout(matrix(seq(3)))
 
-# Create a plot
-bs_grid %>%
-  grid_createMonitor(
-    longitude = -116.5,
-    latitude = 47.2,
-    radius = 10000,
-    monitorID = "Model data",
-    FUN = quantile,
-    probs = 0.90,
-    na.rm = TRUE
-  ) %>%
-  PWFSLSmoke::monitor_timeseriesPlot(shadedNight = TRUE)
-
-
-for ( modelRun in 20191007:20191013 ) {
+for ( chunk in 1:3 ) {
   
-  # Now add the full model time axis 
-  bluesky_load(
+  timeAxis <- seq(
+    MazamaCoreUtils::parseDatetime(20191007, timezone = "UTC"),
+    MazamaCoreUtils::parseDatetime(20191015, timezone = "UTC"),
+    by = "hour"
+  )
+  plot(timeAxis, seq_along(timeAxis), col = "transparent", ylim = c(0,100))
+  
+  # Now do a smaller section
+  agg_grid <- bluesky_aggregate(
     model = "PNW-4km",
-    modelRun = modelRun,
-    subDir = "combined"
-  ) %>%
+    firstModelRun = 20191009,
+    lastModelRun = 20191011,
+    subDir = "combined",
+    chunk = chunk
+  )
+  
+  # Create a plot
+  agg_grid %>%
     grid_createMonitor(
       longitude = -116.5,
       latitude = 47.2,
@@ -48,86 +39,34 @@ for ( modelRun in 20191007:20191013 ) {
       probs = 0.90,
       na.rm = TRUE
     ) %>%
-    PWFSLSmoke::monitor_timeseriesPlot(type='b', cex=0.5, pch=15, col="goldenrod", add = TRUE)
+    PWFSLSmoke::monitor_timeseriesPlot(shadedNight = TRUE, add = TRUE)
+  title(paste0("Chunk ", chunk))
+  
+  colors <- RColorBrewer::brewer.pal(7, "Dark2")
+  i <- 0
+  for ( modelRun in 20191009:20191011 ) {
+    
+    i <- i + 1
+    
+    # Now add the full model time axis 
+    bluesky_load(
+      model = "PNW-4km",
+      modelRun = modelRun,
+      subDir = "combined"
+    ) %>%
+      grid_createMonitor(
+        longitude = -116.5,
+        latitude = 47.2,
+        radius = 10000,
+        monitorID = "Model data",
+        FUN = quantile,
+        probs = 0.90,
+        na.rm = TRUE
+      ) %>%
+      PWFSLSmoke::monitor_timeseriesPlot(type='l', cex=0.5, pch=15, col=colors[i], add = TRUE)
+    
+  }
   
 }
 
-# ----- 20191007
-
-# Now add the full model time axis 
-bluesky_load(
-  model = "PNW-4km",
-  modelRun = 20191007,
-  subDir = "combined"
-) %>%
-  grid_createMonitor(
-    longitude = -116.5,
-    latitude = 47.2,
-    radius = 10000,
-    monitorID = "Model data",
-    FUN = quantile,
-    probs = 0.90,
-    na.rm = TRUE
-  ) %>%
-  PWFSLSmoke::monitor_timeseriesPlot(pch = 1, cex = 0.5, col = 'red', add = TRUE)
-
-# TODO:  Looks like full model is shifted by one timestep
-
-# ----- 20191008
-
-# Now add the full model time axis 
-bluesky_load(
-  model = "PNW-4km",
-  modelRun = 20191008,
-  subDir = "combined"
-) %>%
-  grid_createMonitor(
-    longitude = -116.5,
-    latitude = 47.2,
-    radius = 10000,
-    monitorID = "Model data",
-    FUN = quantile,
-    probs = 0.90,
-    na.rm = TRUE
-  ) %>%
-  PWFSLSmoke::monitor_timeseriesPlot(pch = 1, cex = 0.5, col = 'blue', add = TRUE)
-
-# ----- 20191009
-
-# Now add the full model time axis 
-bluesky_load(
-  model = "PNW-4km",
-  modelRun = 20191009,
-  subDir = "combined"
-) %>%
-  grid_createMonitor(
-    longitude = -116.5,
-    latitude = 47.2,
-    radius = 10000,
-    monitorID = "Model data",
-    FUN = quantile,
-    probs = 0.90,
-    na.rm = TRUE
-  ) %>%
-  PWFSLSmoke::monitor_timeseriesPlot(pch = 1, cex = 0.5, col = 'orange', add = TRUE)
-
-# ----- 20191010
-
-# Now add the full model time axis 
-bluesky_load(
-  model = "PNW-4km",
-  modelRun = 20191010,
-  subDir = "combined"
-) %>%
-  grid_createMonitor(
-    longitude = -116.5,
-    latitude = 47.2,
-    radius = 10000,
-    monitorID = "Model data",
-    FUN = quantile,
-    probs = 0.90,
-    na.rm = TRUE
-  ) %>%
-  PWFSLSmoke::monitor_timeseriesPlot(pch = 1, cex = 0.5, col = 'cyan', add = TRUE)
-
-
+layout(1)

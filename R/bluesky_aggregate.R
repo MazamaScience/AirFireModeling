@@ -168,8 +168,13 @@ bluesky_aggregate <- function(
     
     iteration <- iteration + 1
     
+    if ( !quiet ) 
+      message(paste0(
+        "Loading chunk ", chunk, " from modelRun ", modelRun, "."
+      ))
+    
     # NOTE:  As of 2019-10-13, model time axes begin with hour "01".
-    # NOTE:  This is represents a 1 hour shift from normal reporting which
+    # NOTE:  This represents a 1 hour shift from normal reporting which
     # NOTE:  uses a beginning-of-hour timestamp.
 
     # Chunk timesteps
@@ -261,25 +266,6 @@ bluesky_aggregate <- function(
     
   } # END LOOP -- modelRun
   
-  # NOTE:  These next 2 checks may not be need as bluesky_load() guarantees
-  # NOTE:  the proper size of the returned bs_grid. Keep them anyway.
-  
-  # Sanity check -- spacing
-  if ( spacing > length(bsList[[1]]$time) ) {
-    stop(paste0(
-      "'spacing' ",
-      "must be smaller than the length of the model time axis"
-    ))
-  }
-  
-  # Sanity check -- chunk
-  if ( ((chunk - 1) * spacing + 1) > length(bsList[[1]]$time) ) {
-    stop(paste0(
-      "'(chunk - 1) * spacing' ",
-      "must be smaller than the length of the model time axis"
-    ))
-  }
-
   # ----- Assemble aggregated bs_grid ------------------------------------------
   
   modelCount <- length(names(bsList))
@@ -298,10 +284,12 @@ bluesky_aggregate <- function(
   )
 
   # Add a complete time axis
-  starttime <- MazamaCoreUtils::parseDatetime(firstModelRun, timezone = "UTC")
+  starttime <-
+    MazamaCoreUtils::parseDatetime(firstModelRun, timezone = "UTC") +
+    lubridate::dhours((chunk - 1) * spacing + 1)
   endtime <-
     MazamaCoreUtils::parseDatetime(lastModelRun, timezone = "UTC") +
-    lubridate::dhours(chunk * spacing - 1)
+    lubridate::dhours(chunk * spacing )
   bs_grid$time <- seq(starttime, endtime, by = "1 hour")
 
   # TODO:  support multiple parameters
@@ -329,8 +317,8 @@ if ( FALSE ) {
   
   dailyOutputDir <- "standard"
   model <- "PNW-4km"
-  firstModelRun <- 20191009
-  lastModelRun <- 20191011
+  firstModelRun <- 20191007
+  lastModelRun <- 20191013
   subDir <- "combined"
   parameter <- "pm25"
   download <- TRUE
