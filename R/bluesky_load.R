@@ -358,6 +358,9 @@ bluesky_load <- function(
   
   bs_grid <- structure(bs_grid, class = c("bs_grid", "list"))
   
+  # Take out the trash
+  gc()
+  
   return(bs_grid)
   
 }

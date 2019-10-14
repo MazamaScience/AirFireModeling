@@ -233,8 +233,8 @@ bluesky_aggregate <- function(
       
     } else {
       
-      # Save memory
-      rm(result)
+      # # Save memory
+      # rm(result)
       
     }
     
@@ -261,8 +261,8 @@ bluesky_aggregate <- function(
     # NOTE:  Put data in chunkDataList it easier to use abind::abind() later.
     chunkDataList[[modelRun]] <- bsList[[modelRun]]$data[[parameter]]
     
-    # Save memory
-    bsList[[modelRun]]$data[[parameter]] <- NULL
+    # # Save memory
+    # bsList[[modelRun]]$data[[parameter]] <- NULL
     
   } # END LOOP -- modelRun
   
@@ -298,12 +298,15 @@ bluesky_aggregate <- function(
   bs_grid$data <- list(
     pm25 = abind::abind(chunkDataList)
   )
-  # Save memory
-  rm(chunkDataList)
+  # # Save memory
+  # rm(chunkDataList)
   
   # ----- Return ---------------------------------------------------------------
   
   bs_grid <- structure(bs_grid, class = c("bs_grid", "list") )
+  
+  # Take out the trash
+  gc()
   
   return(bs_grid)
   
