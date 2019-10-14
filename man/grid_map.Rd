@@ -5,7 +5,7 @@
 \title{Map gridded model data}
 \usage{
 grid_map(bs_grid, parameter = "pm25", xlim = range(bs_grid$longitude),
-  ylim = range(bs_grid$latitude), tmask = rep(TRUE, times =
+  ylim = range(bs_grid$latitude), tMask = rep(TRUE, times =
   length(bs_grid$time)), slice = max, style = "default",
   breaks = NULL, colors = NULL, addAxes = TRUE, main = NULL, ...)
 }
@@ -18,7 +18,8 @@ grid_map(bs_grid, parameter = "pm25", xlim = range(bs_grid$longitude),
 
 \item{ylim}{Latitude range to be plotted.}
 
-\item{tmask}{logical time mask to select specific times.}
+\item{tMask}{Logical vector of the same length as the time axis or a set
+of indices used to select specific times.}
 
 \item{slice}{Either a time index or a function used to collapse the time axis.}
 
@@ -55,6 +56,6 @@ setModelDataDir('~/Data/Bluesky')
 bs_grid <- bluesky_load(model = "PNW-1.33km", modelRun = 2019100900)
 xlim <- c(-118, -114)
 ylim <- c(45, 48)
-grid_map(bs_grid, xlim = xlim, ylim = ylim, tmask = (1:40))
+grid_map(bs_grid, xlim = xlim, ylim = ylim, tMask = 1:40)
 }
 }

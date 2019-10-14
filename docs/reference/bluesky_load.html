@@ -37,7 +37,13 @@
 
 <meta property="og:title" content="Load BlueSky NetCDF file and return contents as a bs_grid. — bluesky_load" />
 <meta property="og:description" content="Reads in a &quot;_V2&quot; BlueSky output NetCDF file and ingests the 
-data, returning it in a list of class bs_grid." />
+data, returning it in a list of class bs_grid.
+Data are searched for in the package internal dataDir which can be set 
+with setModelDataDir(). If no data are found in the dataDir, 
+and download = TRUE an attempt is made to download data.
+If timesteps are specified, the returned bs_grid object will
+contain data associated with those timesteps. Data missing in the original
+model run will be replaced with NA values." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -70,7 +76,7 @@ data, returning it in a list of class bs_grid." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -112,11 +118,18 @@ data, returning it in a list of class bs_grid." />
     <div class="ref-description">
     <p>Reads in a "_V2" BlueSky output NetCDF file and ingests the 
 data, returning it in a list of class <code>bs_grid</code>.</p>
+<p>Data are searched for in the package internal <code>dataDir</code> which can be set 
+with <code><a href='setModelDataDir.html'>setModelDataDir()</a></code>. If no data are found in the <code>dataDir</code>, 
+and <code>download = TRUE</code> an attempt is made to download data.</p>
+<p>If <code>timesteps</code> are specified, the returned <em>bs_grid</em> object will
+contain data associated with those timesteps. Data missing in the original
+model run will be replaced with NA values.</p>
     </div>
 
     <pre class="usage"><span class='fu'>bluesky_load</span>(<span class='kw'>dailyOutputDir</span> <span class='kw'>=</span> <span class='st'>"standard"</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-1.33km"</span>,
-  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>subDir</span> <span class='kw'>=</span> <span class='st'>"combined"</span>, <span class='kw'>param</span> <span class='kw'>=</span> <span class='st'>"pm25"</span>,
-  <span class='kw'>download</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>cleanup</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>filePath</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>subDir</span> <span class='kw'>=</span> <span class='st'>"combined"</span>, <span class='kw'>parameter</span> <span class='kw'>=</span> <span class='st'>"pm25"</span>,
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timesteps</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>download</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>cleanup</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>filePath</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://haze.airfire.org/bluesky-daily/output"</span>,
   <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
@@ -140,8 +153,21 @@ data, returning it in a list of class <code>bs_grid</code>.</p>
       <td><p>Subdirectory path containing netcdf data.</p></td>
     </tr>
     <tr>
-      <th>param</th>
+      <th>parameter</th>
       <td><p>Parameter name.</p></td>
+    </tr>
+    <tr>
+      <th>xlim</th>
+      <td><p>Optional longitude range.</p></td>
+    </tr>
+    <tr>
+      <th>ylim</th>
+      <td><p>Optional latitude range.</p></td>
+    </tr>
+    <tr>
+      <th>timesteps</th>
+      <td><p>Optional vector of timesteps to be loaded. Defaults to all
+available timesteps in the file.</p></td>
     </tr>
     <tr>
       <th>download</th>
@@ -174,7 +200,7 @@ progress bar.</p></td>
 <li><p>lon -- 1D vector of longitudes (X)</p></li>
 <li><p>lat -- 1D vector of latitudes (Y)</p></li>
 <li><p>time -- 1D vector of POSIXct times (T)</p></li>
-<li><p>pm25 -- 3D array of PM2.5 values (X-Y-T)</p></li>
+<li><p>data -- list of 3D arrays of data values (X-Y-T)</p></li>
 <li><p>model -- character name of model used to generate the data</p></li>
 <li><p>modelRun -- character date + hour when the model was run</p></li>
 <li><p>deltaLon -- longitude axis grid cell spacing</p></li>
@@ -191,9 +217,7 @@ structure:</p>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Data are searched for in the package internal <code>dataDir</code> which 
-can be set with <code><a href='setModelDataDir.html'>setModelDataDir()</a></code>.</p>
-<p>#' On 2019-10-11, vailable model identifiers include the following:</p><ul>
+    <p>#' On 2019-10-11, vailable model identifiers include the following:</p><ul>
 <li><p>AK-12km</p></li>
 <li><p>CANSAC-1.33km</p></li>
 <li><p>CANSAC-4km</p></li>
@@ -218,7 +242,16 @@ can be set with <code><a href='setModelDataDir.html'>setModelDataDir()</a></code
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/Bluesky'</span>)
-<span class='no'>bs_grid</span> <span class='kw'>&lt;-</span> <span class='fu'>bluesky_load</span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-1.33km"</span>, <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019090900</span>)
+
+<span class='no'>xlim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>118</span>, -<span class='fl'>114</span>)
+<span class='no'>ylim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>45</span>, <span class='fl'>48</span>)
+<span class='no'>bs_grid</span> <span class='kw'>&lt;-</span> <span class='fu'>bluesky_load</span>(
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-1.33km"</span>,
+  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019100900</span>,
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='no'>xlim</span>,
+  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='no'>ylim</span>
+)
+<span class='fu'><a href='grid_map.html'>grid_map</a></span>(<span class='no'>bs_grid</span>, <span class='kw'>tMask</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>24</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

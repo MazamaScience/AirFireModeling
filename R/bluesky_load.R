@@ -8,6 +8,8 @@
 #' @param modelRun Date code as "YYYYMMDDHH" (integer or character).
 #' @param subDir Subdirectory path containing netcdf data.
 #' @param parameter Parameter name.
+#' @param xlim Optional longitude range.
+#' @param ylim Optional latitude range.
 #' @param timesteps Optional vector of timesteps to be loaded. Defaults to all
 #' available timesteps in the file. 
 #' @param download Logical specifying whether to download and convert data if it
@@ -76,10 +78,16 @@
 #' @examples
 #' \dontrun{
 #' setModelDataDir('~/Data/Bluesky')
-#' bs_grid <- bluesky_load(model = "PNW-1.33km", modelRun = 2019100900)
+#' 
 #' xlim <- c(-118, -114)
 #' ylim <- c(45, 48)
-#' grid_map(bs_grid, xlim = xlim, ylim = ylim, tmask = (1:40))
+#' bs_grid <- bluesky_load(
+#'   model = "PNW-1.33km", 
+#'   modelRun = 2019100900,
+#'   xlim = xlim, 
+#'   ylim = ylim
+#' )
+#' grid_map(bs_grid, tMask = 1:24)
 #' }
 
 bluesky_load <- function(
@@ -88,6 +96,8 @@ bluesky_load <- function(
   modelRun = NULL,
   subDir = "combined",
   parameter = "pm25",
+  xlim = NULL,
+  ylim = NULL,
   timesteps = NULL,
   download = TRUE,
   cleanup = TRUE,
@@ -255,8 +265,68 @@ bluesky_load <- function(
     time <- seq(from, by = "hours", length.out = length(time))
   }
   
-  # In case we need it later
+  # In case we need them later
+  lon_originalModelAxis <- lon
+  lat_originalModelAxis <- lat
   time_originalModelAxis <- time
+  
+  # ----- Handle xlim, ylim ----------------------------------------------------
+  
+  if ( is.null(xlim) ) {
+    
+    start_x <- 1
+    count_x <- length(lon)
+    
+  } else {
+    
+    # Any values lower than xlim[1]? Find the index of the biggest one. 
+    # Otherwise use the start.
+    if ( any(lon < xlim[1]) ) {
+      index_lonLo <- max(which(lon < xlim[1]))
+    } else {
+      index_lonLo <- 1
+    }
+    
+    if ( any(lon > xlim[2]) ) {
+      index_lonHi <- min(which(lon > xlim[2]))
+    } else {
+      index_lonHi <- length(lon)
+    }
+    
+    start_x <- index_lonLo
+    count_x <- index_lonHi - index_lonLo + 1
+    
+    # Subset lon varaible
+    lon <- lon[index_lonLo:index_lonHi]
+
+  }
+  
+  if ( is.null(ylim) ) {
+    
+    start_y <- 1
+    count_y <- length(lat)
+    
+  } else {
+    
+    if ( any(lat < ylim[1]) ) {
+      index_latLo <- max(which(lat < ylim[1]))
+    } else {
+      index_latLo <- 1
+    }
+    
+    if ( any(lat > ylim[2]) ) {
+      index_latHi <- min(which(lat > ylim[2]))
+    } else {
+      index_latHi <- length(lat)
+    }
+    
+    start_y <- index_latLo
+    count_y <- index_latHi - index_latLo + 1
+    
+    # Subset lat varaible
+    lat <- lat[index_latLo:index_latHi]
+
+  }
   
   # ----- Read in parameter data -----------------------------------------------
   
@@ -267,8 +337,8 @@ bluesky_load <- function(
     parameter_data <- ncdf4::ncvar_get(
       nc, 
       varid = "PM25",
-      start = c(1, 1, 1, 1),
-      count = c(-1, -1, -1, -1),
+      start = c(start_x, start_y, 1, 1),
+      count = c(count_x, count_y, -1, -1),
       verbose = FALSE,
       signedbyte = TRUE,
       collapse_degen = TRUE,
@@ -307,8 +377,8 @@ bluesky_load <- function(
     parameter_data <- ncdf4::ncvar_get(
       nc, 
       varid = "PM25",
-      start = c(1, 1, 1, startIndex_t),
-      count = c(-1, -1, -1, validCount_t),
+      start = c(start_x, start_y, 1, startIndex_t),
+      count = c(count_x, count_y, -1, validCount_t),
       verbose = FALSE,
       signedbyte = TRUE,
       collapse_degen = TRUE,
@@ -338,6 +408,10 @@ bluesky_load <- function(
     }
     
   }
+  
+  # TODO:  Figure out why this was causing memory problems that resulted in
+  # TODO:  (memory?) errors resulting in complaints from MazamaCoreUtils about
+  # TODO:  not understanding "UTC".
   
   # Close the file now that everything is in memory
   ncdf4::nc_close(nc)
@@ -376,6 +450,8 @@ if ( FALSE ) {
   modelRun <- 20191009
   subDir <- "combined"
   parameter <- "pm25"
+  xlim <- c(-118, -114)
+  ylim <- c(45, 48)
   timesteps <- NULL
   download <- TRUE
   cleanup <- TRUE

@@ -6,7 +6,8 @@
 #' @param parameter Data parameter to plot.
 #' @param xlim Longitude range to be plotted.
 #' @param ylim Latitude range to be plotted.
-#' @param tmask logical time mask to select specific times.
+#' @param tMask Logical vector of the same length as the time axis or a set
+#' of indices used to select specific times.
 #' @param slice Either a time index or a function used to collapse the time axis.
 #' @param style Custom styling, one of \code{'default'}.
 #' @param breaks A set of numeric breakpoints for colors. This is passed on
@@ -35,7 +36,7 @@
 #' bs_grid <- bluesky_load(model = "PNW-1.33km", modelRun = 2019100900)
 #' xlim <- c(-118, -114)
 #' ylim <- c(45, 48)
-#' grid_map(bs_grid, xlim = xlim, ylim = ylim, tmask = (1:40))
+#' grid_map(bs_grid, xlim = xlim, ylim = ylim, tMask = 1:40)
 #' }
 
 grid_map <- function(
@@ -43,7 +44,7 @@ grid_map <- function(
   parameter = "pm25",
   xlim = range(bs_grid$longitude), 
   ylim = range(bs_grid$latitude), 
-  tmask = rep(TRUE, times = length(bs_grid$time)), 
+  tMask = rep(TRUE, times = length(bs_grid$time)), 
   slice = max,
   style = "default", 
   breaks = NULL, 
@@ -59,7 +60,7 @@ grid_map <- function(
   MazamaCoreUtils::stopIfNull(parameter)
   MazamaCoreUtils::stopIfNull(xlim)
   MazamaCoreUtils::stopIfNull(ylim)
-  MazamaCoreUtils::stopIfNull(tmask)
+  MazamaCoreUtils::stopIfNull(tMask)
   MazamaCoreUtils::stopIfNull(slice)
   MazamaCoreUtils::stopIfNull(style)
   
@@ -84,8 +85,8 @@ grid_map <- function(
   bs_gridSub <- grid_subset(bs_grid, xlim, ylim)
   lon <- bs_gridSub$longitude
   lat <- bs_gridSub$latitude
-  dataGrid <- bs_gridSub$data[[parameter]][,,tmask]
-  timeRange <- range(bs_grid$time[tmask])
+  dataGrid <- bs_gridSub$data[[parameter]][,,tMask]
+  timeRange <- range(bs_grid$time[tMask])
   
   # specify which map slice to plot, or how to aggregate values across time
   if ( is.null(slice) ) {

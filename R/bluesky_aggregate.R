@@ -10,6 +10,8 @@
 #' @param lastModelRun Datestamp of the last model run.
 #' @param subDir Subdirectory path containing netcdf data.
 #' @param parameter Parameter name.
+#' @param xlim Optional longitude range.
+#' @param ylim Optional latitude range.
 #' @param download Logical specifying whether to download and convert data if it
 #' is not found locally.
 #' @param cleanup Logical specifying whether to remove the original files.
@@ -92,10 +94,12 @@ bluesky_aggregate <- function(
   lastModelRun = NULL, 
   subDir = "combined", 
   parameter = "pm25",
+  xlim = NULL,
+  ylim = NULL,
   download = TRUE,
   cleanup = TRUE,
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
-  quiet = FALSE,
+  quiet = TRUE,
   spacing = NULL, 
   chunk = 1
 ) {
@@ -168,21 +172,42 @@ bluesky_aggregate <- function(
     
     iteration <- iteration + 1
     
-    if ( !quiet ) 
-      message(paste0(
-        "Loading chunk ", chunk, " from modelRun ", modelRun, "."
-      ))
+    # TODO:  WTF! This seems to prevent parseDatettime() from returning a
+    # TODO:  WTF! "'UTC' not recognized" error. ... W.T.F!
+    dummy_lubridate <- lubridate::ymd_h(modelRun, tz = "UTC")
+    dummy_MazamaCoreUtils <- MazamaCoreUtils::parseDatetime(modelRun, timezone = "UTC")
+    
+    if ( !quiet ) {
+      # message(paste0(
+      #   "Loading chunk ", chunk, " from modelRun ", modelRun,
+      #   "       lubridate says: ",
+      #   strftime(dummy_lubridate, "%F %T %Z", tz = "UTC")
+      # ))
+      # message(paste0(
+      #   "Loading chunk ", chunk, " from modelRun ", modelRun,
+      #   " MazamaCoreUtils says: ",
+      #   strftime(dummy_MazamaCoreUtils, "%F %T %Z", tz = "UTC")
+      # ))
+    }
     
     # NOTE:  As of 2019-10-13, model time axes begin with hour "01".
     # NOTE:  This represents a 1 hour shift from normal reporting which
     # NOTE:  uses a beginning-of-hour timestamp.
 
     # Chunk timesteps
-    chunkStart <-
-      MazamaCoreUtils::parseDatetime(modelRun, timezone = "UTC") +
-      lubridate::dhours((chunk - 1) * spacing + 1)
+    chunkStart <- MazamaCoreUtils::parseDatetime(modelRun, timezone = "UTC") 
+    chunkStart <- chunkStart + lubridate::dhours((chunk - 1) * spacing + 1)
     chunkTimeAxis <- seq(chunkStart, length.out = spacing, by = "hour")
 
+    if ( !quiet ) {
+      message(paste0(
+        "Chunk from ", 
+        strftime(range(chunkTimeAxis)[1],"%F %T %Z"), 
+        " to ", 
+        strftime(range(chunkTimeAxis)[2],"%F %T %Z")
+      ))
+    }
+    
     result <- try({
       bsList[[modelRun]] <- bluesky_load(
         dailyOutputDir = dailyOutputDir,
@@ -190,6 +215,8 @@ bluesky_aggregate <- function(
         modelRun = modelRun, 
         subDir = subDir,
         parameter = parameter,
+        xlim = xlim,
+        ylim = ylim,
         timesteps = chunkTimeAxis,
         download = download,
         cleanup = cleanup,
@@ -231,11 +258,6 @@ bluesky_aggregate <- function(
 
       bsList[[modelRun]] <- empty_bs_grid
       
-    } else {
-      
-      # # Save memory
-      # rm(result)
-      
     }
     
     # Sanity check -- X and Y dimensions must be the same
@@ -261,8 +283,8 @@ bluesky_aggregate <- function(
     # NOTE:  Put data in chunkDataList it easier to use abind::abind() later.
     chunkDataList[[modelRun]] <- bsList[[modelRun]]$data[[parameter]]
     
-    # # Save memory
-    # bsList[[modelRun]]$data[[parameter]] <- NULL
+    # Save memory
+    bsList[[modelRun]]$data[[parameter]] <- NULL
     
   } # END LOOP -- modelRun
   
@@ -298,8 +320,8 @@ bluesky_aggregate <- function(
   bs_grid$data <- list(
     pm25 = abind::abind(chunkDataList)
   )
-  # # Save memory
-  # rm(chunkDataList)
+  # Save memory
+  rm(chunkDataList)
   
   # ----- Return ---------------------------------------------------------------
   
@@ -307,7 +329,7 @@ bluesky_aggregate <- function(
   
   # Take out the trash
   gc()
-  
+
   return(bs_grid)
   
 }

@@ -6,9 +6,10 @@
 \usage{
 bluesky_aggregate(dailyOutputDir = "standard", model,
   firstModelRun = NULL, lastModelRun = NULL, subDir = "combined",
-  parameter = "pm25", download = TRUE, cleanup = TRUE,
+  parameter = "pm25", xlim = NULL, ylim = NULL, download = TRUE,
+  cleanup = TRUE,
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
-  quiet = FALSE, spacing = NULL, chunk = 1)
+  quiet = TRUE, spacing = NULL, chunk = 1)
 }
 \arguments{
 \item{dailyOutputDir}{BlueSky web directory.}
@@ -23,6 +24,10 @@ format (e.g: 2015072100) or 8 digit format (e.g: 20150721).}
 \item{subDir}{Subdirectory path containing netcdf data.}
 
 \item{parameter}{Parameter name.}
+
+\item{xlim}{Optional longitude range.}
+
+\item{ylim}{Optional latitude range.}
 
 \item{download}{Logical specifying whether to download and convert data if it
 is not found locally.}

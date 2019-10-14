@@ -6,8 +6,8 @@
 \usage{
 bluesky_load(dailyOutputDir = "standard", model = "PNW-1.33km",
   modelRun = NULL, subDir = "combined", parameter = "pm25",
-  timesteps = NULL, download = TRUE, cleanup = TRUE,
-  filePath = NULL,
+  xlim = NULL, ylim = NULL, timesteps = NULL, download = TRUE,
+  cleanup = TRUE, filePath = NULL,
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
   quiet = FALSE)
 }
@@ -21,6 +21,10 @@ bluesky_load(dailyOutputDir = "standard", model = "PNW-1.33km",
 \item{subDir}{Subdirectory path containing netcdf data.}
 
 \item{parameter}{Parameter name.}
+
+\item{xlim}{Optional longitude range.}
+
+\item{ylim}{Optional latitude range.}
 
 \item{timesteps}{Optional vector of timesteps to be loaded. Defaults to all
 available timesteps in the file.}
@@ -93,10 +97,16 @@ model run will be replaced with NA values.
 \examples{
 \dontrun{
 setModelDataDir('~/Data/Bluesky')
-bs_grid <- bluesky_load(model = "PNW-1.33km", modelRun = 2019100900)
+
 xlim <- c(-118, -114)
 ylim <- c(45, 48)
-grid_map(bs_grid, xlim = xlim, ylim = ylim, tmask = (1:40))
+bs_grid <- bluesky_load(
+  model = "PNW-1.33km", 
+  modelRun = 2019100900,
+  xlim = xlim, 
+  ylim = ylim
+)
+grid_map(bs_grid, tMask = 1:24)
 }
 }
 \seealso{

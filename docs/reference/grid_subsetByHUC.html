@@ -71,7 +71,7 @@ monitor_~ functions." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -163,7 +163,7 @@ level of the <code>HUC</code> argument must be loaded as in the example.</p>
 <span class='no'>HUC</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>MazamaSpatialUtils</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/getHUC.html'>getHUC</a></span>(<span class='no'>longitude</span>, <span class='no'>latitude</span>, <span class='st'>"WA10"</span>)
 
 <span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>"~/Data/Bluesky"</span>)
-<span class='no'>bs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='bluesky_load.html'>bluesky_load</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-1.33km"</span>, <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019090900</span>)
+<span class='no'>bs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='bluesky_load.html'>bluesky_load</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-1.33km"</span>, <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019100900</span>)
 
 <span class='no'>QueetsRiver</span> <span class='kw'>&lt;-</span> <span class='fu'>grid_subsetByHUC</span>(<span class='no'>bs</span>, <span class='no'>HUC</span>)
 <span class='kw pkg'>PWFSLSmoke</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/PWFSLSmoke/man/monitor_staticmap.html'>monitor_staticmap</a></span>(<span class='no'>QueetsRiver</span>, <span class='kw'>cex</span> <span class='kw'>=</span> <span class='fl'>.5</span>, <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>15</span>)

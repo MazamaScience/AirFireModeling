@@ -8,13 +8,16 @@ library(AirFireModeling)
 
 setModelDataDir("~/Data/Bluesky")
 
+xlim <- c(-117, -116)
+ylim <- c(46.7, 47.7)
+
 layout(matrix(seq(3)))
 
 for ( chunk in 1:3 ) {
   
   timeAxis <- seq(
-    MazamaCoreUtils::parseDatetime(20191009, timezone = "UTC"),
-    MazamaCoreUtils::parseDatetime(20191016, timezone = "UTC"),
+    MazamaCoreUtils::parseDatetime(20191010, timezone = "UTC"),
+    MazamaCoreUtils::parseDatetime(20191015, timezone = "UTC"),
     by = "hour"
   )
   plot(timeAxis, seq_along(timeAxis), las = 1,
@@ -26,7 +29,10 @@ for ( chunk in 1:3 ) {
     firstModelRun = 20191010,
     lastModelRun = 20191012,
     subDir = "combined",
-    chunk = chunk
+    xlim = xlim,
+    ylim = ylim,
+    chunk = chunk,
+    quiet = FALSE
   )
   
   # Create a plot
@@ -43,30 +49,32 @@ for ( chunk in 1:3 ) {
     PWFSLSmoke::monitor_timeseriesPlot(shadedNight = TRUE, add = TRUE)
   title(paste0("Chunk ", chunk))
   
-  # colors <- RColorBrewer::brewer.pal(7, "Dark2")
-  # i <- 0
-  # for ( modelRun in 20191010:20191012 ) {
-  # 
-  #   i <- i + 1
-  # 
-  #   # Now add the full model time axis
-  #   bluesky_load(
-  #     model = "PNW-4km",
-  #     modelRun = modelRun,
-  #     subDir = "combined"
-  #   ) %>%
-  #     grid_createMonitor(
-  #       longitude = -116.5,
-  #       latitude = 47.2,
-  #       radius = 10000,
-  #       monitorID = "Model data",
-  #       FUN = quantile,
-  #       probs = 0.90,
-  #       na.rm = TRUE
-  #     ) %>%
-  #     PWFSLSmoke::monitor_timeseriesPlot(type='l', cex=0.5, pch=15, col=colors[i], add = TRUE)
-  # 
-  # }
+  colors <- RColorBrewer::brewer.pal(7, "Dark2")
+  i <- 0
+  for ( modelRun in 20191010:20191012 ) {
+
+    i <- i + 1
+
+    # Now add the full model time axis
+    bluesky_load(
+      model = "PNW-4km",
+      modelRun = modelRun,
+      subDir = "combined",
+      xlim = xlim,
+      ylim = ylim
+    ) %>%
+      grid_createMonitor(
+        longitude = -116.5,
+        latitude = 47.2,
+        radius = 10000,
+        monitorID = "Model data",
+        FUN = quantile,
+        probs = 0.90,
+        na.rm = TRUE
+      ) %>%
+      PWFSLSmoke::monitor_timeseriesPlot(type='l', cex=0.5, pch=15, col=colors[i], add = TRUE)
+
+  }
   
 }
 

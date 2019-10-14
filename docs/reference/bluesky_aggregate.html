@@ -38,8 +38,8 @@
 <meta property="og:title" content="Aggregate multiple BlueSky model runs into a single bs_grid object — bluesky_aggregate" />
 <meta property="og:description" content="Combines multiple bluesky model runs tp produce a single 
 bs_grid object. Users can set the start date, end date, the hourly 
-spacing between model runs, and the chunk index for the cssection of each
-models time axis to be used." />
+spacing between model runs, and the chunk index for the section of each
+model's time axis to be used." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -72,7 +72,7 @@ models time axis to be used." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -114,15 +114,16 @@ models time axis to be used." />
     <div class="ref-description">
     <p>Combines multiple bluesky model runs tp produce a single 
 <em>bs_grid</em> object. Users can set the start date, end date, the hourly 
-spacing between model runs, and the chunk index for the cssection of each
-models time axis to be used.</p>
+spacing between model runs, and the chunk index for the section of each
+model's time axis to be used.</p>
     </div>
 
     <pre class="usage"><span class='fu'>bluesky_aggregate</span>(<span class='kw'>dailyOutputDir</span> <span class='kw'>=</span> <span class='st'>"standard"</span>, <span class='no'>model</span>,
   <span class='kw'>firstModelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lastModelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>subDir</span> <span class='kw'>=</span> <span class='st'>"combined"</span>,
-  <span class='kw'>param</span> <span class='kw'>=</span> <span class='st'>"pm25"</span>, <span class='kw'>download</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>cleanup</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>parameter</span> <span class='kw'>=</span> <span class='st'>"pm25"</span>, <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>download</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>cleanup</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://haze.airfire.org/bluesky-daily/output"</span>,
-  <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>spacing</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>chunk</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
+  <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>spacing</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>chunk</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -149,8 +150,16 @@ format (e.g: 2015072100) or 8 digit format (e.g: 20150721).</p></td>
       <td><p>Subdirectory path containing netcdf data.</p></td>
     </tr>
     <tr>
-      <th>param</th>
+      <th>parameter</th>
       <td><p>Parameter name.</p></td>
+    </tr>
+    <tr>
+      <th>xlim</th>
+      <td><p>Optional longitude range.</p></td>
+    </tr>
+    <tr>
+      <th>ylim</th>
+      <td><p>Optional latitude range.</p></td>
     </tr>
     <tr>
       <th>download</th>
@@ -193,7 +202,7 @@ explanation.</p></td>
     <p>Setting <code>cunk = 1</code> results in grabbing the initial portion of each model
 run. Setting chunk to higher numbers utilizes times further out in the the
 forecast of each model run implying more uncertainty.</p>
-    <h2 class="hasAnchor" id="chunk"><a class="anchor" href="#chunk"></a>Chunk</h2>
+    <h2 class="hasAnchor" id="chunks"><a class="anchor" href="#chunks"></a>Chunks</h2>
 
     
  
@@ -211,9 +220,37 @@ setting <code>chunk = 2</code> produced better results.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/Bluesky'</span>)
-<span class='no'>bs</span> <span class='kw'>&lt;-</span> <span class='fu'>bluesky_aggregate</span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>, <span class='fl'>20190907</span>, <span class='fl'>20190910</span>, <span class='kw'>chunk</span> <span class='kw'>=</span> <span class='fl'>1</span>)
-<span class='fu'>gridMap</span>(<span class='no'>bs</span>)
+<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>"~/Data/Bluesky"</span>)
+<span class='no'>bs_grid</span> <span class='kw'>&lt;-</span> <span class='fu'>bluesky_aggregate</span>(
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
+  <span class='kw'>firstModelRun</span> <span class='kw'>=</span> <span class='fl'>20191007</span>,
+  <span class='kw'>lastModelRun</span> <span class='kw'>=</span> <span class='fl'>20191013</span>,
+  <span class='kw'>subDir</span> <span class='kw'>=</span> <span class='st'>"combined"</span>,
+  <span class='kw'>chunk</span> <span class='kw'>=</span> <span class='fl'>1</span>
+)
+
+<span class='no'>xlim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>118</span>, -<span class='fl'>114</span>)
+<span class='no'>ylim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>45</span>, <span class='fl'>48</span>)
+<span class='co'>###grid_map(bs_grid, xlim = xlim, ylim = ylim)</span>
+
+<span class='co'># Next three lines required for bs_grid to ws_monitor conversion</span>
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSpatialUtils</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/setSpatialDataDir.html'>setSpatialDataDir</a></span>(<span class='st'>"~/Data/Spatial"</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/loadSpatialData.html'>loadSpatialData</a></span>(<span class='st'>"NaturalEarthAdm1"</span>)
+
+<span class='co'># Create a fake monitor using the 80'th percentile</span>
+<span class='no'>monitor</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='grid_createMonitor.html'>grid_createMonitor</a></span>(
+  <span class='no'>bs_grid</span>,
+  <span class='kw'>longitude</span> <span class='kw'>=</span> -<span class='fl'>116.5</span>,
+  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='fl'>47.2</span>,
+  <span class='kw'>radius</span> <span class='kw'>=</span> <span class='fl'>10000</span>,
+  <span class='kw'>monitorID</span> <span class='kw'>=</span> <span class='st'>"Model data"</span>,
+  <span class='kw'>FUN</span> <span class='kw'>=</span> <span class='no'>quantile</span>,
+  <span class='kw'>probs</span> <span class='kw'>=</span> <span class='fl'>0.90</span>,
+  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)
+
+<span class='kw pkg'>PWFSLSmoke</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/PWFSLSmoke/man/monitor_timeseriesPlot.html'>monitor_timeseriesPlot</a></span>(<span class='no'>monitor</span>, <span class='kw'>shadedNight</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -222,7 +259,7 @@ setting <code>chunk = 2</code> produced better results.</p>
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
       <li><a href="#details">Details</a></li>
-      <li><a href="#chunk">Chunk</a></li>
+      <li><a href="#chunks">Chunks</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 
