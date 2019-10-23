@@ -39,40 +39,40 @@ is not found locally.}
 \item{quiet}{If \code{TRUE}, suppress status messages (if any), and the
 progress bar.}
 
-\item{spacing}{Time spacing (hrs) between each model run -- overrides default 
+\item{spacing}{Time spacing (hrs) between each model run -- overrides default
 values}
 
-\item{chunk}{The portion of the time (of width = 'spacing') to be chosen from 
-each model run. If \code{spacing = 12}, then \code{chunk = 1} corresponds to 
-the first 12 hours of the each model run, \code{chunk = 2} corresponds to the 
-next 12 hours of each model run, and so on. See the note below for further 
+\item{chunk}{The portion of the time (of width = 'spacing') to be chosen from
+each model run. If \code{spacing = 12}, then \code{chunk = 1} corresponds to
+the first 12 hours of the each model run, \code{chunk = 2} corresponds to the
+next 12 hours of each model run, and so on. See the note below for further
 explanation.}
 }
 \value{
 \emph{bs_grid} object aggregating multiple bluesky model runs.
 }
 \description{
-Combines multiple bluesky model runs tp produce a single 
-\emph{bs_grid} object. Users can set the start date, end date, the hourly 
+Combines multiple Bluesky model runs to produce a single
+\emph{bs_grid} object. Users can set the start date, end date, the hourly
 spacing between model runs, and the chunk index for the section of each
 model's time axis to be used.
 }
 \details{
-Setting \code{cunk = 1} results in grabbing the initial portion of each model
+Setting \code{chunk = 1} results in grabbing the initial portion of each model
 run. Setting chunk to higher numbers utilizes times further out in the the
 forecast of each model run implying more uncertainty.
 }
 \section{Chunks}{
- 
-Suppose a model is run every 12 hours. For this model \code{spacing = 12}. 
-In this case, \code{chunk = 1} means we selet the first 12 hours from each 
-model run -- i.e. we work with the model data from as close to initialization 
-as possible. Setting \code{chunk = 2} means we select the next 12 hours 
-(i.e. hours 13-24) from each model run. Setting \code{chunk = 3} means we 
+
+Suppose a model is run every 12 hours. For this model \code{spacing = 12}.
+In this case, \code{chunk = 1} means we select the first 12 hours from each
+model run -- i.e. we work with the model data from as close to initialization
+as possible. Setting \code{chunk = 2} means we select the next 12 hours
+(i.e. hours 13-24) from each model run. Setting \code{chunk = 3} means we
 select hours 25-48 from each model run and so on.
 
-Chunking is can be used to account for any innacuracies in the data that may 
-be due to poor initial conditions. For example, older models only predicted 
+Chunking can be used to account for any inaccuracies in the data that may
+be due to poor initial conditions. For example, older models only predicted
 impacts from existing sources, and did not take into account any smoke that
 may have already been present at the time of initialization. In this case,
 setting \code{chunk = 2} produced better results.

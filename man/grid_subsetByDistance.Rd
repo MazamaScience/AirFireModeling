@@ -46,11 +46,12 @@ bs_monitors <- grid_subsetByDistance(bs, -121.017092, 46.901512,
                                      radius = 10000)
 
 # Now start using functions from PWFSLSMoke
+library(PWFSLSmoke)
 bs_mean <- monitor_collapse(bs_monitors, monitorID = "mean", FUN = mean)
 bs_median <- monitor_collapse(bs_monitors, monitorID = "median", FUN = median)
-monitorPlot_timeseries(bs_monitors, style = "gnats", ylim = c(0, 100), cex = 1.5)
-monitorPlot_timeseries(bs_median, type = "l", lwd = 3, col = "blue", add = TRUE)
-monitorPlot_timeseries(bs_mean, type = "l", lwd = 3, col = "red", add = TRUE)
+monitor_timeseriesPlot(bs_monitors, style = "gnats", ylim = c(0, 100), cex = 1.5)
+monitor_timeseriesPlot(bs_median, type = "l", lwd = 3, col = "blue", add = TRUE)
+monitor_timeseriesPlot(bs_mean, type = "l", lwd = 3, col = "red", add = TRUE)
 legend("topleft", col = c("red", "blue"), lwd = 1, legend = c("mean", "median"))
 }
 }
