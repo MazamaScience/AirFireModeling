@@ -1,0 +1,75 @@
+---
+title: "Blue Sky Aggregation"
+author: "Hans Martin"
+date: "10/23/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Import the neccesary libraries and set the proper directories. 
+```{r}
+library(AirFireModeling)
+library(MazamaSpatialUtils)
+
+setSpatialDataDir("~/Data/Spatial")
+loadSpatialData("NaturalEarthAdm1")
+setModelDataDir("~/Data/Bluesky")
+```
+https://inciweb.nwcg.gov/incident/6498/
+
+Here we will use the Bluesky aggregation function using the PNW-1.33km model of Oregon during the Granite Gulch (~5,000 acres) fire started by lightning on approximately the evening of Jul. 28, 2019. We will inspect Aug.8, 2019, about a week out, to view one of the worst air-quality time frames caused by the fire.
+
+We can obtain a bounding box region of the counties with the greatest affected air quality in Oregon by using the `USCensusCounties` dataset and the `sp` package. The Granite Gulch fire is centered between Wallowa County, Union County, and Baker County. We will restrict our bounding to regions to these three affected Oregon counties. 
+
+```{r}
+library(sp)
+# Load the County spatial data
+loadSpatialData('USCensusCounties')
+
+# Subset Baker, Wallowa, and Union counties
+bwu <- subset(USCensusCounties, stateCode == 'OR' & countyName == c('Union', 'Baker', 'Wallowa'))
+
+# Find the regions bounding box
+bwu_bb <- bbox(bwu)
+xlim <- bwu_bb[1,]
+ylim <- bwu_bb[2,]
+```
+
+We can now load a subset of the Bluesky data using the bounded box region of the three counties. In this case we will use the PNW-1.33km model. 
+```{r}
+bs_grid <- bluesky_load(model = "PNW-1.33km", modelRun = 2019080800, xlim = xlim, ylim = ylim)
+```
+
+Just to be certain we've obtained a good bounding box and date, we can plot the `bs_grid` Bluesky data using `grid_map()`. 
+```{r}
+grid_map(bs_grid = bs_grid, xlim = xlim, ylim = ylim)
+```
+
+This map looks good. 
+```{r}
+agg_grid <- bluesky_aggregate(
+    model = "PNW-4km",
+    firstModelRun = 20190808,
+    lastModelRun = 20190815,
+    subDir = "combined",
+    xlim = xlim,
+    ylim = ylim,
+    chunk = 1,
+    quiet = FALSE
+  )
+```
+
+-----//-----
+
+```{r}
+# Lets find the center of Oregons bounding box
+or_cen <- rowMeans(or_bb)
+
+# Create the monitor object
+bs_monitor <- grid_createMonitor(bs_grid = agg_grid, longitude = or_cen[1], latitude = or_cen[2], redius = 10000,  monitorID = 'Model Data', FUN = quantile, probs = 0.9, na.rm = TRUE)
+```
+
+
