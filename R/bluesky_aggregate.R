@@ -1,8 +1,8 @@
 #' @export
 #' @importFrom MazamaCoreUtils logger.warn logger.error
-#' 
+#'
 #' @title Aggregate multiple BlueSky model runs into a single bs_grid object
-#' 
+#'
 #' @param dailyOutputDir BlueSky web directory.
 #' @param model Model identifier.
 #' @param firstModelRun Datestamp of first model run. Supports either 10 digits
@@ -18,40 +18,40 @@
 #' @param baseUrl Base URL for BlueSky output.
 #' @param quiet If \code{TRUE}, suppress status messages (if any), and the
 #' progress bar.
-#' @param spacing Time spacing (hrs) between each model run -- overrides default 
+#' @param spacing Time spacing (hrs) between each model run -- overrides default
 #' values
-#' @param chunk The portion of the time (of width = 'spacing') to be chosen from 
-#' each model run. If \code{spacing = 12}, then \code{chunk = 1} corresponds to 
-#' the first 12 hours of the each model run, \code{chunk = 2} corresponds to the 
-#' next 12 hours of each model run, and so on. See the note below for further 
+#' @param chunk The portion of the time (of width = 'spacing') to be chosen from
+#' each model run. If \code{spacing = 12}, then \code{chunk = 1} corresponds to
+#' the first 12 hours of the each model run, \code{chunk = 2} corresponds to the
+#' next 12 hours of each model run, and so on. See the note below for further
 #' explanation.
-#' 
-#' @description Combines multiple bluesky model runs tp produce a single 
-#' \emph{bs_grid} object. Users can set the start date, end date, the hourly 
+#'
+#' @description Combines multiple Bluesky model runs to produce a single
+#' \emph{bs_grid} object. Users can set the start date, end date, the hourly
 #' spacing between model runs, and the chunk index for the section of each
 #' model's time axis to be used.
-#' 
+#'
 #' @details
-#' Setting \code{cunk = 1} results in grabbing the initial portion of each model
+#' Setting \code{chunk = 1} results in grabbing the initial portion of each model
 #' run. Setting chunk to higher numbers utilizes times further out in the the
 #' forecast of each model run implying more uncertainty.
-#' 
-#' @section Chunks: 
-#' Suppose a model is run every 12 hours. For this model \code{spacing = 12}. 
-#' In this case, \code{chunk = 1} means we selet the first 12 hours from each 
-#' model run -- i.e. we work with the model data from as close to initialization 
-#' as possible. Setting \code{chunk = 2} means we select the next 12 hours 
-#' (i.e. hours 13-24) from each model run. Setting \code{chunk = 3} means we 
+#'
+#' @section Chunks:
+#' Suppose a model is run every 12 hours. For this model \code{spacing = 12}.
+#' In this case, \code{chunk = 1} means we select the first 12 hours from each
+#' model run -- i.e. we work with the model data from as close to initialization
+#' as possible. Setting \code{chunk = 2} means we select the next 12 hours
+#' (i.e. hours 13-24) from each model run. Setting \code{chunk = 3} means we
 #' select hours 25-48 from each model run and so on.
-#' 
-#' Chunking is can be used to account for any innacuracies in the data that may 
-#' be due to poor initial conditions. For example, older models only predicted 
+#'
+#' Chunking can be used to account for any inaccuracies in the data that may
+#' be due to poor initial conditions. For example, older models only predicted
 #' impacts from existing sources, and did not take into account any smoke that
 #' may have already been present at the time of initialization. In this case,
 #' setting \code{chunk = 2} produced better results.
-#' 
+#'
 #' @return \emph{bs_grid} object aggregating multiple bluesky model runs.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' setModelDataDir("~/Data/Bluesky")
@@ -62,16 +62,16 @@
 #'   subDir = "combined",
 #'   chunk = 1
 #' )
-#' 
+#'
 #' xlim <- c(-118, -114)
 #' ylim <- c(45, 48)
 #' ###grid_map(bs_grid, xlim = xlim, ylim = ylim)
-#' 
+#'
 #' # Next three lines required for bs_grid to ws_monitor conversion
 #' library(MazamaSpatialUtils)
 #' setSpatialDataDir("~/Data/Spatial")
 #' loadSpatialData("NaturalEarthAdm1")
-#' 
+#'
 #' # Create a fake monitor using the 80'th percentile
 #' monitor <- grid_createMonitor(
 #'   bs_grid,
@@ -83,16 +83,16 @@
 #'   probs = 0.90,
 #'   na.rm = TRUE
 #' )
-#' 
+#'
 #' PWFSLSmoke::monitor_timeseriesPlot(monitor, shadedNight = TRUE)
 #' }
 
 bluesky_aggregate <- function(
   dailyOutputDir = "standard",
-  model, 
-  firstModelRun = NULL, 
-  lastModelRun = NULL, 
-  subDir = "combined", 
+  model,
+  firstModelRun = NULL,
+  lastModelRun = NULL,
+  subDir = "combined",
   parameter = "pm25",
   xlim = NULL,
   ylim = NULL,
@@ -100,30 +100,30 @@ bluesky_aggregate <- function(
   cleanup = TRUE,
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
   quiet = TRUE,
-  spacing = NULL, 
+  spacing = NULL,
   chunk = 1
 ) {
-  
+
   # ----- Validate parameters --------------------------------------------------
-  
+
   MazamaCoreUtils::stopIfNull(dailyOutputDir)
   MazamaCoreUtils::stopIfNull(model)
   MazamaCoreUtils::stopIfNull(subDir)
   MazamaCoreUtils::stopIfNull(baseUrl)
   MazamaCoreUtils::stopIfNull(parameter)
-  
+
   # Default to download
-  if ( !is.logical(download) ) 
+  if ( !is.logical(download) )
     download <- TRUE
-  
+
   # Default to cleanup
-  if ( !is.logical(cleanup) ) 
+  if ( !is.logical(cleanup) )
     cleanup <- TRUE
-  
+
   # Default to verbose
-  if ( !is.logical(quiet) ) 
+  if ( !is.logical(quiet) )
     quiet <- FALSE
-  
+
   # Model-specific spacing
   if ( is.null(spacing) && dailyOutputDir == "standard" ) {
     spacing <- switch(model,
@@ -142,41 +142,41 @@ bluesky_aggregate <- function(
                       "PNW4km-CMAQ" = 24
     )
   }
-  
+
   # Did we identify it?
   MazamaCoreUtils::stopIfNull(spacing)
-  
+
   # Just in case
   chunk <- as.integer(chunk)
-  
+
   # ----- Create time axis -----------------------------------------------------
-  
+
   # All timestamps are UTC
   starttime <- MazamaCoreUtils::parseDatetime(firstModelRun, timezone = "UTC")
   endtime <- MazamaCoreUtils::parseDatetime(lastModelRun, timezone = "UTC")
   runTimes <- seq(starttime, endtime, by = paste0(spacing, " hours"))
   modelRuns <- strftime(runTimes, "%Y%m%d%H", tz = "UTC")
-  
+
   # ----- Load model data ------------------------------------------------------
-  
+
   # Create empty lists for model data
   bsList <- list()
   chunkDataList <- list()
-  
+
   dims <- c(1,1,1)
-  
+
   iteration <- 0
-  
+
   # BEGIN LOOP -- modelRun
   for ( modelRun in modelRuns ) {
-    
+
     iteration <- iteration + 1
-    
+
     # TODO:  WTF! This seems to prevent parseDatettime() from returning a
     # TODO:  WTF! "'UTC' not recognized" error. ... W.T.F!
     dummy_lubridate <- lubridate::ymd_h(modelRun, tz = "UTC")
     dummy_MazamaCoreUtils <- MazamaCoreUtils::parseDatetime(modelRun, timezone = "UTC")
-    
+
     if ( !quiet ) {
       # message(paste0(
       #   "Loading chunk ", chunk, " from modelRun ", modelRun,
@@ -189,30 +189,30 @@ bluesky_aggregate <- function(
       #   strftime(dummy_MazamaCoreUtils, "%F %T %Z", tz = "UTC")
       # ))
     }
-    
+
     # NOTE:  As of 2019-10-13, model time axes begin with hour "01".
     # NOTE:  This represents a 1 hour shift from normal reporting which
     # NOTE:  uses a beginning-of-hour timestamp.
 
     # Chunk timesteps
-    chunkStart <- MazamaCoreUtils::parseDatetime(modelRun, timezone = "UTC") 
+    chunkStart <- MazamaCoreUtils::parseDatetime(modelRun, timezone = "UTC")
     chunkStart <- chunkStart + lubridate::dhours((chunk - 1) * spacing + 1)
     chunkTimeAxis <- seq(chunkStart, length.out = spacing, by = "hour")
 
     if ( !quiet ) {
       message(paste0(
-        "Chunk from ", 
-        strftime(range(chunkTimeAxis)[1],"%F %T %Z"), 
-        " to ", 
+        "Chunk from ",
+        strftime(range(chunkTimeAxis)[1],"%F %T %Z"),
+        " to ",
         strftime(range(chunkTimeAxis)[2],"%F %T %Z")
       ))
     }
-    
+
     result <- try({
       bsList[[modelRun]] <- bluesky_load(
         dailyOutputDir = dailyOutputDir,
         model = model,
-        modelRun = modelRun, 
+        modelRun = modelRun,
         subDir = subDir,
         parameter = parameter,
         xlim = xlim,
@@ -225,21 +225,21 @@ bluesky_aggregate <- function(
         quiet = quiet
       )
     },  silent = FALSE )
-    
+
     # NOTE:  Handle missing model runs by creating an empty bs_grid object
     # NOTE:  based on the characteristics of the first modelRun loaded.
-    
+
     if ( "try-error" %in% class(result) ) {
-      
+
       if ( MazamaCoreUtils::logger.isInitialized() )
         logger.warn("Could not download %s/%s ... skipping", model, modelRun)
-      
+
       # Sanity check -- first modelRun must exist
       if ( iteration == 1 )
         stop(paste0(
           "Could not load first model run: ", model, "/", modelRun
         ))
-      
+
       # Create an empty bs_grid object
       empty_bs_grid <- list(
         longitude = bsList[[1]]$longitude,
@@ -257,9 +257,9 @@ bluesky_aggregate <- function(
       empty_bs_grid$data[[parameter]] <- array(data = as.numeric(NA), dim = dim)
 
       bsList[[modelRun]] <- empty_bs_grid
-      
+
     }
-    
+
     # Sanity check -- X and Y dimensions must be the same
     if ( iteration == 1 ) {
       dims <- dim(bsList[[modelRun]]$data[[parameter]])
@@ -269,7 +269,7 @@ bluesky_aggregate <- function(
         dimString <- paste0(dims, collapse = "-")
         newDimString <- paste0(newDims, collapse = "-")
         err_msg <- paste0(
-          "bluesky_aggregate: Model Run '", modelRun, 
+          "bluesky_aggregate: Model Run '", modelRun,
           "' has incompatible dimensions: ",
           dimString, " != ", newDimString)
         if ( MazamaCoreUtils::logger.isInitialized() )
@@ -277,19 +277,19 @@ bluesky_aggregate <- function(
         stop(err_msg)
       }
     }
-    
+
     # TODO:  support multiple parameters
-    
+
     # NOTE:  Put data in chunkDataList it easier to use abind::abind() later.
     chunkDataList[[modelRun]] <- bsList[[modelRun]]$data[[parameter]]
-    
+
     # Save memory
     bsList[[modelRun]]$data[[parameter]] <- NULL
-    
+
   } # END LOOP -- modelRun
-  
+
   # ----- Assemble aggregated bs_grid ------------------------------------------
-  
+
   modelCount <- length(names(bsList))
 
   # Extract the constant information from the first bs_grid object int the list.
@@ -315,31 +315,31 @@ bluesky_aggregate <- function(
   bs_grid$time <- seq(starttime, endtime, by = "1 hour")
 
   # TODO:  support multiple parameters
-  
+
   # Add the combined data
   bs_grid$data <- list(
     pm25 = abind::abind(chunkDataList)
   )
   # Save memory
   rm(chunkDataList)
-  
+
   # ----- Return ---------------------------------------------------------------
-  
+
   bs_grid <- structure(bs_grid, class = c("bs_grid", "list") )
-  
+
   # Take out the trash
   gc()
 
   return(bs_grid)
-  
+
 }
 
 # ===== DEBUGGING ==============================================================
 
 if ( FALSE ) {
-  
+
   setModelDataDir("~/Data/Bluesky")
-  
+
   dailyOutputDir <- "standard"
   model <- "PNW-4km"
   firstModelRun <- 20191007
@@ -350,8 +350,8 @@ if ( FALSE ) {
   cleanup <- TRUE
   baseUrl <- "https://haze.airfire.org/bluesky-daily/output"
   quiet <- FALSE
-  spacing <- NULL 
+  spacing <- NULL
   chunk <- 2
-  
+
 }
 
