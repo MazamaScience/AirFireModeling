@@ -63,5 +63,54 @@ gran_gulch2 <- bluesky_aggregate( model = 'PNW-4km',
 grid_map(gran_gulch2)
 ```
 
-As demonstrated, the `bluesky_aggregate()` function allows us to bind together models generated over a period of time. Each model produced can be accessed by specifying the `chunk` parameter. 
+As demonstrated, the `bluesky_aggregate()` function allows us to bind together models generated over a period of time. Each model produced daily can be accessed by specifying the `chunk` parameter. We can inspect our `chunks` further by plotting them on a time axis to better understand, rather than the above combined spatial timeseries. 
 
+We will make a function called `chunkPlot()` that accepts the first date of the first model we wish to obtain, the second model we wish to obtain and the regions bounded box. The function will collapse the Bluesky data into a `ws_object` monitor, cenetered about the mean location of the data, to use with timeseries plotting in the PWFSLSmoke Package. 
+
+```{r}
+chunkPlot <- function(firstModelRun, lastModelRun, bbox) {
+  timeAxis <- seq(
+    MazamaCoreUtils::parseDatetime(firstModelRun, timezone = "UTC"),
+    MazamaCoreUtils::parseDatetime(lastModelRun + 3, timezone = "UTC"),
+    by = "hour"
+  )
+  plot(timeAxis, seq_along(timeAxis), las = 1,
+       col = "transparent", ylim = c(0,100))
+  for ( modelRun in firstModelRun:lastModelRun ) {
+    # Now add the full model time axis
+    bluesky_load(
+      model = "PNW-4km",
+      modelRun = modelRun,
+      subDir = "combined",
+      xlim = bbox[1,],
+      ylim = bbox[2,]
+    ) %>%
+      grid_createMonitor(
+        longitude = rowMeans(bbox)[1],
+        latitude = rowMeans(bbox)[2],
+        radius = 10000,
+        monitorID = "Model data",
+        FUN = quantile,
+        probs = 0.90,
+        na.rm = TRUE
+      ) %>%
+      PWFSLSmoke::monitor_timeseriesPlot(
+        type='l', 
+        cex=0.5, 
+        pch=15, 
+        col = modelRun, 
+        add = TRUE
+      )
+  }
+}
+```
+
+Just as above, we want to look at our two seperate models produced on Aug. 8, 2019 and Aug. 9.  2019. both of which view three days in advanced. 
+
+```{r}
+chunkPlot(20190808, 20190809, bbox = bu_bb)
+```
+
+As we can see, each `chunk` models three days in advanced. Notice the overlap of models between Friday and Saturday - this will be an important aspect to recall when working with Bluesky model data. 
+
+-- Mazama Science
