@@ -9,55 +9,59 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Import the neccesary libraries and set the proper directories. 
+## Bluesky Aggregation
+
+Bluesky air-quality models by default generate new models for each day. That means for each $N$ days we decide to obtain data for, there will be $N$ independent models generated. For example, if we wanted to preform an analysis on _two_ days of data we would obtain a total of _two_ seperate models, or `chunks`, produced - each model looking $N$ days in advanced. 
+
+To demonstrate this we will use the `blueksy_aggregate()` function  model of Oregon during the Granite Gulch fire (~5,500 acres), started by lightning on approximately the evening of Jul. 28, 2019. We will inspect models from Aug.8 - Aug. 10, 2019 to view one of the worst air-quality time frames caused by the fire.
+
+#### Preparing our enviroment
+We can begin by importing the necessary libraries and loading the required data.
 ```{r}
 library(AirFireModeling)
 library(MazamaSpatialUtils)
 
 setSpatialDataDir("~/Data/Spatial")
-loadSpatialData("NaturalEarthAdm1")
 setModelDataDir("~/Data/Bluesky")
-```
-https://inciweb.nwcg.gov/incident/6498/
-
-
-
-The `bluesky_aggregate()` function 
-
-We can obtain a bounding box region of the counties with the greatest affected air quality in Oregon by using the `USCensusCounties` dataset and the `sp` package. The Granite Gulch fire is centered between Wallowa County, Union County, and Baker County. We will restrict our bounding to regions to these three affected Oregon counties. 
-
-```{r}
-library(sp)
-# Load the County spatial data
+loadSpatialData("NaturalEarthAdm1")
 loadSpatialData('USCensusCounties')
+```
+#### Bounding regions
+To avoid loading excessive data, we'll focus on a the counties near the source as they likely exhibit greatest affected air-quality - in this case it'll be Union and Baker County. 
 
+We can obtain a bounding box region of the counties with the greatest affected air quality in Oregon by using the `USCensusCounties` dataset and the `bbox()` function. 
+```{r}
 # Subset Baker, Wallowa, and Union counties
-bwu <- subset(USCensusCounties, stateCode == c('OR') & countyName == c('Union', 'Baker'))
+bu <- subset(USCensusCounties, stateCode == 'OR' & countyName == c('Union', 'Baker'), )
 
 # Find the regions bounding box
-bwu_bb <- bbox(bwu[1])
-xlim <- bwu_bb[1,]
-ylim <- bwu_bb[2,]
+bu_bb <- bbox(bu)
 ```
 
-We can now load a subset of the Bluesky data using the bounded box region of the three counties. In this case we will use the PNW-1.33km model. 
+#### Chunks
+By default the first chunk is returned. The first chunk was _generated_ on Aug. 8, 2019 and models two days, to Aug. 11 2019.
 ```{r}
-bs_grid <- bluesky_load(model = "PNW-4km", modelRun = 20190808, xlim = xlim, ylim = ylim)
+# Chunk 1
+gran_gulch1 <- bluesky_aggregate( model = 'PNW-4km', 
+                                  firstModelRun = 20190808, 
+                                  lastModelRun = 20190810, 
+                                  xlim = bu_bb[1,], 
+                                  ylim = bu_bb[2,] ) 
+# Plot the chunk aggregated 
+grid_map(gran_gulch1)
 ```
 
-Just to be certain we've obtained a good bounding box and date, we can plot the `bs_grid` Bluesky data using `grid_map()`. 
+We can access the second chunk by using `chunk = 2`, to view the model produced on the second day, Aug. 9, 2019. Just as before, the second day chunk models two days, to Aug. 12, 2019.    
 ```{r}
-grid_map(bs_grid = bs_grid, xlim = xlim, ylim = ylim)
+# Chunk 2
+gran_gulch2 <- bluesky_aggregate( model = 'PNW-4km', 
+                                  firstModelRun = 20190808, 
+                                  lastModelRun = 20190810, 
+                                  xlim = bu_bb[1,], 
+                                  ylim = bu_bb[2,],
+                                  chunk = 2 ) 
+grid_map(gran_gulch2)
 ```
 
-### Bluesky Aggregation
-
-Bluesky air quality models by default generate new models for each day. That means for each $N$ days we decide to obtain data for, there will be $N$ independent models generated. For example, if we wanted to preform an analysis on 2 days of data we would obtain a total of 2 seperate models, or `chunks`, produced with each model looking $N$ days in advanced. 
-
-
-
-To demonstrate this we will use the Bluesky aggregation function  model of Oregon during the Granite Gulch (~5,000 acres) fire started by lightning on approximately the evening of Jul. 28, 2019. We will inspect Aug.8, 2019, about a week out, to view one of the worst air-quality time frames caused by the fire.
-```{r}
-
-```
+As demonstrated, the `bluesky_aggregate()` function allows us to bind together models generated over a period of time. Each model produced can be accessed by specifying the `chunk` parameter. 
 
