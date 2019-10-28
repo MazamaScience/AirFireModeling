@@ -38,6 +38,9 @@ monitor_forecasts <-  function( ws_monitor,
     stop('Parameter ws_monitor is empty')
   }
 
+  # NOTE: In order to automatically select the models to use, we will need a new
+  #       varible of bounding box in the netcdfs.
+
   # Extract target coordinates
   lon <- ws_monitor$meta$longitude
   lat <- ws_monitor$meta$latitude
