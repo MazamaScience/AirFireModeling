@@ -72,7 +72,7 @@
 #' setSpatialDataDir("~/Data/Spatial")
 #' loadSpatialData("NaturalEarthAdm1")
 #'
-#' # Create a fake monitor using the 80'th percentile
+#' # Create a fake monitor using the 90'th percentile
 #' monitor <- grid_createMonitor(
 #'   bs_grid,
 #'   longitude = -116.5,
@@ -254,7 +254,7 @@ bluesky_aggregate <- function(
       )
       dim <- dim(bsList[[1]]$data[[parameter]])
       dim[3] <- spacing
-      empty_bs_grid$data[[parameter]] <- array(data = as.numeric(NA), dim = dim)
+      empty_bs_grid$data[[parameter]] <- array(data = as.numeric(NA), dim = c(dim))
 
       bsList[[modelRun]] <- empty_bs_grid
 
