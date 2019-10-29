@@ -1,3 +1,8 @@
+# AirFireModeling 0.1.3
+
+* New `monitor_forecastPlot()` function plots monitor data and model forecasts
+at the monitor location.
+
 # AirFireModeling 0.1.2
 
 * Refactored `bluesky_load()` to handle `xlim` and `ylim` arguments.

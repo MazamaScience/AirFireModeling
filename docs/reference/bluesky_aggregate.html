@@ -36,8 +36,8 @@
 
 
 <meta property="og:title" content="Aggregate multiple BlueSky model runs into a single bs_grid object — bluesky_aggregate" />
-<meta property="og:description" content="Combines multiple bluesky model runs tp produce a single 
-bs_grid object. Users can set the start date, end date, the hourly 
+<meta property="og:description" content="Combines multiple Bluesky model runs to produce a single
+bs_grid object. Users can set the start date, end date, the hourly
 spacing between model runs, and the chunk index for the section of each
 model's time axis to be used." />
 <meta name="twitter:card" content="summary" />
@@ -72,7 +72,7 @@ model's time axis to be used." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
       </span>
     </div>
 
@@ -112,8 +112,8 @@ model's time axis to be used." />
     </div>
 
     <div class="ref-description">
-    <p>Combines multiple bluesky model runs tp produce a single 
-<em>bs_grid</em> object. Users can set the start date, end date, the hourly 
+    <p>Combines multiple Bluesky model runs to produce a single
+<em>bs_grid</em> object. Users can set the start date, end date, the hourly
 spacing between model runs, and the chunk index for the section of each
 model's time axis to be used.</p>
     </div>
@@ -181,15 +181,15 @@ progress bar.</p></td>
     </tr>
     <tr>
       <th>spacing</th>
-      <td><p>Time spacing (hrs) between each model run -- overrides default 
+      <td><p>Time spacing (hrs) between each model run -- overrides default
 values</p></td>
     </tr>
     <tr>
       <th>chunk</th>
-      <td><p>The portion of the time (of width = 'spacing') to be chosen from 
-each model run. If <code>spacing = 12</code>, then <code>chunk = 1</code> corresponds to 
-the first 12 hours of the each model run, <code>chunk = 2</code> corresponds to the 
-next 12 hours of each model run, and so on. See the note below for further 
+      <td><p>The portion of the time (of width = 'spacing') to be chosen from
+each model run. If <code>spacing = 12</code>, then <code>chunk = 1</code> corresponds to
+the first 12 hours of the each model run, <code>chunk = 2</code> corresponds to the
+next 12 hours of each model run, and so on. See the note below for further
 explanation.</p></td>
     </tr>
     </table>
@@ -199,21 +199,21 @@ explanation.</p></td>
     <p><em>bs_grid</em> object aggregating multiple bluesky model runs.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Setting <code>cunk = 1</code> results in grabbing the initial portion of each model
+    <p>Setting <code>chunk = 1</code> results in grabbing the initial portion of each model
 run. Setting chunk to higher numbers utilizes times further out in the the
 forecast of each model run implying more uncertainty.</p>
     <h2 class="hasAnchor" id="chunks"><a class="anchor" href="#chunks"></a>Chunks</h2>
 
     
- 
-<p>Suppose a model is run every 12 hours. For this model <code>spacing = 12</code>. 
-In this case, <code>chunk = 1</code> means we selet the first 12 hours from each 
-model run -- i.e. we work with the model data from as close to initialization 
-as possible. Setting <code>chunk = 2</code> means we select the next 12 hours 
-(i.e. hours 13-24) from each model run. Setting <code>chunk = 3</code> means we 
+
+<p>Suppose a model is run every 12 hours. For this model <code>spacing = 12</code>.
+In this case, <code>chunk = 1</code> means we select the first 12 hours from each
+model run -- i.e. we work with the model data from as close to initialization
+as possible. Setting <code>chunk = 2</code> means we select the next 12 hours
+(i.e. hours 13-24) from each model run. Setting <code>chunk = 3</code> means we
 select hours 25-48 from each model run and so on.</p>
-<p>Chunking is can be used to account for any innacuracies in the data that may 
-be due to poor initial conditions. For example, older models only predicted 
+<p>Chunking can be used to account for any inaccuracies in the data that may
+be due to poor initial conditions. For example, older models only predicted
 impacts from existing sources, and did not take into account any smoke that
 may have already been present at the time of initialization. In this case,
 setting <code>chunk = 2</code> produced better results.</p>

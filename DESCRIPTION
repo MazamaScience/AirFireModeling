@@ -1,6 +1,6 @@
 Type: Package
 Package: AirFireModeling
-Version: 0.1.2
+Version: 0.1.3
 Title: Utilities for Working with Monitoring Data and Smoke Model Output
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")), 
@@ -30,6 +30,7 @@ Imports:
     MazamaCoreUtils (>= 0.3.11),
     MazamaSpatialUtils,
     PWFSLSmoke,
+    RColorBrewer,
     sp,
     stringr
 Suggests:

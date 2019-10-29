@@ -68,9 +68,9 @@ gridPlot_timeseries <-
 
       # convert tlim to POSIXct in appropriate timezone
       if ( localTime ) {
-        tlim <- parseDatetime(tlim, timezone)
+        tlim <- PWFSLSmoke::parseDatetime(tlim, timezone)
       } else {
-        tlim <- parseDatetime(tlim)
+        tlim <- PWFSLSmoke::parseDatetime(tlim)
       }
 
       bs_grid <- grid_subset(bs_grid, tlim=tlim)
@@ -82,30 +82,30 @@ gridPlot_timeseries <-
 
     # Create histogram matrix
     FUN <- function(x) {
-      return( table(cut(x, breaks=c(-1e12,seq(0,5000,10),1e12))) )
+      return( table(cut(x, breaks=c(-1e12, seq(0,5000,10), 1e12))) )
     }
     histMatrix <- apply(bs_grid$data$pm25, 3, FUN)
 
     # Y values associated with the matrix derived from breaks above
-    y_values <- seq(-10,5010,10)
+    y_values <- seq(-10, 5010, 10)
 
     # Image breaks and colors
-    breaks <- c(-1e12,0,1,2,5,10,20,50,100,200,500,1000,1e12)
+    breaks <- c(-1e12, 0, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 1e12)
     colors <- c('transparent', rep('black',length(breaks)-2))
-    norm <- quantile(histMatrix, 0.99)
+    norm <- stats::quantile(histMatrix, 0.99)
 
-    for (i in 2:length(colors)) {
+    for (i in 2:length(colors)) { # Look into this use
       alpha <- breaks[i+1] / norm
       colors[i] <- grDevices::adjustcolor(colors[i], alpha)
     }
 
     # y limit
     if ( is.null(ylim) ) {
-      ylim <- c(0, 1.1 * max(as.numeric(bs_grid$data$pm25), na.rm=TRUE))
+      ylim <- c(0, 1.1 * max(as.numeric(bs_grid$data$pm25), na.rm = TRUE))
     }
 
     # ---------- Plotting -------
-    par(mar=c(4,6,4,0)+0.1)
+    graphics::par(mar=c(4, 6, 4, 0) + 0.1)
 
     if ( is.null(title) ) {
       dims <- dim(bs_grid$data$pm25)
@@ -114,56 +114,56 @@ gridPlot_timeseries <-
     }
 
     # Use base image
-    image( x = bs_grid$time,
-           y = y_values,
-           z = t(histMatrix),
-           las = 1,
-           col = c(rep('transparent',length(breaks)-1)),
-           breaks = breaks,
-           axes = FALSE,
-           xlab = '',
-           ylab = 'PM2.5',
-           ylim = ylim,
-           add = add,
-           main = title )
+    graphics::image( x = bs_grid$time,
+                     y = y_values,
+                     z = t(histMatrix),
+                     las = 1,
+                     col = c(rep('transparent',length(breaks)-1)),
+                     breaks = breaks,
+                     axes = FALSE,
+                     xlab = '',
+                     ylab = 'PM2.5',
+                     ylim = ylim,
+                     add = add,
+                     main = title )
 
     # Add vertical lines to denote days and/or hour breaks
     hour_indices <- which(as.numeric(strftime(times,format="%H",tz=timezone)) %% hourInterval == 0)
     day_indices <- which(as.numeric(strftime(times,format="%H",tz=timezone)) %% 24 == 0)
-    abline(v=times[hour_indices], lwd=hourLwd) # at beginning of hour
-    abline(v=times[day_indices], lwd=dayLwd) # at beginning of day
+    graphics::abline(v=times[hour_indices], lwd=hourLwd) # at beginning of hour
+    graphics::abline(v=times[day_indices], lwd=dayLwd) # at beginning of day
 
     # Add horizontal grid lines (before points if grid=='under')
     if ( gridPos == 'under' ) {
-      abline(h=axTicks(2)[-1], col=gridCol, lwd=gridLwd, lty=gridLty)
+      graphics::abline(h = graphics::axTicks(2)[-1], col=gridCol, lwd=gridLwd, lty=gridLty)
     }
 
-    image( x = bs_grid$time,
-           y = y_values,
-           z = t(histMatrix),
-           las = 1,
-           col = colors,
-           breaks = breaks,
-           axes = FALSE,
-           add = TRUE )
+    graphics::image( x = bs_grid$time,
+                     y = y_values,
+                     z = t(histMatrix),
+                     las = 1,
+                     col = colors,
+                     breaks = breaks,
+                     axes = FALSE,
+                     add = TRUE )
 
     # Add horizontal grid lines (after points if grid=='over')
     if ( gridPos == 'over' ) {
-      abline(h=axTicks(2)[-1], col=gridCol, lwd=gridLwd, lty=gridLty)
+      graphics::abline(h = graphics::axTicks(2)[-1], col=gridCol, lwd=gridLwd, lty=gridLty)
     }
 
     # Y axis
-    axis(2, las=1)
+    graphics::axis(2, las=1)
 
     # Nicely formatted time axis
     if ( !localTime ) {
       at1 <- times[seq(1,length(times),6)]
       labels1 <- strftime(at1, "%H",  tz = "UTC")
-      axis.POSIXct(1, times, at=at1, labels=labels1, tcl = -0.25, mgp = c(1,0.5,0))
+      graphics::axis.POSIXct(1, times, at=at1, labels=labels1, tcl = -0.25, mgp = c(1,0.5,0))
     } else {
       at1 <- times[seq(1,length(times),6)]
       labels1 <- strftime(at1, "%H")
-      axis.POSIXct(1, times, at=at1, labels=labels1, tcl = -0.25, mgp = c(1,0.5,0))
+      graphics::axis.POSIXct(1, times, at=at1, labels=labels1, tcl = -0.25, mgp = c(1,0.5,0))
     }
 
     # Additional tickless axis for locating noons on the time axis and label them as the Dayname,Month Day
@@ -172,10 +172,10 @@ gridPlot_timeseries <-
 
     if ( !localTime ) {
       labels2 <- strftime(at2, "%a, %b %d UTC")
-      axis.POSIXct(1, times, at=at2, labels=labels2, tick = FALSE, line = 1)
+      graphics::axis.POSIXct(1, times, at=at2, labels=labels2, tick = FALSE, line = 1)
     } else {
       labels2 <- strftime(at2, "%a, %b %d %Z")
-      axis.POSIXct(1, times, at=at2, labels=labels2, tick = FALSE, line = 1)
+      graphics::axis.POSIXct(1, times, at=at2, labels=labels2, tick = FALSE, line = 1)
     }
 
     if ( shadedNight ) {
