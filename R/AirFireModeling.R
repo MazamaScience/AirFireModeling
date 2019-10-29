@@ -17,10 +17,10 @@ AirFireModelingEnv$dataDir <- NULL
 #' @name ModelDataDir
 #' @title Directory for Modeling Data
 #' @format Absolute path string.
-#' @description This package maintains an internal directory location which 
-#' users can set using \code{setModelDataDir()}. All package functions use this 
+#' @description This package maintains an internal directory location which
+#' users can set using \code{setModelDataDir()}. All package functions use this
 #' directory whenever datasets are created or loaded.
-#' 
+#'
 #' The default setting when the package is loaded is \code{getwd()}.
 #' @seealso \link{getModelDataDir}
 #' @seealso \link{setModelDataDir}
@@ -70,7 +70,7 @@ setModelDataDir <- function(dataDir) {
 #' @keywords internal
 #' @export
 #' @title Remove package data directory
-#' @description Resets the package data directory to NULL. Used for internal 
+#' @description Resets the package data directory to NULL. Used for internal
 #' testing.
 #' @return Silently returns previous value of data directory.
 #' @seealso ModelDataDir
@@ -81,3 +81,24 @@ removeModelDataDir <- function() {
   AirFireModelingEnv$dataDir <- NULL
 }
 
+#' @title Find bs_grid model bouding box
+#'
+#' @param bs_grid a bs_grid object
+#'
+#' @description Quickly find the bluesky models bounded region.
+#' @return a bounding box matrix
+#' @export
+modelBoundingBox <- function(bs_grid) {
+
+  model_bb <- rbind(
+    cbind(min = min(bs_grid$longitude),
+          max = max(bs_grid$longitude)),
+    cbind(min = min(bs_grid$latitude),
+          max = max(bs_grid$latitude))
+  )
+
+  rownames(model_bb) <- c('x', 'y')
+
+  return(model_bb)
+
+}
