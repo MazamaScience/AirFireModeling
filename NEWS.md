@@ -1,3 +1,9 @@
+# AirFireModeling 0.1.4
+
+* Added `grid_spaghettiPlot()`
+* Added `grid_timeseriesPlot()`
+* Added `modelBoundingBox()`
+
 # AirFireModeling 0.1.3
 
 * New `monitor_forecastPlot()` function plots monitor data and model forecasts
