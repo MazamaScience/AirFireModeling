@@ -21,7 +21,9 @@ Depends:
     R (>= 3.5.0)
 Imports:
     abind,
+    AirMonitorPlots,
     geodist,
+    ggplot2,
     lubridate,
     maps,
     mapproj,
@@ -34,7 +36,6 @@ Imports:
     sp,
     stringr
 Suggests:
-    AirMonitorPlots,
     knitr,
     testthat (>= 2.1.0)
 SystemRequirements: netcdf
