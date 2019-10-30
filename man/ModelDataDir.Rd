@@ -6,8 +6,8 @@
 \title{Directory for Modeling Data}
 \format{Absolute path string.}
 \description{
-This package maintains an internal directory location which 
-users can set using \code{setModelDataDir()}. All package functions use this 
+This package maintains an internal directory location which
+users can set using \code{setModelDataDir()}. All package functions use this
 directory whenever datasets are created or loaded.
 
 The default setting when the package is loaded is \code{getwd()}.

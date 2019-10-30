@@ -15,13 +15,13 @@ bluesky_toV2(filePath = NULL, cleanup = TRUE)
 Absolute path of the converted NetCDF file.
 }
 \description{
-Converts BlueSky model output from its original format to a more 
-modernized NetCDF format with dimension axes for longitude, latitude, 
-elevation and time. With default settings, output files renamed to 
+Converts BlueSky model output from its original format to a more
+modernized NetCDF format with dimension axes for longitude, latitude,
+elevation and time. With default settings, output files renamed to
 ~base~_V2.nc.
 }
 \note{
-Users will typically call \code{bluesky_load()} which in turn calls 
+Users will typically call \code{bluesky_load()} which in turn calls
 this function.
 }
 \examples{

@@ -34,7 +34,7 @@ is not found locally.}
 
 \item{cleanup}{Logical specifying whether to remove the original files.}
 
-\item{filePath}{Absolute path of the local bluesky .nc file 
+\item{filePath}{Absolute path of the local bluesky .nc file
 \emph{(not "_V2.nc")} for special occasions.}
 
 \item{baseUrl}{Base URL for BlueSky output.}
@@ -65,11 +65,11 @@ structure:
 }
 }
 \description{
-Reads in a "_V2" BlueSky output NetCDF file and ingests the 
+Reads in a "_V2" BlueSky output NetCDF file and ingests the
 data, returning it in a list of class \code{bs_grid}.
 
-Data are searched for in the package internal \code{dataDir} which can be set 
-with \code{setModelDataDir()}. If no data are found in the \code{dataDir}, 
+Data are searched for in the package internal \code{dataDir} which can be set
+with \code{setModelDataDir()}. If no data are found in the \code{dataDir},
 and \code{download = TRUE} an attempt is made to download data.
 
 If \code{timesteps} are specified, the returned \emph{bs_grid} object will
@@ -101,9 +101,9 @@ setModelDataDir('~/Data/Bluesky')
 xlim <- c(-118, -114)
 ylim <- c(45, 48)
 bs_grid <- bluesky_load(
-  model = "PNW-1.33km", 
+  model = "PNW-1.33km",
   modelRun = 2019100900,
-  xlim = xlim, 
+  xlim = xlim,
   ylim = ylim
 )
 grid_map(bs_grid, tMask = 1:24)

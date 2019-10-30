@@ -18,8 +18,8 @@
 #' @examples
 #' \dontrun{
 #' setModelDataDir('~/Data/Bluesky')
-#' bs_grid <- bluesky_load(model="PNW-1.33km", modelRun=2016091200)
-#' ws_monitor <- airsis_createMonitorObject(20160912, 20160913, "USFS", 1033)
+#' bs_grid <- bluesky_load(model="PNW-1.33km", modelRun=2019091200)
+#' ws_monitor <- airsis_createMonitorObject(20190912, 20190913, "USFS", 1033)
 #' gridMap_correlation(bs_grid, ws_monitor)
 #' }
 
@@ -104,12 +104,12 @@ gridMap_correlation <- function(bs_grid, ws_monitor, monitorID=NULL, param="pm25
   gridData <- bs_gridSub$data[[param]][,,]
 
   # Subset ws_monitor to have the same times as bs_grid
-  ws_monSub <- monitor_subset(ws_monitor, tlim=tlim)
+  ws_monSub <- monitor_subset(ws_monitor, tlim = tlim)
   monitorData <- ws_monSub$data[,2]
 
   # Calculation the correlation
   # NOTE:  Suppress warnings to avoid "standard deviation is zero" for model grid cells with no smoke
-  gridSlice <- suppressWarnings( apply(gridData, 1:2, stats::cor, monitorData, "complete.obs") )
+  gridSlice <- suppressWarnings( apply(gridData, c(1,2), stats::cor, monitorData, "complete.obs") )
 
   # style options
   # create default palette if none is passed in
@@ -131,4 +131,21 @@ gridMap_correlation <- function(bs_grid, ws_monitor, monitorID=NULL, param="pm25
 
   addBullseye(ws_monSub$meta$longitude,ws_monSub$meta$latitude)
 
+  if ( FALSE ) {
+    ws_monitor <-
+      monitor_load(20191014, 20191015) %>%
+      monitor_subset(monitorIDs = "lon_.120.591_lat_38.714_arb2.1008")
+    bs_grid <- bluesky_load(model = 'CANSAC-1.33km',modelRun = 20191014)
+    param <- 'pm25'
+    monitorID=NULL
+    param="pm25"
+    xlim=NULL
+    ylim=NULL
+    tlim=NULL
+    breaks=c(-1,-.7,-.5,-.3,-.1,.1,.3,.5,.7,1)
+    colors=rev(RColorBrewer::brewer.pal(9,'RdBu'))
+    zoom=1.5
+  }
+
 }
+

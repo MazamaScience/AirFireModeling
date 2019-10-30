@@ -98,7 +98,7 @@ library(MazamaSpatialUtils)
 setSpatialDataDir("~/Data/Spatial")
 loadSpatialData("NaturalEarthAdm1")
 
-# Create a fake monitor using the 80'th percentile
+# Create a fake monitor using the 90'th percentile
 monitor <- grid_createMonitor(
   bs_grid,
   longitude = -116.5,

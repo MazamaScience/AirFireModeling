@@ -5,7 +5,8 @@
 \title{Compare forecasts}
 \usage{
 monitor_forecastPlot(ws_monitor, starttime = NULL, endtime = NULL,
-  models = c("CANSAC-1.33km", "CANSAC-4km"), subDir = "combined")
+  models = c("CANSAC-1.33km", "CANSAC-4km"), subDir = "forecast",
+  plotter = "base")
 }
 \arguments{
 \item{ws_monitor}{a ws_monitor object.}
@@ -16,8 +17,10 @@ monitor_forecastPlot(ws_monitor, starttime = NULL, endtime = NULL,
 
 \item{models}{a list of valid monitors to plot}
 
-\item{subDir}{Subdirectory path containing netcdf data. (Passed to 
+\item{subDir}{Subdirectory path containing netcdf data. (Passed to
 \code{bluesky_load()})}
+
+\item{plotter}{Determine which plotting package to use - `base` or `ggplot2`.}
 }
 \description{
 Overlays models of the bluesky forecasts to compare.
@@ -30,10 +33,10 @@ initializeMazamaSpatialUtils()
 library(AirFireModeling)
 setModelDataDir('~/Data/Bluesky')
 
-pollock_pines <- 
-  monitor_load(20191007, 20191014) \%>\%
-  monitor_subset(monitorIDs = "lon_.120.591_lat_38.714_arb2.1008")
-  
-monitor_forecastPlot(pollock_pines)
+yosemite_village <-
+  monitor_load(20191025, 20191029) \%>\%
+  monitor_subset(monitorIDs = '060131004_01')
+
+monitor_forecastPlot(yosemite_village)
 }
 }

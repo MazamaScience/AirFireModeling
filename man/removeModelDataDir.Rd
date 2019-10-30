@@ -10,7 +10,7 @@ removeModelDataDir()
 Silently returns previous value of data directory.
 }
 \description{
-Resets the package data directory to NULL. Used for internal 
+Resets the package data directory to NULL. Used for internal
 testing.
 }
 \seealso{
