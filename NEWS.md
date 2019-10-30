@@ -3,6 +3,7 @@
 * Added `grid_spaghettiPlot()`
 * Added `grid_timeseriesPlot()`
 * Added `modelBoundingBox()`
+* Include ggplot2 option in `monitor_forecastPlot()`
 
 # AirFireModeling 0.1.3
 
