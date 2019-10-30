@@ -13,6 +13,7 @@
 #' @param models a list of valid monitors to plot
 #' @param subDir Subdirectory path containing netcdf data. (Passed to
 #' \code{bluesky_load()})
+#' @param plotter Determine which plotting package to use - `base` or `ggplot2`.
 #'
 #' @examples
 #' \dontrun{
@@ -26,14 +27,15 @@
 #'   monitor_load(20191025, 20191029) %>%
 #'   monitor_subset(monitorIDs = '060131004_01')
 #'
-#' monitor_forecastPlot(yosemite_village, models = 'CANSAC-4km')
+#' monitor_forecastPlot(yosemite_village)
 #' }
 monitor_forecastPlot <-  function(
   ws_monitor,
   starttime = NULL,
   endtime = NULL,
   models = c('CANSAC-1.33km', 'CANSAC-4km') ,
-  subDir = "forecast"
+  subDir = 'forecast',
+  plotter = 'base'
 ) {
 
   # ----- Validate parameters --------------------------------------------------
@@ -99,68 +101,76 @@ monitor_forecastPlot <-  function(
 
   }
 
-  # ----- Create ggplot --------------------------------------------------------
-
-  # TODO:  An alternative solution is to combine all the monitors and then use
-  # TODO:  ggplot2 graphics from AirMonitorPlots to plot them all at once like
-  # TODO:  this:
-
+  # Combine the monitors
   fakeMonitors <- PWFSLSmoke::monitor_combine(fakeMonitorList)
   allMonitors <- PWFSLSmoke::monitor_combine(list(ws_monitor, fakeMonitors))
 
-  # AirMonitorPlots code goes here
+  # Determine which plotting package to use
 
-  # ----- Create plot ----------------------------------------------------------
+  if ( grepl('gg', plotter) ) {
 
-  # TODO:  Combine all time axes before sort(unique(...))
+    # ----- Create ggplot ------------------------------------------------------
 
-  # Create long time axis
-  time_axis <- sort(unique(c(ws_monitor$data$datetime, fakeMonitorList[[1]]$data$datetime)))
+    gg <- AirMonitorPlots::ggplot_pm25Timeseries(allMonitors) +
+      AirMonitorPlots::geom_pm25Points(ggplot2::aes(color = allMonitors$monitorID)) +
+      AirMonitorPlots::stat_nowcast(ggplot2::aes(color = allMonitors$monitorID))
 
-  xlim_plot <- range(time_axis)
-  ylim_plot <- c(0, max(allMonitors$data[,-1], na.rm = TRUE))
+    return(gg)
 
-  # TODO:  Allow most of these parameters to be specified as arguments or as
-  # TODO:  part of ...
+  } else {
 
-  # Add ws_monitor to plot
-  PWFSLSmoke::monitorPlot_timeseries(
-    ws_monitor = ws_monitor,
-    xlim = xlim_plot,
-    ylim = ylim_plot,
-    type = 'b',
-    lwd = 1,
-    cex = 0.8
-  )
+    # ----- Create plot --------------------------------------------------------
 
-  # Create colors and legend names
-  cols <- RColorBrewer::brewer.pal(length(fakeMonitorList), 'Set1')
+    # TODO:  Combine all time axes before sort(unique(...))
 
-  i <- 0
-  for ( model in names(fakeMonitorList) ) {
+    # Create long time axis
+    time_axis <- sort(unique(c(ws_monitor$data$datetime,
+                               fakeMonitorList[[1]]$data$datetime)))
 
-    i <- i + 1
-    PWFSLSmoke::monitor_timeseriesPlot(
-      fakeMonitorList[[model]],
-      add = TRUE,
-      type = "b",
+    xlim_plot <- range(time_axis)
+    ylim_plot <- c(0, max(allMonitors$data[,-1], na.rm = TRUE))
+
+    # TODO:  Allow most of these parameters to be specified as arguments or as
+    # TODO:  part of ...
+
+    # Add ws_monitor to plot
+    PWFSLSmoke::monitorPlot_timeseries(
+      ws_monitor = ws_monitor,
+      xlim = xlim_plot,
+      ylim = ylim_plot,
+      type = 'b',
       lwd = 1,
-      cex = 0.8,
-      col = cols[[i]]
+      cex = 0.8
     )
 
+    # Create colors and legend names
+    cols <- RColorBrewer::brewer.pal(length(fakeMonitorList), 'Set1')
+
+    i <- 0
+    for ( model in names(fakeMonitorList) ) {
+
+      i <- i + 1
+      PWFSLSmoke::monitor_timeseriesPlot(
+        fakeMonitorList[[model]],
+        add = TRUE,
+        type = "b",
+        lwd = 1,
+        cex = 0.8,
+        col = cols[[i]]
+      )
+
+    }
+
+    legend(
+      "topleft",
+      legend = names(fakeMonitorList),
+      lwd = 2,
+      col = cols
+    )
   }
-
-  legend(
-    "topleft",
-    legend = names(fakeMonitorList),
-    lwd = 2,
-    col = cols
-  )
-
 }
 
-# ===== DEBUGGING ============================================================
+# ===== DEBUGGING ==============================================================
 
 if (FALSE) {
 
@@ -175,7 +185,7 @@ if (FALSE) {
     PWFSLSmoke::monitor_subset(monitorIDs = "lon_.120.591_lat_38.714_arb2.1008")
   starttime <- NULL
   endtime <- NULL
-  models <- list('CANSAC-1.33km', 'CANSAC-4km', 'PNW-4km')
+  models <- list('CANSAC-1.33km', 'CANSAC-4km')
 
   monitor_forecastPlot(ws_monitor, models = models)
 
