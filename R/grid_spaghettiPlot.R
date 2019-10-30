@@ -5,7 +5,7 @@
 #' @param longitude target longitude
 #' @param latitude target latitude
 #' @param count count of closest grid cells to be included in the plot
-#' @param rmWidth rolling mean width in hours
+#' @param width rolling mean width in hours
 #' @param ... additional arguments to pass to plot() via monitorPlot_timeseries()
 #' @description Creates a "spaghetti plot" timeseries  with a line for each of the
 #' \code{count} model grid cells closest to the target location. A centered
