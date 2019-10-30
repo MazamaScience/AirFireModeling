@@ -104,3 +104,95 @@ modelBoundingBox <- function(bs_grid) {
 }
 
 
+#' @title Find coordinates appropriate model
+#' @description Determine what model to use based on the target coordinates
+#' provided.
+#'
+#' @param longitude the target longitude
+#' @param latitude the target latitude
+#'
+#' @return vectors of model(s)
+#' @export
+inside_model <- function(longitude, latitude) {
+
+  domain <- data.frame(check.names = FALSE,
+    'NAM-12km' = c(
+      CENTER_LATITUDE   =  38.5,
+      CENTER_LONGITUDE  = -95.0,
+      WIDTH_LONGITUDE   =  70.0,
+      HEIGHT_LATITUDE   =  36.0,
+      SPACING_LONGITUDE =  0.15,
+      SPACING_LATITUDE  =  0.15 ),
+
+    'GFS' = c(
+      CENTER_LATITUDE   =  47,
+      CENTER_LONGITUDE  = -110,
+      WIDTH_LONGITUDE   =  120.0,
+      HEIGHT_LATITUDE   =  50.0,
+      SPACING_LONGITUDE =  0.25,
+      SPACING_LATITUDE  =  0.25 ),
+
+    'AK-12km' = c(
+      CENTER_LATITUDE   =  62.5,
+      CENTER_LONGITUDE  = -155.0,
+      WIDTH_LONGITUDE   =  39.0,
+      HEIGHT_LATITUDE   =  25.0,
+      SPACING_LONGITUDE =  0.08,
+      SPACING_LATITUDE  =  0.08 ),
+
+    'NAM-3km' = c(
+      CENTER_LATITUDE   =  37.5,
+      CENTER_LONGITUDE  = -95.0,
+      WIDTH_LONGITUDE   =  70.0,
+      HEIGHT_LATITUDE   =  30.0,
+      SPACING_LONGITUDE =  0.04,
+      SPACING_LATITUDE  =  0.04 ),
+
+    'CANSAC-4km' = c(
+      CENTER_LATITUDE   =  38.8,
+      CENTER_LONGITUDE  = -119.0,
+      WIDTH_LONGITUDE   =  19.0,
+      HEIGHT_LATITUDE   =  16.0,
+      SPACING_LONGITUDE =  0.05,
+      SPACING_LATITUDE  =  0.05 ),
+
+    'CANSAC-1.33km' = c(
+      CENTER_LATITUDE   =  37.25,
+      CENTER_LONGITUDE  = -119.00,
+      WIDTH_LONGITUDE   =  10.00,
+      HEIGHT_LATITUDE   =  9.5,
+      SPACING_LONGITUDE =  0.02,
+      SPACING_LATITUDE  =  0.02 ),
+
+    'PNW-4km' = c(
+      CENTER_LATITUDE   =  45.00,
+      CENTER_LONGITUDE  = -118.30,
+      WIDTH_LONGITUDE   =  20.5,
+      HEIGHT_LATITUDE   =  10.5,
+      SPACING_LONGITUDE =  0.04,
+      SPACING_LATITUDE  =  0.04 ),
+
+    'PNW-1.33km' = c(
+      CENTER_LATITUDE   =  45.55,
+      CENTER_LONGITUDE  = -120.25,
+      WIDTH_LONGITUDE   =  12.15,
+      HEIGHT_LATITUDE   =  8.35,
+      SPACING_LONGITUDE =  0.01,
+      SPACING_LATITUDE  =  0.01 )
+  )
+
+  domain['MAX_LATITUDE',] <- domain[1,] + domain[4,]/2 # Max latitude
+  domain['MIN_LATITUDE',] <- domain[1,] - domain[4,]/2 # min latitude
+  domain['MAX_LONGITUDE',] <- domain[2,] + domain[3,]/2 # max longitude
+  domain['MIN_LONGITUDE',] <- domain[2,] - domain[3,]/2 # min longitude
+
+  inside <- which(
+    (latitude <= domain['MAX_LATITUDE',] & latitude >= domain['MIN_LATITUDE',]) &
+      (longitude <= domain['MAX_LONGITUDE',] & longitude >= domain['MIN_LONGITUDE',])
+  )
+
+  models_inside <- names(domain[inside])
+
+  return(models_inside)
+
+}
