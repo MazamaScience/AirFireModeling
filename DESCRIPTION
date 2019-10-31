@@ -32,6 +32,8 @@ Imports:
     MazamaCoreUtils (>= 0.3.11),
     MazamaSpatialUtils,
     PWFSLSmoke,
+    raster, 
+    rasterVis,
     RColorBrewer,
     sp,
     stringr

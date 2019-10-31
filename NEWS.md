@@ -4,6 +4,7 @@
 * Added `grid_timeseriesPlot()`
 * Added `modelBoundingBox()`
 * Include ggplot2 option in `monitor_forecastPlot()`
+* Added `grid_correlationMap()`
 
 # AirFireModeling 0.1.3
 
