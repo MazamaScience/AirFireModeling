@@ -57,7 +57,7 @@ grid_correlationMap <- function(
       stop(paste0("ws_monitor may only contain data from a single monitor. Please provide a monitorID from ", ws_name ,"$meta$monitorID"))
     } else {
       if ( monitorID %in% ws_monitor$meta$monitorID ) {
-        ws_monitor <- monitor_subset(ws_monitor, monitorIDs = monitorID)
+        ws_monitor <- PWFSLSmoke::monitor_subset(ws_monitor, monitorIDs = monitorID)
       } else {
         stop(paste0("monitorID ",monitorID," not found in ws_monitor meta data"))
       }
@@ -82,7 +82,7 @@ grid_correlationMap <- function(
     if ( nchar(tlim)[2] == 8 ) {
       tlim[2] <- paste0(tlim[2],"23")
     }
-    tlim <- parseDatetime(tlim)
+    tlim <- PWFSLSmoke::parseDatetime(tlim)
   }
 
   tlimBeg <- max(bs_grid$time[1], ws_monitor$data$datetime[1], tlim[1])
@@ -91,7 +91,7 @@ grid_correlationMap <- function(
 
   # set xlim
   if ( length(xlim) == 2 ) {
-    xlim <- adjustRange(xlim, zoom)
+    xlim <- adjustRange(xlim, zoom) # ? What function is this?
   } else {
     if ( is.null(xlim) ) {
       xmid <- ws_monitor$meta$longitude
@@ -124,7 +124,7 @@ grid_correlationMap <- function(
   gridData <- bs_gridSub$data[[param]][,,]
 
   # Subset ws_monitor to have the same times as bs_grid
-  ws_monSub <- monitor_subset(ws_monitor, tlim = tlim)
+  ws_monSub <- PWFSLSmoke::monitor_subset(ws_monitor, tlim = tlim)
   monitorData <- ws_monSub$data[,2]
 
   # Calculation the correlation
@@ -163,8 +163,8 @@ grid_correlationMap <- function(
     # style options
     # create default palette if none is passed in
     if (is.null(colors)) {
-      palette <- colorRampPalette(c("white", "orange", "firebrick"))
-      colors <- palette(length(breaks)-1)
+      palette <- grDevices::colorRampPalette(c("white", "orange", "firebrick"))
+      colors <- grDevices::palette(length(breaks)-1)
     }
 
     # create base map
@@ -178,13 +178,13 @@ grid_correlationMap <- function(
     labels <- rev(paste0(lag(breaks),' to ',breaks)[-1])
     legend("bottomright", col=rev(colors), legend=labels, pch=16, cex=.7)
 
-    addBullseye(ws_monSub$meta$longitude,ws_monSub$meta$latitude)
+    PWFSLSmoke::addBullseye(ws_monSub$meta$longitude,ws_monSub$meta$latitude)
 
   }
   if ( FALSE ) {
     ws_monitor <-
-      monitor_load(20191014, 20191016) %>%
-      monitor_subset(monitorIDs = "lon_.120.591_lat_38.714_arb2.1008")
+      PWFSLSmoke::monitor_load(20191014, 20191016) %>%
+      PWFSLSmoke::monitor_subset(monitorIDs = "lon_.120.591_lat_38.714_arb2.1008")
     bs_grid <- bluesky_load(model = 'CANSAC-1.33km',modelRun = 20191014)
     param <- 'pm25'
     monitorID=NULL
