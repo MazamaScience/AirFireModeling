@@ -8,6 +8,7 @@
 #' @param ylim Latitude range to be plotted.
 #' @param tMask Logical vector of the same length as the time axis or a set
 #' of indices used to select specific times.
+#' @param slice Either a time index or a function used to collapse the time axis.
 #'
 #' @description Use the \pkg{ggplot2} package to plot a map of bluesky data in a
 #' given area.
@@ -34,7 +35,6 @@ grid_ggmap <- function(
   MazamaCoreUtils::stopIfNull(ylim)
   MazamaCoreUtils::stopIfNull(tMask)
   MazamaCoreUtils::stopIfNull(slice)
-  MazamaCoreUtils::stopIfNull(style)
 
   if ( !("bs_grid" %in% class(bs_grid)) )
     stop("bs_grid object is not of class 'bs_grid'.")
