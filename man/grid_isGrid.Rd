@@ -10,7 +10,7 @@ grid_isGrid(bs_grid = NULL)
 \item{bs_grid}{\emph{bs_grid} object}
 }
 \value{
-\code{TRUE} if \code{bs_grid} has the correct structure, 
+\code{TRUE} if \code{bs_grid} has the correct structure,
 \code{FALSE} otherwise.
 }
 \description{
