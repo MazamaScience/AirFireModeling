@@ -111,7 +111,7 @@ modelBoundingBox <- function(bs_grid) {
 #' @param latitude the target latitude
 #'
 #' @return vectors of model(s)
-inside_model <- function(longitude, latitude) {
+bluesky_availiableModels <- function(longitude, latitude) {
 
   domain <- data.frame(check.names = FALSE,
     'NAM-12km' = c(
