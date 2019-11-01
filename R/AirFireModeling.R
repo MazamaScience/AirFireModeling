@@ -87,7 +87,6 @@ removeModelDataDir <- function() {
 #'
 #' @description Quickly find the bluesky models bounded region.
 #' @return a bounding box matrix
-#' @export
 modelBoundingBox <- function(bs_grid) {
 
   model_bb <- rbind(
@@ -103,7 +102,7 @@ modelBoundingBox <- function(bs_grid) {
 
 }
 
-
+#' @export
 #' @title Find coordinates appropriate model
 #' @description Determine what model to use based on the target coordinates
 #' provided.
@@ -112,7 +111,6 @@ modelBoundingBox <- function(bs_grid) {
 #' @param latitude the target latitude
 #'
 #' @return vectors of model(s)
-#' @export
 inside_model <- function(longitude, latitude) {
 
   domain <- data.frame(check.names = FALSE,
