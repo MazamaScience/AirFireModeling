@@ -22,6 +22,7 @@ Depends:
 Imports:
     abind,
     AirMonitorPlots,
+    dplyr,
     geodist,
     ggplot2,
     lubridate,
@@ -35,6 +36,7 @@ Imports:
     raster, 
     rasterVis,
     RColorBrewer,
+    rlang,
     sp,
     stringr
 Suggests:

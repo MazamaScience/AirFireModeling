@@ -1,3 +1,4 @@
+#' @importFrom rlang .data
 #' @keywords bs_grid, ws_monitor
 #' @export
 #' @title Correlation Map
@@ -134,7 +135,7 @@ grid_correlationMap <- function(
   # ----- Mapping ------
 
   if ( grepl('gg', plotter) ) {
-
+    #library(rlang)
     # create ggmap
     states <- ggplot2::map_data('state', xlim = xlim, ylim = ylim)
     counties <- ggplot2::map_data('county', xlim = xlim, ylim = ylim)
@@ -144,9 +145,9 @@ grid_correlationMap <- function(
     ras <- raster::raster(gs, xmn = xlim[1], xmx = xlim[2], ymn = ylim[1], ymx = ylim[2])
 
     gg <- rasterVis::gplot(ras) +
-      ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = value)) +
-      ggplot2::geom_path(data = counties, ggplot2::aes(x = long, y = lat, group = group), alpha = 0.2, color = 'grey12') +
-      ggplot2::geom_polygon(data = states, ggplot2::aes(y = lat, x = long, group = group), fill = 'NA', color = 'black') +
+      ggplot2::geom_tile(ggplot2::aes(x = .data$x, y = .data$y, fill = .data$value)) +
+      ggplot2::geom_path(data = counties, ggplot2::aes(x = .data$long, y = .data$lat, group = .data$group), alpha = 0.2, color = 'grey12') +
+      ggplot2::geom_polygon(data = states, ggplot2::aes(y = .data$lat, x = .data$long, group = .data$group), fill = 'NA', color = 'black') +
       ggplot2::scale_fill_gradient2(na.value = 'NA', low = 'dodgerblue', mid = 'white', high = 'firebrick') +
       ggplot2::geom_point(ggplot2::aes(x = ws_monSub$meta$longitude, y = ws_monSub$meta$latitude),
                           shape = 23, colour = 'black', fill = 'NA', size = 2, stroke = 1) +
@@ -154,7 +155,7 @@ grid_correlationMap <- function(
                     subtitle = paste0(tlim[1], " to ",tlim[2]),
                     x = 'Longitude', y = 'Latitude', fill = 'Correlation') +
       ggplot2::theme_classic() +
-      ggplot2::coord_fixed(xlim = xlim, ylim = ylim,ratio = 4/3)
+      ggplot2::coord_fixed(xlim = xlim, ylim = ylim, ratio = 4/3)
 
     return(gg)
 
@@ -169,14 +170,14 @@ grid_correlationMap <- function(
 
     # create base map
     maps::map('state', xlim = xlim, ylim = ylim)
-    title(main=paste0("Correlation of ", monitorID," vs. ", bs_grid$model, "\n", tlim[1], " to ",tlim[2]))
-    image(lon, lat, gridSlice, breaks = breaks, col = colors, add = TRUE)
+    graphics::title(main=paste0("Correlation of ", monitorID," vs. ", bs_grid$model, "\n", tlim[1], " to ",tlim[2]))
+    graphics::image(lon, lat, gridSlice, breaks = breaks, col = colors, add = TRUE)
     maps::map('county', col = 'gray80', xlim = xlim, ylim = ylim, add = TRUE)
     maps::map('state', xlim = xlim, ylim = ylim, add = TRUE)
     maps::map.axes()
 
-    labels <- rev(paste0(lag(breaks),' to ',breaks)[-1])
-    legend("bottomright", col=rev(colors), legend=labels, pch=16, cex=.7)
+    labels <- rev(paste0(dplyr::lag(breaks),' to ',breaks)[-1])
+    graphics::legend("bottomright", col=rev(colors), legend=labels, pch=16, cex=.7)
 
     PWFSLSmoke::addBullseye(ws_monSub$meta$longitude,ws_monSub$meta$latitude)
 
