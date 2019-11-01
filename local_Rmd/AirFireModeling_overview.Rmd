@@ -1,0 +1,63 @@
+---
+title: "AirFireModeling Preview"
+output:
+  html_document:
+    df_print: paged
+---
+The USFS Pacific Wildland Fire Sciences Lab AirFire team works to model wildland fire emissions and has created the BlueSky Modeling Framework. This system integrates a wide collection of models along the smoke modeling chain (fire information, fuel loadings, consumption modeling, emissions modeling, time rate of emissions modeling, plume height estimations, and smoke trajectory and dispersion modeling). The resulting model output has been integrated into many different smoke prediction systems and scientific modeling efforts.
+
+The AirFireModeling R package is being developed to help modelers and scientists better understand how the smoke predictions in their model output compare with smoke measurements made at monitoring sites.
+
+We will demonstrate some of the functionality that is currently provided by the AirFireModeling package.
+Let's begin by importing the necessary libraries.
+```{r echo=TRUE}
+library(PWFSLSmoke)
+library(AirFireModeling)
+library(MazamaCoreUtils)
+library(AirMonitorPlots)
+setModelDataDir('~/Data/Bluesky')
+initializeMazamaSpatialUtils()
+```
+
+Using the PWFSLSmoke package, we can load a monitor near San Fransico, California, to inspect its air quality and use the data produced by the monitor in conjunction with the AirFireModeling package. 
+
+```{r echo=TRUE}
+san_fran <- monitor_load(monitorIDs = '060750005_01', startdate = 20191025, enddate = 20191029)
+# We can check which Bluesky models the target monitor resides in using `inside_model()`. 
+inside_model(longitude = san_fran$meta$longitude, latitude = san_fran$meta$latitude)
+```
+
+We can load a BlueSky model using `bluesky_load()` function. This allows us to pull data from BlueSky's daily output. Most models model three days in advance. 
+In this case, we would like to compare the BlueSky model data with our San Fransico monitor we have loaded. We will use the CANSAC-1.33km model data, produced on October 25, 2019. 
+```{r echo=TRUE}
+bs <- bluesky_load(model = 'CANSAC-1.33km', modelRun = 20191025, subDir = 'forecast')
+```
+We can get a sense of the BlueSky model data by using the `grid_map()` function. This function takes `bs_grid` object (a multidimensional array) and overlays the model on the regions map. We can ask for different "slices" - in this case we would like to view the average of our BlueSky model run. 
+```{r echo=TRUE}
+map <- grid_map(bs, slice = mean)
+```
+Great, we have an idea about what our data looks like. Currently, a supported and interesting feature in the package allows us to inevestigate the correlation amoung our monitor (San Fransico) and our BlueSky model. 
+```{r echo=TRUE}
+correlation <- grid_correlationMap(bs, san_fran)
+```
+Here we can see the monitors location and it's data correlation to the BlueSky model output. Red is a positive Pearson Correlation, White is uncorrelated, and Blue is negative correlation. 
+
+We can expand the functionality of our BlueSky model data by coercing it to a `ws_monitor`-like object, a fundemental component in many of Mazama Science's packages. We can do so by "collapsing" the BlueSky model to a single coordinate location. 
+```{r echo=TRUE}
+bs_monitor <- grid_createMonitor(bs, longitude = san_fran$meta$longitude, latitude = san_fran$meta$latitude, radius = 2000)
+```
+
+Now that our BlueSky model is represented in a standard hourly format, we can preform a wide variety of model preformance analysis. 
+As an example let's see how the BlueSky model (at the same location of the San Fransico model) compares to our San Fransico model. Red is the BlueSky model, blue is our San Fransico model. 
+```{r echo=TRUE}
+monitorPlot_timeseries(san_fran, col = 'blue')
+monitorPlot_timeseries(bs_monitor, col = 'red', add = TRUE)
+```
+Here we can see that in this particular scenario, our BlueSky model is reporting low when compared to the monitor's data. 
+
+Furthermore, we can forecast our San Fransico monitor using BlueSky. This will use the monitor data and then look ahead using the BlueSky model. 
+```{r echo=TRUE}
+monitor_ggforecastPlot(san_fran, subDir = 'forecast', models = c('CANSAC-1.33km','CANSAC-4km'))
+```
+We can see that in this particular case, the CANSAC models appear to be underreporting when comparing with the monitors particulate readings. 
+
