@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Bluesky Aggregation
 
-Bluesky air-quality models by default generate new models for each day. That means for each $N$ days we decide to obtain data for, there will be $N$ independent models generated. For example, if we wanted to preform an analysis on _two_ days of data we would obtain a total of _two_ seperate models, or `chunks`, produced - each model looking $N$ days in advanced. 
+Bluesky air-quality models by default generate new models for each day. That means for each $N$ days we decide to obtain data for, there will be $N$ independent models generated. For example, if we wanted to preform an analysis on _two_ days of data we would obtain a total of _two_ seperate models, with `chunks` produced - each model looking $N$ days in advanced. Aggregation allows us to aggregate the first $n$ chunks for each day, so we can use the most accurate (less time advance) models for multi-day analysis.
 
 To demonstrate this we will use the `blueksy_aggregate()` function  model of Oregon during the Granite Gulch fire (~5,500 acres), started by lightning on approximately the evening of Jul. 28, 2019. We will inspect models from Aug.8 - Aug. 10, 2019 to view one of the worst air-quality time frames caused by the fire.
 
