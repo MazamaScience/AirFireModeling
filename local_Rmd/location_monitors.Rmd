@@ -50,12 +50,12 @@ AirMonitorPlots::ggplot_pm25Timeseries( monitors_within,
                                         enddate = tlim[2]-1 ) +
   ggplot2::geom_point(mapping = ggplot2::aes_(color = ~monitorID))  + 
   ggplot2::geom_path(mapping = ggplot2::aes_(color = ~monitorID)) + 
-  ggplot2::geom_path( data = monitor_col$data,
+  ggplot2::geom_line( data = monitor_col$data,
                       mapping = ggplot2::aes_(x = ~datetime, y = ~Combined), 
                       linetype = 1, 
-                      size = 2, 
+                      size = 2,
                       color = 'grey52', 
-                      alpha = 0.75 ) + 
+                      alpha = 0.75) + 
   ggplot2::theme(legend.position = 'bottom') + 
   ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
 ```

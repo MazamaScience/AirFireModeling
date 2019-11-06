@@ -62,4 +62,6 @@ AirMonitorPlots::ggplot_pm25Timeseries( bs_monitors_combined,
   ggplot2::guides(color = ggplot2::guide_legend(ncol = 2, title = 'Model')) 
 ```
 
-` r paste0() `
+### Model Links 
+
+`r paste0('[', models_within, ']', '(https://tools.airfire.org/websky/v1/run/standard/', models_within,'/', tlim[1], '00', ')')`
