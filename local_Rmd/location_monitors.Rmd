@@ -29,6 +29,8 @@ monitors_within <-
     latitude = coordinates[2], 
     radius = radius
   )
+
+monitor_col <- PWFSLSmoke::monitor_collapse(monitors_within, monitorID = 'Combined')
 ```
 
 ### Monitor Map
@@ -46,11 +48,19 @@ PWFSLSmoke::monitor_leaflet(monitors_within, ) %>%
 AirMonitorPlots::ggplot_pm25Timeseries( monitors_within,
                                         startdate = tlim[1], 
                                         enddate = tlim[2]-1 ) +
-  ggplot2::geom_point(mapping = ggplot2::aes_(color = ~monitorID)) + 
+  ggplot2::geom_point(mapping = ggplot2::aes_(color = ~monitorID))  + 
+  ggplot2::geom_path(mapping = ggplot2::aes_(color = ~monitorID)) + 
+  ggplot2::geom_path( data = monitor_col$data,
+                      mapping = ggplot2::aes_(x = ~datetime, y = ~Combined), 
+                      linetype = 1, 
+                      size = 2, 
+                      color = 'grey52', 
+                      alpha = 0.75 ) + 
   ggplot2::theme(legend.position = 'bottom') + 
-  ggplot2::guides(color = ggplot2::guide_legend(ncol = 3)) + 
-  ggplot2::geom_path(mapping = ggplot2::aes_(color = ~monitorID))
+  ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
 ```
 
 ### View Monitors
 `r paste0('[Monitor: ',monitors_within$meta$monitorID , ']', '(', 'https://tools.airfire.org/monitoring/v4/#!/?monitors=', monitors_within$meta$monitorID, ')')`
+
+

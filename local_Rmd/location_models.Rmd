@@ -1,0 +1,65 @@
+---
+title: "location_models"
+author: "Mazama Science"
+date: "11/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(PWFSLSmoke)
+knitr::opts_chunk$set(echo = TRUE)
+AirFireModeling::setModelDataDir('~/Data/Bluesky')
+PWFSLSmoke::initializeMazamaSpatialUtils()
+
+coordinates <- c(lon = -122.032718, lat = 36.965317) # sante cruz ish
+tlim <- c(20191021, 20191024) 
+radius = 20
+
+```
+
+```{r logging, echo=FALSE, warning=FALSE}
+# Set up logging
+MazamaCoreUtils::logger.setup()
+MazamaCoreUtils::logger.setLevel("DEBUG")
+```
+
+```{r models_within, echo=FALSE}
+models_within <- 
+  AirFireModeling::bluesky_availiableModels(coordinates[1], coordinates[2])
+```
+
+```{r load_models, echo=FALSE}
+bs_models <- list()
+for ( i in models_within ) {
+  bs_models[[i]] <- 
+    AirFireModeling::bluesky_load( model = i, 
+                                   modelRun = tlim[1], 
+                                   subDir = 'forecast' )
+}
+```
+
+```{r create_monitors, echo=FALSE}
+bs_monitors <- list()
+for ( i in names(bs_models) ) {
+  bs_monitors[[i]] <- 
+    AirFireModeling::grid_createMonitor( bs_models[[i]], 
+                                         longitude = coordinates[1], 
+                                         latitude = coordinates[2], 
+                                         monitorID = i )
+}
+
+bs_monitors_combined <- PWFSLSmoke::monitor_combine(bs_monitors)
+
+```
+
+### Model Plots
+```{r model_plot, echo=FALSE, fig.height=6, warning=FALSE}
+AirMonitorPlots::ggplot_pm25Timeseries( bs_monitors_combined, 
+                                        startdate = tlim[1], 
+                                        enddate = tlim[2] ) + 
+  AirMonitorPlots::geom_pm25Points(mapping = ggplot2::aes_(color = ~monitorID)) + 
+  ggplot2::theme(legend.position = 'bottom') + 
+  ggplot2::guides(color = ggplot2::guide_legend(ncol = 2, title = 'Model')) 
+```
+
+` r paste0() `
