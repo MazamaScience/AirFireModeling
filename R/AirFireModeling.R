@@ -107,7 +107,7 @@ modelBoundingBox <- function(bs_grid) {
 #' @seealso bluesky_availiableModels
 modelDomains <- function() {
   domain <- data.frame(check.names = FALSE,
-                       'NAM-12km' = c(
+                       'NAM84-0.15deg' = c(
                          CENTER_LATITUDE   =  38.5,
                          CENTER_LONGITUDE  = -95.0,
                          WIDTH_LONGITUDE   =  70.0,
@@ -115,7 +115,7 @@ modelDomains <- function() {
                          SPACING_LONGITUDE =  0.15,
                          SPACING_LATITUDE  =  0.15 ),
 
-                       'GFS' = c(
+                       'GFS-0.15deg-CanadaUSA-p25deg-68N' = c(
                          CENTER_LATITUDE   =  47,
                          CENTER_LONGITUDE  = -110,
                          WIDTH_LONGITUDE   =  120.0,
@@ -218,8 +218,8 @@ modelInfo <- function(model) {
   #       'combined' and 'forecast' directories. Whereas a model on 12 tends to only
   #       contain 'forecast' directory.
   dirInfo <- data.frame( check.names = FALSE,
-                         'NAM-12km' = c('carryover, combined, forecast'),
-                         'GFS' = c('forecast'),
+                         'NAM84-0.15deg' = c('carryover, combined, forecast'),
+                         'GFS-0.15deg-CanadaUSA-p25deg-68N' = c('forecast'),
                          'AK-12km' = c('forecast'),
                          'NAM-3km' = c('forecast'),
                          'CANSAC-4km' = c('forecast'),
