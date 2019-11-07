@@ -10,6 +10,123 @@
 AirFireModelingEnv <- new.env(parent = emptyenv())
 AirFireModelingEnv$dataDir <- NULL
 
+# ----- Internal Data ----------------------------------------------------------
+
+#' blues_modelInfo
+#'
+#' @export
+#' @docType data
+#' @name bluesky_modelInfo
+#' @title BlueSky Model Information
+#' @format A data frame
+#' @description Various information regarding BlueSky models.
+bluesky_modelInfo <- data.frame(
+  check.names = FALSE,
+  'NAM84-0.15deg' = c(
+    CENTER_LATITUDE   =  38.5,
+    CENTER_LONGITUDE  = -95.0,
+    WIDTH_LONGITUDE   =  70.0,
+    HEIGHT_LATITUDE   =  36.0,
+    SPACING_LONGITUDE =  0.15,
+    SPACING_LATITUDE  =  0.15,
+    MAX_LATITUDE      =  56.5,
+    MIN_LATITUDE      =  20.5,
+    MAX_LONGITUDE     = -60.0,
+    MIN_LONGITUDE     = -130.0
+  ),
+
+  'GFS-0.15deg-CanadaUSA-p25deg-68N' = c(
+    CENTER_LATITUDE   =  47,
+    CENTER_LONGITUDE  = -110,
+    WIDTH_LONGITUDE   =  120.0,
+    HEIGHT_LATITUDE   =  50.0,
+    SPACING_LONGITUDE =  0.25,
+    SPACING_LATITUDE  =  0.25,
+    MAX_LATITUDE      =  72.0,
+    MIN_LATITUDE      =  22.0,
+    MAX_LONGITUDE     = -50.0,
+    MIN_LONGITUDE     = -170.0
+  ),
+
+  'AK-12km' = c(
+    CENTER_LATITUDE   =  62.5,
+    CENTER_LONGITUDE  = -155.0,
+    WIDTH_LONGITUDE   =  39.0,
+    HEIGHT_LATITUDE   =  25.0,
+    SPACING_LONGITUDE =  0.08,
+    SPACING_LATITUDE  =  0.08,
+    MAX_LATITUDE      =  75.0,
+    MIN_LATITUDE      =  50.0,
+    MAX_LONGITUDE     = -135.50,
+    MIN_LONGITUDE     = -174.50
+  ),
+
+  'NAM-3km' = c(
+    CENTER_LATITUDE   =  37.5,
+    CENTER_LONGITUDE  = -95.0,
+    WIDTH_LONGITUDE   =  70.0,
+    HEIGHT_LATITUDE   =  30.0,
+    SPACING_LONGITUDE =  0.04,
+    SPACING_LATITUDE  =  0.04,
+    MAX_LATITUDE      =  52.50,
+    MIN_LATITUDE      =  22.50,
+    MAX_LONGITUDE     = -60.0,
+    MIN_LONGITUDE     = -130.0
+  ),
+
+  'CANSAC-4km' = c(
+    CENTER_LATITUDE   =  38.8,
+    CENTER_LONGITUDE  = -119.0,
+    WIDTH_LONGITUDE   =  19.0,
+    HEIGHT_LATITUDE   =  16.0,
+    SPACING_LONGITUDE =  0.05,
+    SPACING_LATITUDE  =  0.05,
+    MAX_LATITUDE      =  46.80,
+    MIN_LATITUDE      =  30.80,
+    MAX_LONGITUDE     = -109.50,
+    MIN_LONGITUDE     = -128.50
+  ),
+
+  'CANSAC-1.33km' = c(
+    CENTER_LATITUDE   =  37.25,
+    CENTER_LONGITUDE  = -119.00,
+    WIDTH_LONGITUDE   =  10.00,
+    HEIGHT_LATITUDE   =  9.5,
+    SPACING_LONGITUDE =  0.02,
+    SPACING_LATITUDE  =  0.02,
+    MAX_LATITUDE      =  42.0,
+    MIN_LATITUDE      =  32.5,
+    MAX_LONGITUDE     = -114.0,
+    MIN_LONGITUDE     = -124.0
+  ),
+
+  'PNW-4km' = c(
+    CENTER_LATITUDE   =  45.00,
+    CENTER_LONGITUDE  = -118.30,
+    WIDTH_LONGITUDE   =  20.5,
+    HEIGHT_LATITUDE   =  10.5,
+    SPACING_LONGITUDE =  0.04,
+    SPACING_LATITUDE  =  0.04,
+    MAX_LATITUDE      =  50.25,
+    MIN_LATITUDE      =  39.75,
+    MAX_LONGITUDE     = -108.05,
+    MIN_LONGITUDE     = -128.55
+  ),
+
+  'PNW-1.33km' = c(
+    CENTER_LATITUDE   =  45.55,
+    CENTER_LONGITUDE  = -120.25,
+    WIDTH_LONGITUDE   =  12.15,
+    HEIGHT_LATITUDE   =  8.35,
+    SPACING_LONGITUDE =  0.01,
+    SPACING_LATITUDE  =  0.01,
+    MAX_LATITUDE      =  49.375,
+    MIN_LATITUDE      =  41.375,
+    MAX_LONGITUDE     = -114.175,
+    MIN_LONGITUDE     = -126.325
+  )
+)
+
 # ----- Data Directory Configuration -------------------------------------------
 
 #' @docType data
@@ -102,84 +219,6 @@ modelBoundingBox <- function(bs_grid) {
 
 }
 
-#' @title Internal function for model domain info
-#' @description Used as base model info
-#' @seealso bluesky_availiableModels
-modelDomains <- function() {
-  domain <- data.frame(check.names = FALSE,
-                       'NAM84-0.15deg' = c(
-                         CENTER_LATITUDE   =  38.5,
-                         CENTER_LONGITUDE  = -95.0,
-                         WIDTH_LONGITUDE   =  70.0,
-                         HEIGHT_LATITUDE   =  36.0,
-                         SPACING_LONGITUDE =  0.15,
-                         SPACING_LATITUDE  =  0.15 ),
-
-                       'GFS-0.15deg-CanadaUSA-p25deg-68N' = c(
-                         CENTER_LATITUDE   =  47,
-                         CENTER_LONGITUDE  = -110,
-                         WIDTH_LONGITUDE   =  120.0,
-                         HEIGHT_LATITUDE   =  50.0,
-                         SPACING_LONGITUDE =  0.25,
-                         SPACING_LATITUDE  =  0.25 ),
-
-                       'AK-12km' = c(
-                         CENTER_LATITUDE   =  62.5,
-                         CENTER_LONGITUDE  = -155.0,
-                         WIDTH_LONGITUDE   =  39.0,
-                         HEIGHT_LATITUDE   =  25.0,
-                         SPACING_LONGITUDE =  0.08,
-                         SPACING_LATITUDE  =  0.08 ),
-
-                       'NAM-3km' = c(
-                         CENTER_LATITUDE   =  37.5,
-                         CENTER_LONGITUDE  = -95.0,
-                         WIDTH_LONGITUDE   =  70.0,
-                         HEIGHT_LATITUDE   =  30.0,
-                         SPACING_LONGITUDE =  0.04,
-                         SPACING_LATITUDE  =  0.04 ),
-
-                       'CANSAC-4km' = c(
-                         CENTER_LATITUDE   =  38.8,
-                         CENTER_LONGITUDE  = -119.0,
-                         WIDTH_LONGITUDE   =  19.0,
-                         HEIGHT_LATITUDE   =  16.0,
-                         SPACING_LONGITUDE =  0.05,
-                         SPACING_LATITUDE  =  0.05 ),
-
-                       'CANSAC-1.33km' = c(
-                         CENTER_LATITUDE   =  37.25,
-                         CENTER_LONGITUDE  = -119.00,
-                         WIDTH_LONGITUDE   =  10.00,
-                         HEIGHT_LATITUDE   =  9.5,
-                         SPACING_LONGITUDE =  0.02,
-                         SPACING_LATITUDE  =  0.02 ),
-
-                       'PNW-4km' = c(
-                         CENTER_LATITUDE   =  45.00,
-                         CENTER_LONGITUDE  = -118.30,
-                         WIDTH_LONGITUDE   =  20.5,
-                         HEIGHT_LATITUDE   =  10.5,
-                         SPACING_LONGITUDE =  0.04,
-                         SPACING_LATITUDE  =  0.04 ),
-
-                       'PNW-1.33km' = c(
-                         CENTER_LATITUDE   =  45.55,
-                         CENTER_LONGITUDE  = -120.25,
-                         WIDTH_LONGITUDE   =  12.15,
-                         HEIGHT_LATITUDE   =  8.35,
-                         SPACING_LONGITUDE =  0.01,
-                         SPACING_LATITUDE  =  0.01 )
-  )
-
-  domain['MAX_LATITUDE',] <- domain[1,] + domain[4,]/2 # Max latitude
-  domain['MIN_LATITUDE',] <- domain[1,] - domain[4,]/2 # min latitude
-  domain['MAX_LONGITUDE',] <- domain[2,] + domain[3,]/2 # max longitude
-  domain['MIN_LONGITUDE',] <- domain[2,] - domain[3,]/2 # min longitude
-
-  return(domain)
-}
-
 #' @export
 #' @title Find coordinates appropriate model
 #' @description Determine what model to use based on the target coordinates
@@ -191,7 +230,7 @@ modelDomains <- function() {
 #' @return vectors of model(s)
 bluesky_availiableModels <- function(longitude, latitude) {
 
-  domain <- modelDomains()
+  domain <- bluesky_modelInfo
 
   inside <- which(
     (latitude <= domain['MAX_LATITUDE',] & latitude >= domain['MIN_LATITUDE',]) &
@@ -202,32 +241,4 @@ bluesky_availiableModels <- function(longitude, latitude) {
 
   return(models_inside)
 
-}
-
-#' @title Model information
-#'
-#' @param model the model to view info of.
-#' @description Used to find out model information, such as region and sub-
-#' directory structure.
-#' @export
-
-modelInfo <- function(model) {
-  domain <- modelDomains()
-  # NOTE: For most models, the subDir depends on the hour it was run.
-  # NOTE: For instance: models run on the 00 hour tend to have 'carryover',
-  #       'combined' and 'forecast' directories. Whereas a model on 12 tends to only
-  #       contain 'forecast' directory.
-  dirInfo <- data.frame( check.names = FALSE,
-                         'NAM84-0.15deg' = c('carryover, combined, forecast'),
-                         'GFS-0.15deg-CanadaUSA-p25deg-68N' = c('forecast'),
-                         'AK-12km' = c('forecast'),
-                         'NAM-3km' = c('forecast'),
-                         'CANSAC-4km' = c('forecast'),
-                         'CANSAC-1.33km' =c('forecast'),
-                         'PNW-4km' = c('forecast'),
-                         'PNW-1.33km' = c('forecast') )
-
-  modelInfo <- rbind(domain, 'SUBDIR' = dirInfo)
-
-  return(modelInfo)
 }

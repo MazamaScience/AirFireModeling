@@ -20,10 +20,10 @@ grid_createMonitor(bs_grid, longitude = NULL, latitude = NULL,
 
 \item{count}{Radius (m) passed on to \code{grid_subsetByDistance()}.}
 
-\item{monitorID}{Assigned monitorID of the created monitor. 
+\item{monitorID}{Assigned monitorID of the created monitor.
 (Default = "generated_id")}
 
-\item{FUN}{The function used to collapse all data at a single time index. 
+\item{FUN}{The function used to collapse all data at a single time index.
 (Default = mean)}
 
 \item{...}{Any additional arguments used by \code{FUN}, \emph{e.g.}
@@ -33,11 +33,14 @@ grid_createMonitor(bs_grid, longitude = NULL, latitude = NULL,
 A \emph{ws_monitor} object representing a single monitor.
 }
 \description{
-This function combines the operations of 
+This function combines the operations of
 \code{grid_subsetByDistance()} and \code{PWFSLSmoke::monitor_collapse()}.
 Time series associated with multiple grid cells are merged into a single
-time series by using \code{FUN}. Any function acceptable to
-\code{PWFSLSmoke::monitor_collapse()} can be used.
+time series by using \code{FUN} to collapse a given grid cell count, or
+or a grid cell radi, to a single coordinate. For instance, if the
+\code{FUN = mean} then the grid cells within the paramters are averaged to a
+single central coordinate.
+Any function acceptable to \code{PWFSLSmoke::monitor_collapse()} can be used.
 }
 \examples{
 \dontrun{
@@ -55,7 +58,7 @@ bs <- bluesky_load(
 )
 
 # Get the Yosmite monitor
-Yosemite_Village <- 
+Yosemite_Village <-
   monitor_load(20191009, 20191012) \%>\%
   monitor_subset(monitorIDs = "060431001_01")
 
@@ -72,14 +75,14 @@ Yosemite_fake <- grid_createMonitor(
 )
 
 # Combine them and use AirMonitorPlots to plot them
-Yosemite_combined <- 
+Yosemite_combined <-
   PWFSLSmoke::monitor_combine(list(Yosemite_Village, Yosemite_fake))
-  
+
 library(AirMonitorPlots)
 
 ggplot_pm25Timeseries(Yosemite_combined) +
-  geom_pm25Points(aes(color = monitorID)) + 
+  geom_pm25Points(aes(color = monitorID)) +
   stat_nowcast(aes(color = monitorID)) +
   ggtitle("CANSAC-1.33km vs. Monitoring Data")
-} 
+}
 }
