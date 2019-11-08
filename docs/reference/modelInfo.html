@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Changelog • AirFireModeling</title>
+<title>Model information — modelInfo • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,7 +35,10 @@
 
 
 
-<meta property="og:title" content="Changelog" />
+<meta property="og:title" content="Model information — modelInfo" />
+<meta property="og:description" content="Used to find out model information, such as region and sub-
+directory structure." />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -54,7 +57,7 @@
   </head>
 
   <body>
-    <div class="container template-news">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -101,85 +104,36 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Changelog <small></small></h1>
-      
+    <h1>Model information</h1>
+    
+    <div class="hidden name"><code>modelInfo.Rd</code></div>
     </div>
 
-    <div id="airfiremodeling-0-1-5" class="section level1">
-<h1 class="page-header">
-<a href="#airfiremodeling-0-1-5" class="anchor"></a>AirFireModeling 0.1.5</h1>
-<ul>
-<li>Cleanup of <code><a href="../reference/grid_timeseriesPlot.html">grid_timeseriesPlot()</a></code>
-</li>
-<li>Cleanup of <code>grid_spaghettiPlot()</code>
-</li>
-<li>Cleanup of <code><a href="../reference/grid_correlationMap.html">grid_correlationMap()</a></code>
-</li>
-<li>Cleanup of <code><a href="../reference/monitor_forecastPlot.html">monitor_forecastPlot()</a></code>
-</li>
-</ul>
-</div>
-    <div id="airfiremodeling-0-1-4" class="section level1">
-<h1 class="page-header">
-<a href="#airfiremodeling-0-1-4" class="anchor"></a>AirFireModeling 0.1.4</h1>
-<ul>
-<li>Added <code>grid_spaghettiPlot()</code>
-</li>
-<li>Added <code><a href="../reference/grid_timeseriesPlot.html">grid_timeseriesPlot()</a></code>
-</li>
-<li>Added <code><a href="../reference/modelBoundingBox.html">modelBoundingBox()</a></code>
-</li>
-<li>Include ggplot2 option in <code><a href="../reference/monitor_forecastPlot.html">monitor_forecastPlot()</a></code>
-</li>
-<li>Added <code><a href="../reference/grid_correlationMap.html">grid_correlationMap()</a></code>
-</li>
-</ul>
-</div>
-    <div id="airfiremodeling-0-1-3" class="section level1">
-<h1 class="page-header">
-<a href="#airfiremodeling-0-1-3" class="anchor"></a>AirFireModeling 0.1.3</h1>
-<ul>
-<li>New <code><a href="../reference/monitor_forecastPlot.html">monitor_forecastPlot()</a></code> function plots monitor data and model forecasts at the monitor location.</li>
-</ul>
-</div>
-    <div id="airfiremodeling-0-1-2" class="section level1">
-<h1 class="page-header">
-<a href="#airfiremodeling-0-1-2" class="anchor"></a>AirFireModeling 0.1.2</h1>
-<ul>
-<li>Refactored <code><a href="../reference/bluesky_load.html">bluesky_load()</a></code> to handle <code>xlim</code> and <code>ylim</code> arguments.</li>
-</ul>
-</div>
-    <div id="airfiremodeling-0-1-1" class="section level1">
-<h1 class="page-header">
-<a href="#airfiremodeling-0-1-1" class="anchor"></a>AirFireModeling 0.1.1</h1>
-<ul>
-<li>Refactored <code><a href="../reference/bluesky_load.html">bluesky_load()</a></code> to handle <code>timesteps</code> argument.</li>
-<li>Added <code><a href="../reference/bluesky_aggregate.html">bluesky_aggregate()</a></code>.</li>
-</ul>
-</div>
-    <div id="airfiremodeling-0-1-0" class="section level1">
-<h1 class="page-header">
-<a href="#airfiremodeling-0-1-0" class="anchor"></a>AirFireModeling 0.1.0</h1>
-<ul>
-<li>Initial <code>bluesky_~()</code> and <code>grid_~()</code> functions.</li>
-</ul>
-</div>
-  </div>
+    <div class="ref-description">
+    <p>Used to find out model information, such as region and sub-
+directory structure.</p>
+    </div>
 
+    <pre class="usage"><span class='fu'>modelInfo</span>(<span class='no'>model</span>)</pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>model</th>
+      <td><p>the model to view info of.</p></td>
+    </tr>
+    </table>
+
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <div id="tocnav">
-      <h2>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-        <li><a href="#airfiremodeling-0-1-5">0.1.5</a></li>
-        <li><a href="#airfiremodeling-0-1-4">0.1.4</a></li>
-        <li><a href="#airfiremodeling-0-1-3">0.1.3</a></li>
-        <li><a href="#airfiremodeling-0-1-2">0.1.2</a></li>
-        <li><a href="#airfiremodeling-0-1-1">0.1.1</a></li>
-        <li><a href="#airfiremodeling-0-1-0">0.1.0</a></li>
-      </ul>
-    </div>
-  </div>
+    <h2>Contents</h2>
+    <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
+    </ul>
 
+  </div>
 </div>
 
 

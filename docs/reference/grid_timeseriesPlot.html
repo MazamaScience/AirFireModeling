@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Download BlueSky model data from AirFire — bluesky_download • AirFireModeling</title>
+<title>Timeseries Plot for a `bs_grid` Object — grid_timeseriesPlot • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,36 +35,8 @@
 
 
 
-<meta property="og:title" content="Download BlueSky model data from AirFire — bluesky_download" />
-<meta property="og:description" content="Downloads a copy of the specified BlueSky model run to the 
-package data directory. This file can then be converted into a more 
-modernized format by bluesky2v2().
-#' On 2019-10-11, vailable model identifiers include the following:
-AK-12km
-CANSAC-1.33km
-CANSAC-4km
-DRI1.33km-CMAQ
-DRI4km-CMAQ
-GFS-0.15deg-CanadaUSA-p25deg-68N
-GFS-0.15deg
-NAM-3km
-NAM84-0.15deg
-PNW-1.33km
-PNW-4km
-PNW1.33km-CMAQ
-PNW4km-CMAQ
-
-
-Users will typically call bluesky_load() which in turn calls this function.
-
-BlueSky output files are found in directories with the following
-structure:
-
-.../standard/NAM84-0.08deg/2016050600/carryover/data/...
-.../standard/NAM84-0.08deg/2016050600/combined/data/...
-.../standard/NAM84-0.08deg/2016050600/forecast/data/...
-
-" />
+<meta property="og:title" content="Timeseries Plot for a `bs_grid` Object — grid_timeseriesPlot" />
+<meta property="og:description" content="This funciton plot timeseries from an 'unraveled' BlueSky dataList." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -131,96 +103,105 @@ structure:
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Download BlueSky model data from AirFire</h1>
+    <h1>Timeseries Plot for a `bs_grid` Object</h1>
     
-    <div class="hidden name"><code>bluesky_download.Rd</code></div>
+    <div class="hidden name"><code>grid_timeseriesPlot.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Downloads a copy of the specified BlueSky model run to the 
-package data directory. This file can then be converted into a more 
-modernized format by bluesky2v2().</p>
-<p>#' On 2019-10-11, vailable model identifiers include the following:</p><ul>
-<li><p>AK-12km</p></li>
-<li><p>CANSAC-1.33km</p></li>
-<li><p>CANSAC-4km</p></li>
-<li><p>DRI1.33km-CMAQ</p></li>
-<li><p>DRI4km-CMAQ</p></li>
-<li><p>GFS-0.15deg-CanadaUSA-p25deg-68N</p></li>
-<li><p>GFS-0.15deg</p></li>
-<li><p>NAM-3km</p></li>
-<li><p>NAM84-0.15deg</p></li>
-<li><p>PNW-1.33km</p></li>
-<li><p>PNW-4km</p></li>
-<li><p>PNW1.33km-CMAQ</p></li>
-<li><p>PNW4km-CMAQ</p></li>
-</ul>
-
-<p>Users will typically call bluesky_load() which in turn calls this function.</p>
-
-<p>BlueSky output files are found in directories with the following
-structure:</p>
-<pre>
-.../standard/NAM84-0.08deg/2016050600/carryover/data/...
-.../standard/NAM84-0.08deg/2016050600/combined/data/...
-.../standard/NAM84-0.08deg/2016050600/forecast/data/...
-</pre>
-
+    <p>This funciton plot timeseries from an 'unraveled' BlueSky dataList.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>bluesky_download</span>(<span class='kw'>dailyOutputDir</span> <span class='kw'>=</span> <span class='st'>"standard"</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-1.33km"</span>,
-  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>subDir</span> <span class='kw'>=</span> <span class='st'>"combined"</span>,
-  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://haze.airfire.org/bluesky-daily/output"</span>,
-  <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>grid_timeseriesPlot</span>(<span class='kw'>bs_grid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>tlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>localTime</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>shadedNight</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>gridPos</span> <span class='kw'>=</span> <span class='st'>""</span>,
+  <span class='kw'>gridCol</span> <span class='kw'>=</span> <span class='st'>"black"</span>, <span class='kw'>gridLwd</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>gridLty</span> <span class='kw'>=</span> <span class='st'>"solid"</span>, <span class='kw'>dayLwd</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>hourLwd</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>hourInterval</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>dailyOutputDir</th>
-      <td><p>BlueSky web directory</p></td>
+      <th>bs_grid</th>
+      <td><p>'gridded' BlueSky DataList</p></td>
     </tr>
     <tr>
-      <th>model</th>
-      <td><p>Model identifier.</p></td>
+      <th>tlim</th>
+      <td><p>optional vector with start and end times (integer or character representing YYYYMMDD[HH])</p></td>
     </tr>
     <tr>
-      <th>modelRun</th>
-      <td><p>Date code as "YYYYMMDDHH".</p></td>
+      <th>localTime</th>
+      <td><p>A logical whether you are going to use GMT time or not</p></td>
     </tr>
     <tr>
-      <th>subDir</th>
-      <td><p>Subdirectory path containing netcdf data.</p></td>
+      <th>shadedNight</th>
+      <td><p>A logical whether you want to add shaded rectangles for the local night times</p></td>
     </tr>
     <tr>
-      <th>baseUrl</th>
-      <td><p>Base URL for BlueSky output.</p></td>
+      <th>add</th>
+      <td><p>logical specifying whether to add points to an existing plot</p></td>
     </tr>
     <tr>
-      <th>quiet</th>
-      <td><p>If <code>TRUE</code>, suppress status messages (if any), and the
-progress bar.</p></td>
+      <th>gridPos</th>
+      <td><p>position of grid lines either "over", "under" ("" for no grid lines)</p></td>
+    </tr>
+    <tr>
+      <th>gridCol</th>
+      <td><p>grid line color</p></td>
+    </tr>
+    <tr>
+      <th>gridLwd</th>
+      <td><p>grid line width</p></td>
+    </tr>
+    <tr>
+      <th>gridLty</th>
+      <td><p>grid line type</p></td>
+    </tr>
+    <tr>
+      <th>dayLwd</th>
+      <td><p>day marker line width</p></td>
+    </tr>
+    <tr>
+      <th>hourLwd</th>
+      <td><p>hour marker line width</p></td>
+    </tr>
+    <tr>
+      <th>hourInterval</th>
+      <td><p>interval for grid (max=12)</p></td>
+    </tr>
+    <tr>
+      <th>title</th>
+      <td><p>The desired title of your plot. Setting as NULL prints out the default title.</p></td>
+    </tr>
+    <tr>
+      <th>ylim</th>
+      <td><p>the y limits of the plot</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>File path of downloaded data.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><a href='setModelDataDir.html'>setModelDataDir</a></p></div>
+    <div class='dont-index'><p><a href='grid_subsetByDistance.html'>grid_subsetByDistance</a></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSpatialUtils</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
 <span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>"~/Data/Bluesky"</span>)
-<span class='fu'>bluesky_download</span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>, <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019100900</span>)
+
+<span class='co'># Full grid -- 72 million grid cells!</span>
+<span class='no'>bs_grid</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='bluesky_load.html'>bluesky_load</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-1.33km"</span>, <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019100900</span>)
+<span class='fu'>grid_timeseriesPlot</span>(<span class='no'>bs_grid</span>, <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>500</span>))
+
+<span class='co'># Small region</span>
+<span class='no'>bs_grid</span> <span class='kw'>%&gt;%</span>
+  <span class='fu'><a href='grid_subset.html'>grid_subset</a></span>(<span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>120</span>, -<span class='fl'>118</span>), <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>45</span>, <span class='fl'>57</span>)) <span class='kw'>%&gt;%</span>
+  <span class='fu'>grid_timeseriesPlot</span>(<span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>500</span>), <span class='kw'>shadedNight</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>localTime</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
       <li><a href="#see-also">See also</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>

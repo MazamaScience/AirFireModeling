@@ -38,11 +38,14 @@ a single monitor — grid_createMonitor • AirFireModeling</title>
 
 <meta property="og:title" content="Collapse a <em>bs_grid</em> object into a <em>ws_monitor</em> object with
 a single monitor — grid_createMonitor" />
-<meta property="og:description" content="This function combines the operations of 
+<meta property="og:description" content="This function combines the operations of
 grid_subsetByDistance() and PWFSLSmoke::monitor_collapse().
 Time series associated with multiple grid cells are merged into a single
-time series by using FUN. Any function acceptable to
-PWFSLSmoke::monitor_collapse() can be used." />
+time series by using FUN to collapse a given grid cell count, or
+or a grid cell radi, to a single coordinate. For instance, if the
+FUN = mean then the grid cells within the paramters are averaged to a
+single central coordinate.
+Any function acceptable to PWFSLSmoke::monitor_collapse() can be used." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -75,7 +78,7 @@ PWFSLSmoke::monitor_collapse() can be used." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -116,11 +119,14 @@ a single monitor</h1>
     </div>
 
     <div class="ref-description">
-    <p>This function combines the operations of 
+    <p>This function combines the operations of
 <code><a href='grid_subsetByDistance.html'>grid_subsetByDistance()</a></code> and <code><a href='https://rdrr.io/pkg/PWFSLSmoke/man/monitor_collapse.html'>PWFSLSmoke::monitor_collapse()</a></code>.
 Time series associated with multiple grid cells are merged into a single
-time series by using <code>FUN</code>. Any function acceptable to
-<code><a href='https://rdrr.io/pkg/PWFSLSmoke/man/monitor_collapse.html'>PWFSLSmoke::monitor_collapse()</a></code> can be used.</p>
+time series by using <code>FUN</code> to collapse a given grid cell count, or
+or a grid cell radi, to a single coordinate. For instance, if the
+<code>FUN = mean</code> then the grid cells within the paramters are averaged to a
+single central coordinate.
+Any function acceptable to <code><a href='https://rdrr.io/pkg/PWFSLSmoke/man/monitor_collapse.html'>PWFSLSmoke::monitor_collapse()</a></code> can be used.</p>
     </div>
 
     <pre class="usage"><span class='fu'>grid_createMonitor</span>(<span class='no'>bs_grid</span>, <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -152,12 +158,12 @@ time series by using <code>FUN</code>. Any function acceptable to
     </tr>
     <tr>
       <th>monitorID</th>
-      <td><p>Assigned monitorID of the created monitor. 
+      <td><p>Assigned monitorID of the created monitor.
 (Default = "generated_id")</p></td>
     </tr>
     <tr>
       <th>FUN</th>
-      <td><p>The function used to collapse all data at a single time index. 
+      <td><p>The function used to collapse all data at a single time index.
 (Default = mean)</p></td>
     </tr>
     <tr>
