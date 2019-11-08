@@ -1,3 +1,9 @@
+# AirFireModeling 0.1.5
+
+* Cleanup of `grid_timeseriesPlot()`
+* Cleanup of `grid_spaghettiPlot()`
+* Cleanup of `grid_correlationMap()`
+
 # AirFireModeling 0.1.4
 
 * Added `grid_spaghettiPlot()`

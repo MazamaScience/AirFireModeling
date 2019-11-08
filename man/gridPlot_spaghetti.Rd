@@ -4,7 +4,7 @@
 \alias{gridPlot_spaghetti}
 \title{Create a Spaghetti Plot From ws_monitor Data}
 \usage{
-gridPlot_spaghetti(bs_grid, longitude = NULL, latitude = NULL,
+gridPlot_spaghetti(bs_grid = NULL, longitude = NULL, latitude = NULL,
   count = 9, width = 3, ...)
 }
 \arguments{
@@ -21,14 +21,21 @@ gridPlot_spaghetti(bs_grid, longitude = NULL, latitude = NULL,
 \item{...}{additional arguments to pass to plot() via monitorPlot_timeseries()}
 }
 \description{
-Creates a "spaghetti plot" timeseries  with a line for each of the
-\code{count} model grid cells closest to the target location. A centered
+Creates a "spaghetti plot" timeseries  with a line for each of
+the \code{count} model grid cells closest to the target location. A centered
 rolling mean is applied to each timeseries before plotting.
 }
 \examples{
 \dontrun{
+library(AirFireModeling)
 setModelDataDir('~/Data/Bluesky')
-bluesky <- bluesky_aggregate(model = 'PNW-4km', firstModelRun = 20190915, lastModelRun = 20190917)
+
+bluesky <- bluesky_aggregate(
+  model = 'PNW-4km', 
+  firstModelRun = 20190915, 
+  lastModelRun = 20190917,
+  chunk = 1
+)
 gridPlot_spaghetti(bluesky, longitude=-117.400, latitude=47.660)
 }
 }

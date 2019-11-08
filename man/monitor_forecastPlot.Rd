@@ -5,7 +5,8 @@
 \title{Compare forecasts}
 \usage{
 monitor_forecastPlot(ws_monitor, starttime = NULL, endtime = NULL,
-  models = c("CANSAC-1.33km", "CANSAC-4km"), subDir = "forecast")
+  models = c("CANSAC-1.33km", "CANSAC-4km"), subDir = "forecast",
+  radius = 20000, count = 9, prob = 0.5, ...)
 }
 \arguments{
 \item{ws_monitor}{a ws_monitor object.}
@@ -16,11 +17,25 @@ monitor_forecastPlot(ws_monitor, starttime = NULL, endtime = NULL,
 
 \item{models}{a list of valid monitors to plot}
 
-\item{subDir}{Subdirectory path containing netcdf data. (Passed to
+\item{subDir}{Subdirectory path containing netcdf data. (Passed to}
+
+\item{radius}{Radius (m) used to select model grid cells.}
+
+\item{count}{Count of model grid cells to be used.}
+
+\item{prob}{Quantile probability used when  plotting model data.
 \code{bluesky_load()})}
+
+\item{...}{Additional arguments passed to 
+\code{PWFSLSmoke::monitor_timeseriesPlot()}.}
 }
 \description{
-Overlays models of the bluesky forecasts to compare.
+Plots monitor data and overlays models of the bluesky forecasts.
+
+For each model, timeseries is created by gathering \code{count} grid cells
+within \code{radius} meters of the \code{ws_monitor}. The resulting set of
+timeseries are then collapsed into a single timeseries by applying the
+\code{quantile()} using the user specified probability \code{prob}.
 }
 \examples{
 \dontrun{

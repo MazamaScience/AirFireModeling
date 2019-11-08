@@ -5,14 +5,24 @@
 #'
 #' @title Compare forecasts
 #'
-#' @description Overlays models of the bluesky forecasts to compare.
+#' @description Plots monitor data and overlays models of the bluesky forecasts.
+#' 
+#' For each model, timeseries is created by gathering \code{count} grid cells
+#' within \code{radius} meters of the \code{ws_monitor}. The resulting set of
+#' timeseries are then collapsed into a single timeseries by applying the
+#' \code{quantile()} using the user specified probability \code{prob}.
 #'
 #' @param ws_monitor a ws_monitor object.
 #' @param starttime an optional start time to subset with
 #' @param endtime an optional end time to subset with
 #' @param models a list of valid monitors to plot
 #' @param subDir Subdirectory path containing netcdf data. (Passed to
+#' @param radius Radius (m) used to select model grid cells.
+#' @param count Count of model grid cells to be used.
+#' @param prob Quantile probability used when  plotting model data.
 #' \code{bluesky_load()})
+#' @param ... Additional arguments passed to 
+#' \code{PWFSLSmoke::monitor_timeseriesPlot()}.
 #'
 #' @examples
 #' \dontrun{
@@ -32,8 +42,12 @@ monitor_forecastPlot <-  function(
   ws_monitor,
   starttime = NULL,
   endtime = NULL,
-  models = c('CANSAC-1.33km', 'CANSAC-4km') ,
-  subDir = 'forecast'
+  models = c('CANSAC-1.33km', 'CANSAC-4km'),
+  subDir = 'forecast',
+  radius = 20000,
+  count = 9,
+  prob = 0.5,
+  ...
 ) {
 
   # ----- Validate parameters --------------------------------------------------
@@ -84,10 +98,11 @@ monitor_forecastPlot <-  function(
         grid_createMonitor(
           longitude = lon,
           latitude = lat,
-          radius = 10000,
+          radius = radius,
+          count,
           monitorID = model,
           FUN = quantile,
-          probs = 0.5,
+          probs = prob,
           na.rm = TRUE
         )
 
@@ -122,14 +137,15 @@ monitor_forecastPlot <-  function(
     ws_monitor = ws_monitor,
     xlim = xlim_plot,
     ylim = ylim_plot,
-    type = 'b',
-    lwd = 1,
-    cex = 0.8
+    ...
   )
 
   # Create colors and legend names
-  cols <- RColorBrewer::brewer.pal(length(fakeMonitorList), 'Set1')
-
+  # cols <- RColorBrewer::brewer.pal(length(fakeMonitorList), 'Set1')
+  
+  # Create a list of more colors than we will use
+  cols <- RColorBrewer::brewer.pal(9, 'Set1')
+  
   i <- 0
   for ( model in names(fakeMonitorList) ) {
 
@@ -151,6 +167,7 @@ monitor_forecastPlot <-  function(
     lwd = 2,
     col = cols
   )
+  
 }
 
 
@@ -167,6 +184,7 @@ if (FALSE) {
   ws_monitor <-
     PWFSLSmoke::monitor_load(20191007, 20191014) %>%
     PWFSLSmoke::monitor_subset(monitorIDs = "lon_.120.591_lat_38.714_arb2.1008")
+  
   starttime <- NULL
   endtime <- NULL
   models <- list('CANSAC-1.33km', 'CANSAC-4km')
@@ -175,8 +193,9 @@ if (FALSE) {
 
   # Napa
   ws_monitor <-
-    PWFSLSmoke::monitor_loadLatest() %>%
+    PWFSLSmoke::monitor_load(20191015, 20191026) %>%
     PWFSLSmoke::monitor_subset(monitorIDs = "060131004_01")
+  
   models <- list('CANSAC-1.33km', 'CANSAC-4km')
 
   monitor_forecastPlot(ws_monitor, models = models)
