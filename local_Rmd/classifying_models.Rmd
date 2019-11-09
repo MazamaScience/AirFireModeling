@@ -1,0 +1,148 @@
+---
+title: "classifying_models"
+author: "Mazama Science"
+date: "11/8/2019"
+output: html_document
+---
+
+In this article, we will focus on the classification of BlueSky model preformance. In particular, our goal will be to compare a BlueSky model to various ground located air quality monitors and determine if the data produced via a BlueSky model agrees with various monitors data. 
+Firstly, we have to make a few assumptions. Our monitor data will be "ground truth". 
+
+How will we do this? Well, there are many ways. 
+
+Load the necesssary data.
+```{r}
+library(PWFSLSmoke)
+library(AirFireModeling)
+library(data.table)
+library(lmtest)
+library(ggplot2)
+initializeMazamaSpatialUtils()
+setModelDataDir('~/Data/Bluesky')
+```
+
+load monitor of interest. In this case, we will pick a monitor located in downtown 
+Sacramento.
+```{r}
+sc_mon <- monitor_load(startdate = 20191029, enddate = 20191101, monitorIDs = '060670010_01')
+sc_lon <- sc_mon$meta$longitude
+sc_lat <- sc_mon$meta$latitude
+```
+
+Find which model domain contains the sacramento monitor region.
+```{r}
+bluesky_availiableModels(longitude = sc_lon, latitude = sc_lat)
+```
+
+We will use the CANSAC monitor with a cell size of 1.33km. 
+```{r}
+sc_bs <- bluesky_load(model = 'CANSAC-1.33km', modelRun = 20191029, subDir = 'forecast')
+sc_bs_mon <- grid_createMonitor(sc_bs, longitude = sc_lon, latitude = sc_lat, count = 1000)
+```
+
+```{r}
+dt <- data.table(date = sc_mon$data$datetime, 
+                 model = sc_bs_mon$data$generated_id, 
+                 monitor = sc_mon$data$`060670010_01`)
+```
+Lets look at the data.
+```{r}
+library(ggplot2)
+ggplot(dt, aes(x = date, y = monitor, color = 'Monitor')) + 
+  geom_line() + 
+  geom_line(aes(x = date, y = model, color = 'Model')) + 
+  ggtitle('Model Monitor Comparison')
+```
+We can see that the model was producing low-reported results. Why? Because the BlueSky model models condtions at an elevation of 100m, while the monitor is likely only a few meters off the ground. As such, we'd expect the monitor to also have a greater variability of measurements (think cars, bbqs, tiki torches) with  higher values, and the model to have relatively low variance and low valued measurements. 
+```{r}
+print(paste('Var(monitor):', var(dt[,monitor])))
+print(paste('Var(model):', var(dt[,model])))
+```
+It is this reason we must standardize the data if we wish to compare their distributions for similarity. 
+Let's center the data. 
+```{r} 
+dt_norm <- dt[, mod := scale(model)][, mon := scale(monitor)][, .(date, mod, mon)]
+```
+
+```{r}
+ggplot(dt, aes(x = date, y = mon, color = 'Monitor')) + 
+  geom_line() + 
+  geom_line(aes(x = date, y = mod, color = 'Model')) + 
+  ggtitle('Standardized Model Monitor Comparison')
+```
+
+
+
+```{r}
+ggplot(dt_norm, aes(x = mon, y = mod)) + 
+  geom_point()+ 
+  geom_smooth(method = 'lm')
+```
+```{r}
+linear_model <- lm(dt_norm[, mod] ~ dt_norm[, mon])
+summary(linear_model)
+```
+
+We can also determine the lag of the two time series using cross correlation. 
+
+```{r}
+lg <- ccf(dt_norm[,mon], dt_norm[,mod], lag.max = 10)
+```
+
+We can see that the highest postive correlation of the two timeseries is with a lag of -6. In other words, the BlueSky model data is most correlated 6 hours behind our monitor data
+
+```{r}
+grangertest(mod ~ mon, order = 6, data = dt_norm)
+```
+
+
+# Bad 
+
+```{r}
+vall_mon <- monitor_load(startdate = 20191029, enddate = 20191101, monitorIDs = '060950004_01')
+vall_lon <- sf_mon$meta$longitude
+vall_lat <- sf_mon$meta$latitude
+```
+
+Find which model domain contains the sacramento monitor region.
+```{r}
+bluesky_availiableModels(longitude = vall_lon, latitude = vall_lat)
+```
+
+We will use the CANSAC monitor with a cell size of 1.33km. 
+```{r}
+vall_bs <- bluesky_load(model = 'CANSAC-1.33km', modelRun = 20191101, subDir = 'forecast')
+vall_bs_mon <- grid_createMonitor(vall_bs, longitude = vall_lon, latitude = vall_lat, count = 1000)
+```
+
+```{r}
+vall <- data.table(date = vall_mon$data$datetime, 
+                 model = vall_bs_mon$data$generated_id, 
+                 monitor = vall_mon$data$`060950004_01`)
+
+vall[is.na(vall)] <- mean(vall$mon)
+```
+
+```{r}
+ggplot(vall, aes(x = date, y = monitor)) + 
+  geom_line(aes(date, monitor, color = 'Monitor')) + 
+  geom_line(aes(date, model, color = 'Model'))
+```
+
+```{r}
+vall_norm <- na.omit(vall[, mod := scale(model)][, mon := scale(monitor)][, .(date, mod, mon)])
+```
+
+```{r}
+ggplot(vall_norm, aes(date, mon)) + 
+  geom_line(aes(date, mon, color = 'Monitor')) + 
+  geom_line(aes(date, mod, color = 'Model')) 
+```
+
+```{r}
+ccf(vall_norm[,mon], vall_norm[,mod])
+```
+```{r}
+grangertest(mon ~ mod, data = vall, order = 4)
+```
+
