@@ -9,6 +9,7 @@
 #' @param xlim longitude range to be plotted
 #' @param ylim latitude range to be plotted
 #' @param tlim time range tover which to calculation the correlation
+#' @param method method to calculate correlation. \code{pearson, kendall, spearm}.
 #' @param breaks used by \code{image()} function to partition correlation values into different colors
 #' @param colors vector of colors to use
 #' @param zoom range extension as a fraction of the coordinate range
@@ -34,6 +35,7 @@ grid_correlationMap <- function(
   xlim = NULL,
   ylim = NULL,
   tlim = NULL,
+  method = 'pearson',
   breaks = NULL,
   colors = NULL,
   zoom = 1.5,
@@ -130,7 +132,12 @@ grid_correlationMap <- function(
 
   # Calculation the correlation
   # NOTE:  Suppress warnings to avoid "standard deviation is zero" for model grid cells with no smoke
-  gridSlice <- suppressWarnings( apply(gridData, c(1,2), stats::cor, monitorData, "complete.obs") )
+  gridSlice <- suppressWarnings( apply( gridData,
+                                        c(1,2),
+                                        stats::cor,
+                                        monitorData,
+                                        "complete.obs",
+                                        method = method ) )
 
   # ----- Mapping ------
 
