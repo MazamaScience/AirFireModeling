@@ -59,12 +59,14 @@ As an example let's see how the BlueSky model (at the same location of the San F
 monitorPlot_timeseries(san_fran, col = 'black', shadedNight = TRUE)
 monitorPlot_timeseries(bs_monitor, col = 'red', add = TRUE)
 ```
+
 Here we can see that in this particular scenario, our BlueSky model is reporting low when compared to the monitor's data. 
 
 Furthermore, we can forecast our San Fransico monitor using BlueSky. This will use the monitor data and then look ahead using the BlueSky model. 
 ```{r echo=TRUE}
 monitor_ggforecastPlot(san_fran, subDir = 'forecast', models = c('CANSAC-1.33km','CANSAC-4km'))
 ```
+
 We can see that in this particular case, the CANSAC models appear to be underreporting when comparing with the monitors particulate readings. 
 
 

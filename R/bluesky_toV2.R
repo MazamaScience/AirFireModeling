@@ -94,7 +94,7 @@ bluesky_toV2 <- function(
   # Create POSIXct time
   time <- MazamaCoreUtils::parseDatetime(time_str,
                                          timezone = "UTC",
-                                         julian = TRUE)
+                                         isJulian = TRUE)
 
   # ----- Create new ncdf4 object ----------------------------------------------
 

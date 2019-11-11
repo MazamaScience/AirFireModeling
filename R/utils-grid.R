@@ -42,6 +42,30 @@ grid_isGrid <- function(
 
 }
 
+
+#' @title Find bs_grid bounding box
+#'
+#' @param bs_grid a bs_grid object
+#'
+#' @description Quickly find the bounding box of a \code{bs_grid} object.
+#' @return a bounding box matrix
+grid_boundingBox <- function(bs_grid) {
+  
+  model_bb <- rbind(
+    cbind(min = min(bs_grid$longitude),
+          max = max(bs_grid$longitude)),
+    cbind(min = min(bs_grid$latitude),
+          max = max(bs_grid$latitude))
+  )
+  
+  rownames(model_bb) <- c('x', 'y')
+  
+  return(model_bb)
+  
+}
+
+
+
 #' @keywords internal
 #' @export
 #' @title Create a Scaled Range
