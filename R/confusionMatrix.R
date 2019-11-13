@@ -70,6 +70,7 @@ confusionMatrix <- function(predicted, observed) {
         (sum(!predicted) * sum(!observed) / (tp + tn + fp + fn)) ) / (tp + tn + fp + fn)
   kappa <- (acc - ex_acc) / (1 - ex_acc)
 
+  # Return data list
   data <- list( table = as.table(con_matrix),
                 TPR = tp_rate,
                 FPR = fp_rate,
