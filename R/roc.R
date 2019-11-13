@@ -9,6 +9,14 @@
 #'
 roc <- function(predicted, observed, showPlot = TRUE) {
 
+  # Checks
+  if ( length(predicted) != length(observed) ) {
+    stop(paste0("Length mismatch: predicted and observed must be same length."))
+  }
+  if ( !is.logical(predicted) | !is.logical(observed) ) {
+    stop(paste0("Predicted and observed must be binary logic vectors."))
+  }
+
   # Order observed based on predicted
   observed <- observed[order(predicted, decreasing = TRUE)]
 
@@ -25,14 +33,23 @@ roc <- function(predicted, observed, showPlot = TRUE) {
 
   # ggplot ROC
   if ( showPlot ) {
-    ggplot2::ggplot(as.data.frame(data),
+    plot <- ggplot2::ggplot(as.data.frame(data),
                     ggplot2::aes(x = data$ROC$FPR, y = data$ROC$TPR)) +
       ggplot2::geom_line() +
       ggplot2::ggtitle('ROC', subtitle = paste0('AUC: ', signif(data$AUC, 4))) +
       ggplot2::labs(x = 'False Positive Rate', y = 'True Positive Rate') +
       ggplot2::theme_light()
+    show(plot)
   }
 
   return(data)
+
+  # ---- Debug ----
+  if ( FALSE ) {
+    predicted <- sample(c(T,F), 100, replace = TRUE)
+    observed <- sample(c(T,F), 100, replace = TRUE)
+
+    roc(predicted, observed, showPlot = TRUE)
+  }
 
 }
