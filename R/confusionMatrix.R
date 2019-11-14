@@ -16,6 +16,12 @@ confusionMatrix <- function(predicted, observed) {
     stop(paste0("Predicted and observed must be binary logic vectors."))
   }
 
+  # Remove any elements where either predicted or observed has NA
+  m <- matrix(c(predicted, observed), ncol = 2)
+  badRows <- apply(m, 1, function(x) { any(is.na(x)) })
+  predicted <- m[!badRows,1]
+  observed <- m[!badRows, 2]
+
   # True Positive
   tp <- sum(predicted & observed)
   # False Positive
@@ -60,10 +66,10 @@ confusionMatrix <- function(predicted, observed) {
   # Prevalence
   prev <- sum(observed) / (tp + tn + fp + fn)
   # F1 Score
-  f1_score <- 2 * (pre * tp_rate) / (pre + tp_rate)
+  f1_score <- 2 * (prec * tp_rate) / (prec + tp_rate)
   # Mattews Correlation Coefficent
   # https://en.wikipedia.org/wiki/Matthews_correlation_coefficient
-  mcc <- (tp * tn - fp * fn) / sqrt((tp + fp) * (tp + fn) * (tn + fn) * (tn + fp))
+  #mcc <- (tp * tn - fp * fn) / sqrt((tp + fp) * (tp + fn) * (tn + fn) * (tn + fp))
   # Cohen's Kappa
   ex_acc <-
     ( (sum(predicted) * sum(observed) / (tp + tn + fp + fn)) +
@@ -83,7 +89,7 @@ confusionMatrix <- function(predicted, observed) {
                 FOR = fo_rate,
                 PREV = prev,
                 F1 = f1_score,
-                MCC = mcc,
+                #MCC = mcc,
                 KAPPA = kappa )
 
   return(data)
