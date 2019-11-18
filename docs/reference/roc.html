@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get Package Data Directory — getModelDataDir • AirFireModeling</title>
+<title>ROC and AUC — roc • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Get Package Data Directory — getModelDataDir" />
-<meta property="og:description" content="Returns the package data directory where model data is located." />
+<meta property="og:title" content="ROC and AUC — roc" />
+<meta property="og:description" content="ROC and AUC" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -103,32 +103,54 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get Package Data Directory</h1>
+    <h1>ROC and AUC</h1>
     
-    <div class="hidden name"><code>getModelDataDir.Rd</code></div>
+    <div class="hidden name"><code>roc.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Returns the package data directory where model data is located.</p>
+    <p>ROC and AUC</p>
     </div>
 
-    <pre class="usage"><span class='fu'>getModelDataDir</span>()</pre>
+    <pre class="usage"><span class='fu'>roc</span>(<span class='no'>predicted</span>, <span class='no'>observed</span>, <span class='kw'>p_thresh</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>100</span>), <span class='kw'>o_thresh</span> <span class='kw'>=</span> <span class='fl'>55.5</span>,
+  <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>100</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>predicted</th>
+      <td><p>Predicted logical.</p></td>
+    </tr>
+    <tr>
+      <th>observed</th>
+      <td><p>Observed logical.</p></td>
+    </tr>
+    <tr>
+      <th>p_thresh</th>
+      <td><p>low and high values used to generate test thresholds for
+classifying <code>predicted</code> data.</p></td>
+    </tr>
+    <tr>
+      <th>o_thresh</th>
+      <td><p>value used to classify <code>observed</code> data.</p></td>
+    </tr>
+    <tr>
+      <th>n</th>
+      <td><p>number of test thresholds in ROC curve.</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Absolute path string.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><a href='ModelDataDir.html'>ModelDataDir</a></p>
-<p><a href='setModelDataDir.html'>setModelDataDir</a></p></div>
+    <p>a AUROC list</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
     </ul>
 
   </div>

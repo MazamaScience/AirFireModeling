@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get Package Data Directory — getModelDataDir • AirFireModeling</title>
+<title>Confusion Matrix — confusionMatrix • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Get Package Data Directory — getModelDataDir" />
-<meta property="og:description" content="Returns the package data directory where model data is located." />
+<meta property="og:title" content="Confusion Matrix — confusionMatrix" />
+<meta property="og:description" content="Confusion Matrix" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -103,32 +103,40 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get Package Data Directory</h1>
+    <h1>Confusion Matrix</h1>
     
-    <div class="hidden name"><code>getModelDataDir.Rd</code></div>
+    <div class="hidden name"><code>confusionMatrix.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Returns the package data directory where model data is located.</p>
+    <p>Confusion Matrix</p>
     </div>
 
-    <pre class="usage"><span class='fu'>getModelDataDir</span>()</pre>
+    <pre class="usage"><span class='fu'>confusionMatrix</span>(<span class='no'>predicted</span>, <span class='no'>observed</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>predicted</th>
+      <td><p>Preicted logical.</p></td>
+    </tr>
+    <tr>
+      <th>observed</th>
+      <td><p>Observed logical.</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Absolute path string.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><a href='ModelDataDir.html'>ModelDataDir</a></p>
-<p><a href='setModelDataDir.html'>setModelDataDir</a></p></div>
+    <p>a list of contingency statistics</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
     </ul>
 
   </div>

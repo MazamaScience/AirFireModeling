@@ -1,3 +1,7 @@
+# AirFireModeling 0.1.7
+
+* Ready for USFS AirFire internal release
+
 # AirFireModeling 0.1.6
 
 * New `bluesky_modelInfo` tibble with model metadata.

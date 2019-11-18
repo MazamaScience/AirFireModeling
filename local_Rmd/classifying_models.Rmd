@@ -1,0 +1,175 @@
+---
+title: "classifying_models"
+author: "Mazama Science"
+date: "11/8/2019"
+output: html_document
+---
+
+In this article, we will focus on the classification of BlueSky model preformance. In particular, our goal will be to compare a BlueSky model to various ground located air quality monitors and determine if the data produced via a BlueSky model agrees with various monitors data. 
+Firstly, we have to make a few assumptions. Our monitor data will be "ground truth". 
+
+How will we do this? Well, there are many ways. 
+
+Load the necesssary data.
+```{r}
+library(PWFSLSmoke)
+library(AirFireModeling)
+library(data.table)
+library(lmtest)
+library(ggplot2)
+initializeMazamaSpatialUtils()
+setModelDataDir('~/Data/Bluesky')
+```
+
+load monitor of interest. In this case, we will pick a monitor located in downtown 
+Sacramento.
+```{r}
+sc_mon <- monitor_load(startdate = 20191029, enddate = 20191101, monitorIDs = '060670010_01')
+sc_lon <- sc_mon$meta$longitude
+sc_lat <- sc_mon$meta$latitude
+```
+
+Find which model domain contains the sacramento monitor region.
+```{r}
+bluesky_availiableModels(longitude = sc_lon, latitude = sc_lat)
+```
+
+We will use the CANSAC monitor with a cell size of 1.33km. 
+```{r}
+sc_bs <- bluesky_load(model = 'CANSAC-1.33km', modelRun = 20191029, subDir = 'forecast')
+sc_bs_mon <- grid_createMonitor(sc_bs, longitude = sc_lon, latitude = sc_lat, count = 250000)
+```
+
+```{r}
+dt <- data.table(date = sc_mon$data$datetime, 
+                 model = sc_bs_mon$data$generated_id, 
+                 monitor = sc_mon$data$`060670010_01`)
+```
+Lets look at the data.
+```{r}
+library(ggplot2)
+ggplot(dt, aes(x = date, y = monitor, color = 'Monitor')) + 
+  geom_line() + 
+  geom_line(aes(x = date, y = model, color = 'Model')) + 
+  ggtitle('Model Monitor Comparison')
+```
+We can see that the model was producing low-reported results. Why? Because the BlueSky model models condtions at an elevation of 100m, while the monitor is likely only a few meters off the ground. As such, we'd expect the monitor to also have a greater variability of measurements (think cars, bbqs, tiki torches) with  higher values, and the model to have relatively low variance and low valued measurements. 
+```{r}
+print(paste('Var(monitor):', var(dt[,monitor])))
+print(paste('Var(model):', var(dt[,model])))
+```
+It is this reason we must standardize the data if we wish to compare their distributions for similarity. 
+Let's center the data. 
+```{r} 
+dt_norm <- dt[, mod := scale(model)][, mon := scale(monitor)][, .(date, mod, mon)]
+```
+
+```{r}
+ggplot(dt, aes(x = date, y = mon, color = 'Monitor')) + 
+  geom_line() + 
+  geom_line(aes(x = date, y = mod, color = 'Model')) + 
+  ggtitle('Standardized Model Monitor Comparison')
+```
+Linear models are highly subject to outliers. 
+```{r}
+ggplot(dt_norm, aes(x = mon, y = mod)) + 
+  geom_point()+ 
+  geom_smooth(method = 'lm')
+```
+```{r}
+linear_model <- lm(dt_norm[, mod] ~ dt_norm[, mon])
+summary(linear_model)
+```
+
+We can also determine the lag of the two time series using cross correlation. 
+
+```{r}
+lg <- ccf(dt_norm[,mon], dt_norm[,mod], lag.max = 10)
+```
+
+We can see that the highest postive correlation of the two timeseries is with a lag of -6. In other words, the BlueSky model data is most correlated 6 hours behind our monitor data
+
+Furthermore, we can exmploy various test statistics to determine properties of both monitor and model data.
+The most effective method to detrmine relationships in this case is Kendall's Tau. This is a non-paramteric test statstic used to meausure oridanal corelation. We consider using this method for various reasons: 
+* The Monitor data will (almost) always report higher values than the Model data. This is likely due to atomspheric dispersion as the Models measure >100m off ground, whereas the monitor data is <10ft. 
+* There is a significant difference in variance of the monitor and model data. Monitor data is going to vary much more than the Model data. 
+* What matters most is the not the data they produce but rather their shape. 
+Kendall's Tau attempts to establish whether two vairables (Model & Monitor) may be regarded as statistically dependent and makes no assumptions about the datas distribution. It only takes into account the datas ranks. In simpler terms, if $x$ and $y$ both increase, then $\tau = 1$.
+
+```{r}
+cor.test(dt_norm[,mon], dt_norm[,mod], method = 'kendall')
+```
+```{r}
+cor.test(dt_norm[,mon], dt_norm[,mod], method = 'pearson')
+```
+
+### BAD 
+
+```{r}
+bad_sc_bs_mon <- grid_createMonitor(sc_bs, longitude = sc_lon+0.5, latitude = sc_lat, count = 9)
+dt_bad <- data.table(date = sc_mon$data$datetime, 
+                 model = bad_sc_bs_mon$data$generated_id, 
+                 monitor = sc_mon$data$`060670010_01`)
+```
+
+```{r}
+ggplot(dt_bad, aes(date, monitor, color = 'Monitor')) + 
+  geom_line() + 
+  geom_line(aes(date, model, color = 'Model'))
+```
+```{r}
+dt_bad_norm <- dt_bad[, mod := scale(model)][, mon := scale(monitor)]
+ggplot(dt_bad_norm, aes(date, mon)) + 
+  geom_line() + 
+  geom_line(aes(date, mod))
+```
+
+```{r}
+cor.test(dt_bad[,monitor], dt_bad[,model], method = 'kendall')
+```
+### Proposal 
+
+We should use Kendall's Tau to determine if the Model agree's with the Monitor data using some threshold. Each grid cell in an appropriate radius will give us a $\tau$ to determine this. Based on that, we can set up a contingency table for the location to determine skill relative to location.  
+
+
+### Aggregation 
+```{r}
+sc_mon <- monitor_load(startdate = 20191029, enddate = 20191101, monitorIDs = '060670010_01')
+sc_lon <- sc_mon$meta$longitude
+sc_lat <- sc_mon$meta$latitude
+sc_bs <- bluesky_load(model = 'CANSAC-1.33km', modelRun = 20191029, subDir = 'forecast')
+sc_bs_mon <- grid_createMonitor(sc_bs, longitude = sc_lon, latitude = sc_lat, count = 250000)
+```
+
+```{r}
+sc_agg_bs <- bluesky_aggregate(model = 'CANSAC-1.33km', 
+                               firstModelRun = 20191025,
+                               lastModelRun = 20191031,
+                               subDir = 'forecast')
+sc_agg_mon <- grid_createMonitor(sc_agg_bs, longitude = sc_lon, latitude = sc_lat, count = 1)
+```
+
+```{r}
+dt <- data.table(date = sc_mon$data$datetime, 
+                 monitor = sc_mon$data$`060670010_01`, 
+                 model = sc_agg_mon$data$generated_id)
+```
+
+```{r}
+ggplot(dt, aes(date, monitor, color = 'Monitor')) + 
+  geom_line() + 
+  geom_line(aes(date, model, color = 'Model'))
+```
+
+```{r}
+ccf(dt[,monitor], dt[,model]) -> x
+```
+
+```{r}
+cor.test(dt[,monitor], dt[,model], method = 'kendall')
+```
+
+```{r}
+
+```
+
