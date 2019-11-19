@@ -4,10 +4,18 @@
 \alias{grid_correlationMap}
 \title{Correlation Map}
 \usage{
+<<<<<<< HEAD
 grid_correlationMap(bs_grid, ws_monitor, monitorID = NULL,
   param = "pm25", xlim = NULL, ylim = NULL, tlim = NULL,
   method = "pearson", breaks = NULL, colors = NULL, zoom = 1.5,
   plotter = "base")
+=======
+grid_correlationMap(bs_grid = NULL, ws_monitor = NULL,
+  monitorID = NULL, parameter = "pm25", xlim = NULL, ylim = NULL,
+  tlim = NULL, breaks = c(-1, -0.7, -0.5, -0.3, -0.1, 0.1, 0.3, 0.5,
+  0.7, 1), colors = rev(RColorBrewer::brewer.pal(9, "RdBu")),
+  zoom = 1.5, plotter = "base")
+>>>>>>> master
 }
 \arguments{
 \item{bs_grid}{bs_grid data list}
@@ -16,36 +24,47 @@ grid_correlationMap(bs_grid, ws_monitor, monitorID = NULL,
 
 \item{monitorID}{monitor ID for correlation to model data}
 
-\item{param}{data parameter to plot}
+\item{parameter}{Data parameter to plot.}
 
 \item{xlim}{longitude range to be plotted}
 
 \item{ylim}{latitude range to be plotted}
 
-\item{tlim}{time range tover which to calculation the correlation}
+\item{tlim}{Time range tover which to calculation the correlation interpreted
+as UTC.}
 
+<<<<<<< HEAD
 \item{method}{method to calculate correlation. \code{pearson, kendall, spearm}.}
 
 \item{breaks}{used by \code{image()} function to partition correlation values into different colors}
+=======
+\item{breaks}{used by \code{image()} function to partition correlation values 
+into different colors}
+>>>>>>> master
 
 \item{colors}{vector of colors to use}
 
 \item{zoom}{range extension as a fraction of the coordinate range}
 
-\item{plotter}{either `base` or `ggplot`}
+\item{plotter}{either \code{"base"} or \code{"ggplot"}.}
 }
 \description{
-Plots a map of the correlation of bluesky model data with a monitoring timeseries.
+Plots a map of the correlation of bluesky model data with a 
+monitoring timeseries.
 
 When \code{colors=NULL}, a color palette is given by \code{colorRampPalette}.
 Note: when using `plotter = ggplot`, zoom, colors and breaks are invalidated.
 }
 \examples{
 \dontrun{
-setModelDataDir('~/Data/Bluesky')
+library(PWFSLSmoke)
+library(AirFireModeling)
+
+setModelDataDir("~/Data/Bluesky")
+
 ws_monitor <- monitor_load(20191014, 20191016) \%>\%
   monitor_subset(monitorIDs = "lon_.120.591_lat_38.714_arb2.1008")
-bs_grid <- bluesky_load(model = 'CANSAC-1.33km', modelRun = 20191014)
+bs_grid <- bluesky_load(model = "CANSAC-1.33km", modelRun = 20191014)
 grid_correlationMap(bs_grid, ws_monitor)
 }
 }

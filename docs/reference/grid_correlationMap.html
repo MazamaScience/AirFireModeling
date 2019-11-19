@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Map gridded model data — grid_map • AirFireModeling</title>
+<title>Correlation Map — grid_correlationMap • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,17 +35,11 @@
 
 
 
-<meta property="og:title" content="Map gridded model data — grid_map" />
-<meta property="og:description" content="Use the maps package to plot a map of bluesky data in a 
-given area.
-When a named style is used, some graphical parameters will be 
-overridden. Available styles include:
-
-default-- hourly values are individually colored by 24-hr AQI levels
-
-
-If breaks and colors are defined, they will override 
-style." />
+<meta property="og:title" content="Correlation Map — grid_correlationMap" />
+<meta property="og:description" content="Plots a map of the correlation of bluesky model data with a 
+monitoring timeseries.
+When colors=NULL, a color palette is given by colorRampPalette.
+Note: when using `plotter = ggplot`, zoom, colors and breaks are invalidated." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,35 +106,38 @@ style." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Map gridded model data</h1>
+    <h1>Correlation Map</h1>
     
-    <div class="hidden name"><code>grid_map.Rd</code></div>
+    <div class="hidden name"><code>grid_correlationMap.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Use the <span class="pkg">maps</span> package to plot a map of bluesky data in a 
-given area.</p>
-<p>When a named <code>style</code> is used, some graphical parameters will be 
-overridden. Available styles include:</p>
-<ul>
-<li><p><code>default</code>-- hourly values are individually colored by 24-hr AQI levels</p></li>
-</ul>
-
-<p>If <code>breaks</code> and <code>colors</code> are defined, they will override 
-<code>style</code>.</p>
+    <p>Plots a map of the correlation of bluesky model data with a 
+monitoring timeseries.</p>
+<p>When <code>colors=NULL</code>, a color palette is given by <code>colorRampPalette</code>.
+Note: when using `plotter = ggplot`, zoom, colors and breaks are invalidated.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>grid_map</span>(<span class='no'>bs_grid</span>, <span class='kw'>parameter</span> <span class='kw'>=</span> <span class='st'>"pm25"</span>, <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span>(<span class='no'>bs_grid</span>$<span class='no'>longitude</span>),
-  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span>(<span class='no'>bs_grid</span>$<span class='no'>latitude</span>), <span class='kw'>tMask</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>TRUE</span>, <span class='kw'>times</span> <span class='kw'>=</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>bs_grid</span>$<span class='no'>time</span>)), <span class='kw'>slice</span> <span class='kw'>=</span> <span class='no'>max</span>, <span class='kw'>style</span> <span class='kw'>=</span> <span class='st'>"default"</span>,
-  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>colors</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>addAxes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>grid_correlationMap</span>(<span class='kw'>bs_grid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ws_monitor</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>monitorID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>parameter</span> <span class='kw'>=</span> <span class='st'>"pm25"</span>, <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>tlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>1</span>, -<span class='fl'>0.7</span>, -<span class='fl'>0.5</span>, -<span class='fl'>0.3</span>, -<span class='fl'>0.1</span>, <span class='fl'>0.1</span>, <span class='fl'>0.3</span>, <span class='fl'>0.5</span>,
+  <span class='fl'>0.7</span>, <span class='fl'>1</span>), <span class='kw'>colors</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span>(<span class='kw pkg'>RColorBrewer</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html'>brewer.pal</a></span>(<span class='fl'>9</span>, <span class='st'>"RdBu"</span>)),
+  <span class='kw'>zoom</span> <span class='kw'>=</span> <span class='fl'>1.5</span>, <span class='kw'>plotter</span> <span class='kw'>=</span> <span class='st'>"base"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>bs_grid</th>
-      <td><p><em>bs_grid</em> object</p></td>
+      <td><p>bs_grid data list</p></td>
+    </tr>
+    <tr>
+      <th>ws_monitor</th>
+      <td><p>monitor data list</p></td>
+    </tr>
+    <tr>
+      <th>monitorID</th>
+      <td><p>monitor ID for correlation to model data</p></td>
     </tr>
     <tr>
       <th>parameter</th>
@@ -148,62 +145,58 @@ overridden. Available styles include:</p>
     </tr>
     <tr>
       <th>xlim</th>
-      <td><p>Longitude range to be plotted.</p></td>
+      <td><p>longitude range to be plotted</p></td>
     </tr>
     <tr>
       <th>ylim</th>
-      <td><p>Latitude range to be plotted.</p></td>
+      <td><p>latitude range to be plotted</p></td>
     </tr>
     <tr>
-      <th>tMask</th>
-      <td><p>Logical vector of the same length as the time axis or a set
-of indices used to select specific times.</p></td>
-    </tr>
-    <tr>
-      <th>slice</th>
-      <td><p>Either a time index or a function used to collapse the time axis.</p></td>
-    </tr>
-    <tr>
-      <th>style</th>
-      <td><p>Custom styling, one of <code>'default'</code>.</p></td>
+      <th>tlim</th>
+      <td><p>Time range tover which to calculation the correlation interpreted
+as UTC.</p></td>
     </tr>
     <tr>
       <th>breaks</th>
-      <td><p>A set of numeric breakpoints for colors. This is passed on
-to <code><a href='https://rdrr.io/r/graphics/image.html'>graphics::image()</a></code> to partition values into different colors.</p></td>
+      <td><p>used by <code><a href='https://rdrr.io/r/graphics/image.html'>image()</a></code> function to partition correlation values 
+into different colors</p></td>
     </tr>
     <tr>
       <th>colors</th>
-      <td><p>Vector of colors to use.</p></td>
+      <td><p>vector of colors to use</p></td>
     </tr>
     <tr>
-      <th>addAxes</th>
-      <td><p>Logical specifying whether to add axes.</p></td>
+      <th>zoom</th>
+      <td><p>range extension as a fraction of the coordinate range</p></td>
     </tr>
     <tr>
-      <th>main</th>
-      <td><p>Title for the plot.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Aadditional arguments passed to maps::map().</p></td>
+      <th>plotter</th>
+      <td><p>either <code>"base"</code> or <code>"ggplot"</code>.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><a href='grid_map.html'>grid_map</a></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/Bluesky'</span>)
-<span class='no'>bs_grid</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='bluesky_load.html'>bluesky_load</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-1.33km"</span>, <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019100900</span>)
-<span class='no'>xlim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>118</span>, -<span class='fl'>114</span>)
-<span class='no'>ylim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>45</span>, <span class='fl'>48</span>)
-<span class='fu'>grid_map</span>(<span class='no'>bs_grid</span>, <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='no'>xlim</span>, <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='no'>ylim</span>, <span class='kw'>tMask</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>40</span>)</div><div class='img'><img src='grid_map-1.png' alt='' width='700' height='433' /></div><div class='input'># }
-</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>PWFSLSmoke</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
+
+<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>"~/Data/Bluesky"</span>)
+
+<span class='no'>ws_monitor</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PWFSLSmoke/man/monitor_load.html'>monitor_load</a></span>(<span class='fl'>20191014</span>, <span class='fl'>20191016</span>) <span class='kw'>%&gt;%</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/PWFSLSmoke/man/monitor_subset.html'>monitor_subset</a></span>(<span class='kw'>monitorIDs</span> <span class='kw'>=</span> <span class='st'>"lon_.120.591_lat_38.714_arb2.1008"</span>)
+<span class='no'>bs_grid</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='bluesky_load.html'>bluesky_load</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"CANSAC-1.33km"</span>, <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>20191014</span>)
+<span class='fu'>grid_correlationMap</span>(<span class='no'>bs_grid</span>, <span class='no'>ws_monitor</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#see-also">See also</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

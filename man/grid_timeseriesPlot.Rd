@@ -4,7 +4,7 @@
 \alias{grid_timeseriesPlot}
 \title{Timeseries Plot for a `bs_grid` Object}
 \usage{
-grid_timeseriesPlot(bs_grid, tlim = NULL, localTime = FALSE,
+grid_timeseriesPlot(bs_grid = NULL, tlim = NULL, localTime = FALSE,
   shadedNight = FALSE, add = FALSE, gridPos = "",
   gridCol = "black", gridLwd = 1, gridLty = "solid", dayLwd = 0,
   hourLwd = 0, hourInterval = 6, title = NULL, ylim = NULL)
@@ -20,7 +20,7 @@ grid_timeseriesPlot(bs_grid, tlim = NULL, localTime = FALSE,
 
 \item{add}{logical specifying whether to add points to an existing plot}
 
-\item{gridPos}{position of grid lines either 'over', 'under' ('' for no grid lines)}
+\item{gridPos}{position of grid lines either "over", "under" ("" for no grid lines)}
 
 \item{gridCol}{grid line color}
 
@@ -43,9 +43,18 @@ This funciton plot timeseries from an 'unraveled' BlueSky dataList.
 }
 \examples{
 \dontrun{
-  setModelDataDir('~/Data/Bluesky')
-  bs_grid <- bluesky_load(model = "PNW-1.33km", modelRun = 2019100900)
-  grid_timeseriesPlot(bs_grid, ylim = c(0,500))
+library(MazamaSpatialUtils)
+library(AirFireModeling)
+setModelDataDir("~/Data/Bluesky")
+
+# Full grid -- 72 million grid cells!
+bs_grid <- bluesky_load(model = "PNW-1.33km", modelRun = 2019100900)
+grid_timeseriesPlot(bs_grid, ylim = c(0, 500))
+
+# Small region
+bs_grid \%>\%
+  grid_subset(xlim = c(-120, -118), ylim = c(45, 57)) \%>\%
+  grid_timeseriesPlot(ylim = c(0, 500), shadedNight = TRUE, localTime = TRUE)
 }
 }
 \seealso{

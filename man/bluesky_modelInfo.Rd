@@ -4,14 +4,15 @@
 \name{bluesky_modelInfo}
 \alias{bluesky_modelInfo}
 \title{BlueSky Model Information}
-\format{A data frame}
+\format{A tibble}
 \usage{
 bluesky_modelInfo
 }
 \description{
-Various information regarding BlueSky models.
+Various information regarding BlueSky models with one model per
+row.
 }
 \details{
-blues_modelInfo
+bluesky_modelInfo
 }
 \keyword{datasets}

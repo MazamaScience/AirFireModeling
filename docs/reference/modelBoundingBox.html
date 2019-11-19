@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create distance-from-targetgGrid — grid_distance • AirFireModeling</title>
+<title>Find bs_grid model bouding box — modelBoundingBox • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,11 +35,8 @@
 
 
 
-<meta property="og:title" content="Create distance-from-targetgGrid — grid_distance" />
-<meta property="og:description" content="This function returns 2D matrix (aka 'grid'). Each cell in the 
-grid contains the distance in meters between the center of that cell and the 
-target location. This distance grid can be used to create a mask identifying 
-grid cells within a certain radius of the target location." />
+<meta property="og:title" content="Find bs_grid model bouding box — modelBoundingBox" />
+<meta property="og:description" content="Quickly find the bluesky models bounded region." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -72,7 +69,7 @@ grid cells within a certain radius of the target location." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -106,60 +103,36 @@ grid cells within a certain radius of the target location." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create distance-from-targetgGrid</h1>
+    <h1>Find bs_grid model bouding box</h1>
     
-    <div class="hidden name"><code>grid_distance.Rd</code></div>
+    <div class="hidden name"><code>modelBoundingBox.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function returns 2D matrix (aka 'grid'). Each cell in the 
-grid contains the distance in meters between the center of that cell and the 
-target location. This distance grid can be used to create a mask identifying 
-grid cells within a certain radius of the target location.</p>
+    <p>Quickly find the bluesky models bounded region.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>grid_distance</span>(<span class='kw'>bs_grid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>longitude</span>, <span class='no'>latitude</span>)</pre>
+    <pre class="usage"><span class='fu'>modelBoundingBox</span>(<span class='no'>bs_grid</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>bs_grid</th>
-      <td><p><em>bs_grid</em> object.</p></td>
-    </tr>
-    <tr>
-      <th>longitude</th>
-      <td><p>Longitude of the point from which distances are calculated
-in decimal degrees E.</p></td>
-    </tr>
-    <tr>
-      <th>latitude</th>
-      <td><p>Latitude of the point from which distances are calculated
-in decimal degrees N.</p></td>
+      <td><p>a bs_grid object</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>2d matrix of distances.</p>
+    <p>a bounding box matrix</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>"~/Data/Bluesky"</span>)
-<span class='no'>bs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='bluesky_load.html'>bluesky_load</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>, <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019100900</span>)
-<span class='no'>xlim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124</span>, -<span class='fl'>122</span>)
-<span class='no'>ylim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>46</span>, <span class='fl'>48</span>)
-<span class='no'>bs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='grid_subset.html'>grid_subset</a></span>(<span class='no'>bs</span>, <span class='kw'>xlim</span><span class='kw'>=</span><span class='no'>xlim</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='no'>ylim</span>)
-<span class='no'>distanceMatrix</span> <span class='kw'>&lt;-</span> <span class='fu'>grid_distance</span>(<span class='no'>bs</span>, -<span class='fl'>123.801</span>, <span class='fl'>47.704</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span>(<span class='no'>bs</span>$<span class='no'>longitude</span>, <span class='no'>bs</span>$<span class='no'>latitude</span>, <span class='no'>distanceMatrix</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>""</span>)</div><div class='img'><img src='grid_distance-1.png' alt='' width='700' height='433' /></div><div class='input'># }
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>

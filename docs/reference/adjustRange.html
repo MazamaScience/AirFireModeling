@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Subset a <em>bs_grid</em> with with a gridMask — grid_subsetByMask • AirFireModeling</title>
+<title>Create a Scaled Range — adjustRange • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,10 +35,10 @@
 
 
 
-<meta property="og:title" content="Subset a <em>bs_grid</em> with with a gridMask — grid_subsetByMask" />
-<meta property="og:description" content="This function subsets the bs_grid object and 
-restructures the data into a ws_monitor that is compatible with 
-PWFSLSmoke monitor_~ functions." />
+<meta property="og:title" content="Create a Scaled Range — adjustRange" />
+<meta property="og:description" content="Scale the range of values by a given factor. The min and max values of the
+original range of valus are adjusted so that the new range is larger or smaller by factor.
+The returned range will always be equal to or greater than minRange." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -105,80 +105,48 @@ PWFSLSmoke monitor_~ functions." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Subset a <em>bs_grid</em> with with a gridMask</h1>
+    <h1>Create a Scaled Range</h1>
     
-    <div class="hidden name"><code>grid_subsetByMask.Rd</code></div>
+    <div class="hidden name"><code>adjustRange.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function subsets the <code>bs_grid</code> object and 
-restructures the data into a <em>ws_monitor</em> that is compatible with 
-<span class="pkg">PWFSLSmoke</span> <code>monitor_~</code> functions.</p>
+    <p>Scale the range of values by a given factor. The min and max values of the
+original range of valus are adjusted so that the new range is larger or smaller by <code>factor</code>.
+The returned range will always be equal to or greater than <code>minRange</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>grid_subsetByMask</span>(<span class='kw'>bs_grid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>gridMask</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>countryCodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"CA"</span>, <span class='st'>"US"</span>))</pre>
+    <pre class="usage"><span class='fu'>adjustRange</span>(<span class='no'>x</span>, <span class='kw'>factor</span> <span class='kw'>=</span> <span class='fl'>1.1</span>, <span class='kw'>minRange</span> <span class='kw'>=</span> <span class='fl'>0.1</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>bs_grid</th>
-      <td><p><em>bs_grid</em> object.</p></td>
+      <th>x</th>
+      <td><p>vector of numeric values</p></td>
     </tr>
     <tr>
-      <th>gridMask</th>
-      <td><p>Logical 2D matrix of the same dimensions as the grid data.</p></td>
+      <th>factor</th>
+      <td><p>scaling factor to be applied</p></td>
     </tr>
     <tr>
-      <th>countryCodes</th>
-      <td><p>Vector of country codes covered by the grid.</p></td>
+      <th>minRange</th>
+      <td><p>minimum range to be returned</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><em>ws_monitor</em> object where each unique monitor represents a
-single grid cell from <code>bs_grid</code>.</p>
-    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
-
-    <p>The <code>countryCodes</code> parameter is provided because of the need
-to perform spatial searches for during the conversion of grid cell locations into
-<em>ws_monitor</em> objects. Each location must have correct information for
-<code>countryCode, stateCode, timezone</code> and these spatial searches can be
-time consuming. Specifying the <code>countryCodes</code> covered by the grid
-greatly speeds up these searches.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><a href='grid_subsetByDistance.html'>grid_subsetByDistance</a></p></div>
+    <p>low and high values of the adjusted range</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='co'># Next three lines required for bs_grid to ws_monitor conversion</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSpatialUtils</span>)
-<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/setSpatialDataDir.html'>setSpatialDataDir</a></span>(<span class='st'>"~/Data/Spatial"</span>)
-<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/loadSpatialData.html'>loadSpatialData</a></span>(<span class='st'>"NaturalEarthAdm1"</span>)
-
-<span class='co'># Now we can work as we normally would</span>
-<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>"~/Data/Bluesky"</span>)
-<span class='no'>bs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='bluesky_load.html'>bluesky_load</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-1.33km"</span>, <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019100900</span>)
-<span class='no'>bs_monitors</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='grid_subsetByDistance.html'>grid_subsetByDistance</a></span>(<span class='no'>bs</span>, -<span class='fl'>121.017092</span>, <span class='fl'>46.901512</span>,
-                                     <span class='kw'>radius</span> <span class='kw'>=</span> <span class='fl'>10000</span>)
-
-<span class='no'>distanceMatrix</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='grid_distance.html'>grid_distance</a></span>(<span class='no'>bs</span>, -<span class='fl'>121.017092</span>, <span class='fl'>46.901512</span>)
-<span class='no'>radius</span> <span class='kw'>&lt;-</span> <span class='fl'>20000</span>
-<span class='no'>gridMask</span> <span class='kw'>&lt;-</span> <span class='no'>distanceMatrix</span> <span class='kw'>&lt;=</span> <span class='no'>radius</span>
-<span class='no'>bs_monitors</span> <span class='kw'>&lt;-</span> <span class='fu'>grid_subsetByMask</span>(<span class='no'>bs</span>, <span class='no'>gridMask</span>)
-<span class='kw pkg'>PWFSLSmoke</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/PWFSLSmoke/man/monitor_staticmap.html'>monitor_staticmap</a></span>(<span class='no'>bs_monitors</span>, <span class='kw'>cex</span> <span class='kw'>=</span> <span class='fl'>.5</span>, <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>15</span>)
-}</div></pre>
+    <pre class="examples"></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#note">Note</a></li>
-      <li><a href="#see-also">See also</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

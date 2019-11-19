@@ -1,3 +1,15 @@
+# AirFireModeling 0.1.6
+
+* New `bluesky_modelInfo` tibble with model metadata.
+* Renamed `modelBoundingBox()` to `grid_boundingBox()`.
+
+# AirFireModeling 0.1.5
+
+* Cleanup of `grid_timeseriesPlot()`
+* Cleanup of `grid_spaghettiPlot()`
+* Cleanup of `grid_correlationMap()`
+* Cleanup of `monitor_forecastPlot()`
+
 # AirFireModeling 0.1.4
 
 * Added `grid_spaghettiPlot()`

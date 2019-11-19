@@ -7,6 +7,14 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+suppressPackageStartupMessages({
+library(MazamaCoreUtils)
+library(PWFSLSmoke)
+library(AirFireModeling)
+})
+setModelDataDir('~/Data/Bluesky')
+initializeMazamaSpatialUtils()
 ```
 
 # hysplit-pp
