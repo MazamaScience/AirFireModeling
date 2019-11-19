@@ -34,6 +34,11 @@ bluesky_assimilate <- function(
   if ( !is.logical(cleanup) )
     cleanup <- TRUE
 
+  # Checks
+  if ( grepl(x = filePath, pattern = '.+_V2') ) {
+    warning('filePath: NetCDF has already been assimilated.')
+    return(filePath)
+  }
   # ----- Open NetCDF file -----------------------------------------------------
 
   # Create old and new file paths
