@@ -1,6 +1,6 @@
 #' @export
 #' @title Download BlueSky model data from AirFire
-#' 
+#'
 #' @param dailyOutputDir BlueSky web directory
 #' @param model Model identifier.
 #' @param modelRun Date code as "YYYYMMDDHH".
@@ -8,9 +8,9 @@
 #' @param baseUrl Base URL for BlueSky output.
 #' @param quiet If \code{TRUE}, suppress status messages (if any), and the
 #' progress bar.
-#' 
-#' @description Downloads a copy of the specified BlueSky model run to the 
-#' package data directory. This file can then be converted into a more 
+#'
+#' @description Downloads a copy of the specified BlueSky model run to the
+#' package data directory. This file can then be converted into a more
 #' modernized format by bluesky2v2().
 #'
 #' #' On 2019-10-11, vailable model identifiers include the following:
@@ -29,21 +29,21 @@
 #'   \item{PNW1.33km-CMAQ}
 #'   \item{PNW4km-CMAQ}
 #' }
-#' 
+#'
 #' Users will typically call bluesky_load() which in turn calls this function.
-#' 
-#' 
+#'
+#'
 #' BlueSky output files are found in directories with the following
 #' structure:
-#' 
+#'
 #' \preformatted{
 #' .../standard/NAM84-0.08deg/2016050600/carryover/data/...
 #' .../standard/NAM84-0.08deg/2016050600/combined/data/...
 #' .../standard/NAM84-0.08deg/2016050600/forecast/data/...
 #' }
-#' 
+#'
 #' @return File path of downloaded data.
-#' 
+#'
 #' @seealso \link{setModelDataDir}
 #' @examples
 #' \dontrun{
@@ -59,15 +59,15 @@ bluesky_download <- function(
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
   quiet = FALSE
 ) {
-  
+
   # ----- Validate parameters --------------------------------------------------
-  
+
   MazamaCoreUtils::stopIfNull(dailyOutputDir)
   MazamaCoreUtils::stopIfNull(model)
   MazamaCoreUtils::stopIfNull(modelRun)
   MazamaCoreUtils::stopIfNull(subDir)
   MazamaCoreUtils::stopIfNull(baseUrl)
-  
+
   # Just in case
   if ( length(model) > 1 || length(modelRun) > 1 ) {
     warning(paste0(
@@ -77,44 +77,44 @@ bluesky_download <- function(
     model <- model[1]
     modelRun <- as.character(modelRun[1])
   }
-  
+
   # Verify YYYYmmddHH
   if ( !stringr::str_detect(modelRun, "[0-9]{10}") ) {
     stop("'modelRun' parameter must have 10 digits")
   }
-  
+
   # Default to verbose
-  if ( !is.logical(quiet) ) 
+  if ( !is.logical(quiet) )
     quiet <- FALSE
-  
+
   # ----- Create URL -----------------------------------------------------------
-  
+
   if ( is.null(subDir) ) {
-    fileURL <- paste0(baseUrl, "/", 
-                      dailyOutputDir, "/", 
-                      model, "/", 
+    fileURL <- paste0(baseUrl, "/",
+                      dailyOutputDir, "/",
+                      model, "/",
                       modelRun, "/",
                       "data/smoke_dispersion.nc")
   } else {
-    fileURL <- paste0(baseUrl, "/", 
-                      dailyOutputDir, "/", 
-                      model, "/", 
-                      modelRun, "/", 
+    fileURL <- paste0(baseUrl, "/",
+                      dailyOutputDir, "/",
+                      model, "/",
+                      modelRun, "/",
                       subDir, "/",
                       "data/smoke_dispersion.nc")
   }
-  
+
   fileName <- paste0(model, "_", modelRun, ".nc")
   filePath <- file.path(getModelDataDir(), fileName)
-  
+
   # ----- Download data --------------------------------------------------------
-  
+
   if ( !file.exists(filePath) ) {
-    
+
     result <- try({
-      utils::download.file(url = fileURL, destfile = filePath)
+      utils::download.file(url = fileURL, destfile = filePath, quiet = )
     }, silent = FALSE)
-    
+
     if ( "try-error" %in% class(result) ) {
       err_msg <- geterrmessage()
       if ( stringr::str_detect(err_msg,"cannot open destfile") ) {
@@ -125,12 +125,12 @@ bluesky_download <- function(
         # Option to stop with a different message
       }
     }
-    
+
   }
-  
+
   # ----- Return ---------------------------------------------------------------
-  
+
   return(filePath)
-  
+
 }
 
