@@ -19,7 +19,7 @@
 #' \dontrun{
 #' setModelDataDir('~/Data/Bluesky')
 #' filePath <- bluesky_download(model = "PNW-4km", modelRun = 2019100900)
-#' bluesky_toV2(filePath)
+#' bluesky_assimilate(filePath)
 #' }
 
 bluesky_assimilate <- function(
@@ -35,41 +35,41 @@ bluesky_assimilate <- function(
     cleanup <- TRUE
 
   # Checks
-  if ( grepl(x = filePath, pattern = '.+_V2') ) {
+  if ( grepl(x = filePath, pattern = '.+_V2.nc$') ) {
     warning('filePath: NetCDF has already been assimilated.')
     return(filePath)
   }
   # ----- Open NetCDF file -----------------------------------------------------
 
   # Create old and new file paths
-  oldFilePath <- filePath
-  newFilePath <- stringr::str_replace(oldFilePath, "\\.nc$", "_V2.nc")
+  raw_nc_path <- filePath
+  nc_path <- stringr::str_replace(raw_nc_path, "\\.nc$", "_V2.nc")
 
   # open nc file
-  old_nc <- ncdf4::nc_open(oldFilePath)
+  raw_nc <- ncdf4::nc_open(raw_nc_path)
 
   # ----- Create latitude and longitude axes -----------------------------------
 
   # Current (index) values
-  row <- old_nc$dim$ROW$vals
-  col <- old_nc$dim$COL$vals
-  lay <- old_nc$dim$LAY$vals # LAYERS (height)
+  row <- raw_nc$dim$ROW$vals
+  col <- raw_nc$dim$COL$vals
+  lay <- raw_nc$dim$LAY$vals # LAYERS (height)
 
   # Useful information is found in the global attributes
-  globalAttributes <- ncdf4::ncatt_get(old_nc, varid=0) # varid=0 means 'global'
+  global_attributes <- ncdf4::ncatt_get(raw_nc, varid = 0) # varid=0 means 'global'
 
-  # NOTE:  Use names(globalAttributes) to see the names of the elements
+  # NOTE:  Use names(global_attributes) to see the names of the elements
   # NOTE:  contained in this list
 
-  # NOTE:  globalAttributes is of class 'list'
+  # NOTE:  global_attributes is of class 'list'
   # NOTE:  Access list elements with either 'listName[[objectName]]' or
   # NOTE:  'listName$objectName' notation
 
-  XORIG <- globalAttributes[["XORIG"]] # x origin
-  YORIG <- globalAttributes[["YORIG"]] # y origin
-  XCENT <- globalAttributes[["XCENT"]] # x center
-  YCENT <- globalAttributes[["YCENT"]] # y center
-  ZLVLS <- globalAttributes[["VGLVLS"]]
+  XORIG <- global_attributes[["XORIG"]] # x origin
+  YORIG <- global_attributes[["YORIG"]] # y origin
+  XCENT <- global_attributes[["XCENT"]] # x center
+  YCENT <- global_attributes[["YCENT"]] # y center
+  ZLVLS <- global_attributes[["VGLVLS"]]
 
   # Now we have enough information about the domain to figure out W, E, S, N
   w <- XORIG
@@ -79,14 +79,14 @@ bluesky_assimilate <- function(
 
   # Knowing the grid dimensions and the true edges, we can define legitimate
   # lat/lon dimensions
-  lat <- seq(s, n, length.out=length(row))
-  lon <- seq(w, e, length.out=length(col))
+  lat <- seq(s, n, length.out = length(row))
+  lon <- seq(w, e, length.out = length(col))
   lvl <- ZLVLS[1:length(lay)]
 
   # ----- Create time axis -----------------------------------------------------
 
   # Temporal information is stored in the 'TFLAG' variable
-  tflag <- ncdf4::ncvar_get(old_nc, "TFLAG")
+  tflag <- ncdf4::ncvar_get(raw_nc, "TFLAG")
 
   # NOTE:  'tflag' is a matrix object with two rows, one containing the year and
   # NOTE:  Julian day, the other containing time in HHMMSS format. We will paste
@@ -94,7 +94,7 @@ bluesky_assimilate <- function(
   # NOTE:  useful for C-style string formatting. Here we use it to add leading
   # NOTE:  0s to create a string that is six characters long.
 
-  time_str <- paste0(tflag[1,], sprintf(fmt="%06d", tflag[2,]))
+  time_str <- paste0(tflag[1,], sprintf(fmt = "%06d", tflag[2,]))
 
   # Create POSIXct time
   time <- MazamaCoreUtils::parseDatetime(time_str,
@@ -107,7 +107,7 @@ bluesky_assimilate <- function(
   # NOTE:  3-D, not 3- or 4-D.
 
   # Get PM25 values
-  pm25 <- ncdf4::ncvar_get(old_nc, "PM25")
+  pm25 <- ncdf4::ncvar_get(raw_nc, "PM25")
 
   # Convert time to numeric value for storing purposes
   numericTime <- as.numeric(time)
@@ -127,20 +127,20 @@ bluesky_assimilate <- function(
   )
 
   # Create a new netcdf file
-  new_nc <- ncdf4::nc_create(newFilePath, pm25Var)
+  nc <- ncdf4::nc_create(nc_path, pm25Var)
 
   # Put data into the newly defined variable
-  ncdf4::ncvar_put(new_nc, pm25Var, pm25)
+  ncdf4::ncvar_put(nc, pm25Var, pm25)
 
   # Close the file
-  ncdf4::nc_close(new_nc)
+  ncdf4::nc_close(nc)
 
   if (cleanup) {
-    unlink(oldFilePath)
+    unlink(raw_nc_path)
   }
 
   # ----- Return ---------------------------------------------------------------
 
-  return(newFilePath)
+  return(nc_path)
 
 }
