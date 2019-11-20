@@ -6,7 +6,7 @@
 #' @param modelRun Date code as "YYYYMMDDHH".
 #' @param subDir Subdirectory path containing netcdf data.
 #' @param baseUrl Base URL for BlueSky output.
-#' @param verbose If \code{TRUE}, suppress status messages (if any), and the
+#' @param verbose If \code{FALSE}, suppress status messages (if any), and the
 #' progress bar.
 #'
 #' @description Downloads a copy of the specified BlueSky model run to the
@@ -57,7 +57,7 @@ bluesky_download <- function(
   modelRun = NULL,
   subDir = "combined",
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
-  verbose = FALSE
+  verbose = TRUE
 ) {
 
   # ----- Validate parameters --------------------------------------------------
@@ -85,7 +85,7 @@ bluesky_download <- function(
 
   # Default to verbose
   if ( !is.logical(verbose) )
-    verbose <- FALSE
+    verbose <- TRUE
 
   # ----- Create URL -----------------------------------------------------------
 
@@ -112,7 +112,7 @@ bluesky_download <- function(
   if ( !file.exists(filePath) ) {
 
     result <- try({
-      utils::download.file(url = fileURL, destfile = filePath)
+      utils::download.file(url = fileURL, destfile = filePath, quiet = !verbose)
     }, silent = FALSE)
 
     if ( "try-error" %in% class(result) ) {
