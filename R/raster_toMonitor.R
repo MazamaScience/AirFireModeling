@@ -15,7 +15,7 @@
 #' single central coordinate.
 #'
 #' @return A \emph{ws_monitor} object representing a single monitor.
-raster_createMonitor <- function(
+raster_toMonitor <- function(
   raster,
   longitude = NULL,
   latitude = NULL,
