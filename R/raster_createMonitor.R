@@ -1,13 +1,20 @@
 #' @export
 #' @title Create a ws_monitor object from raster object
 #'
-#' @param raster
-#' @param longitude
-#' @param latitude
-#' @param buffer
-#' @param monitorID
-#' @param FUN
+#' @param raster A raster object
+#' @param longitude Target longitude
+#' @param latitude Target latitude
+#' @param buffer A radial buffer about the buffer, in meters.
+#' @param monitorID An optional monitor identification name.
+#' @param FUN A function to collapse cells if buffer > 0.
 #'
+#' @description Time series associated with multiple grid cells are merged into a single
+#' time series by using \code{FUN} to collapse a given grid cell count, or
+#' or a grid cell radi, to a single coordinate. For instance, if the
+#' \code{FUN = mean} then the grid cells within the paramters are averaged to a
+#' single central coordinate.
+#'
+#' @return A \emph{ws_monitor} object representing a single monitor.
 raster_createMonitor <- function(
   raster,
   longitude = NULL,
@@ -31,7 +38,7 @@ raster_createMonitor <- function(
 
   # Create target Spatial Point
   target_sp <- sp::SpatialPoints( coords = cbind(longitude, latitude),
-                                  proj4string = crs(raster) )
+                                  proj4string = raster::crs(raster) )
 
   # Extract values from Raster Object at the target spatial point(s)
   target_data <- c(t(raster::extract( x = raster,
@@ -63,18 +70,9 @@ raster_createMonitor <- function(
   colnames(data) <- c('datetime', monitorID)
 
   # Combine into ws_monitor list object
-
   monitor <- list('meta' = meta, 'data' = data)
   class(monitor) <- c('ws_monitor', class(monitor))
+
   return(monitor)
-
-
-  if ( FALSE ) {
-    raster <- X
-    longitude <- sc_lon
-    latitude <- sc_lat
-    buffer <- 100
-    FUN = mean
-  }
 
 }
