@@ -11,7 +11,7 @@
 #'
 #' @description Downloads a copy of the specified BlueSky model run to the
 #' package data directory. This file can then be converted into a more
-#' modernized format by bluesky2v2().
+#' modernized format by assimilation.
 #'
 #' #' On 2019-10-11, vailable model identifiers include the following:
 #' \itemize{
