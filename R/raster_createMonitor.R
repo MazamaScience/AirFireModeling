@@ -47,9 +47,10 @@ raster_createMonitor <- function(
                                       fun = FUN )))
 
   # Assume names of raster layers are POSIX dates
-  datetime <- stringr::str_remove( string = names(raster),
-                                   pattern = 'X' )
-
+  # Remove 'X' from string convert to numeric
+  datetime <- as.numeric(stringr::str_remove( string = names(raster),
+                                              pattern = 'X' ))
+  # TIMEZONES!
   tzone <- c('UTC')
 
   # Assimilate datetime class
@@ -64,6 +65,7 @@ raster_createMonitor <- function(
   meta$longitude <- as.numeric(longitude)
   meta$latitude <- as.numeric(latitude)
   meta$timezone <- as.character(tzone)
+  rownames(meta) <- as.character(monitorID)
 
   # Fill Data
   data <- data.frame(datetime, target_data)
