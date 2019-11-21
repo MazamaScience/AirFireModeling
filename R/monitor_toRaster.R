@@ -6,7 +6,6 @@
 #' @param crs Set the coordinate reference system (CRS) of a Raster* object.
 #' @param extent Set or inherit the extent of the Raster* object.
 #' @param projectTo
-#' @param na.action
 #'
 #' @return
 monitor_toRaster <- function(
@@ -28,24 +27,29 @@ monitor_toRaster <- function(
   # Round the cells
   roundCell <- function(x, r) ceiling(x*(1/r))/(1/r)
 
-  M <- data.frame(x = roundCell(ws_monitor$meta$longitude, res),
-                  y = roundCell(ws_monitor$meta$latitude, res),
-                  z = t(ws_monitor$data[,-1]) )
-  ras <- raster::rasterFromXYZ(xyz = M)
+  # Create the XYZ data.frame with x lat, y lon, and z data
+  M <- data.frame( x = roundCell(ws_monitor$meta$longitude, res),
+                   y = roundCell(ws_monitor$meta$latitude, res),
+                   z = t(ws_monitor$data[,-1]) )
+  # Create raster
+  ras <- raster::rasterFromXYZ(xyz = M, crs = crs,res = res )
 
+  # Apply POSIX numeric names to raster layers
   names(ras) <- as.numeric(ws_monitor$data$datetime)
 
-  if ( !is.null(crs) ) raster::crs(ras) <- crs
-  if ( !is.null(extent) ) raster::extent(ras) <- extent
+  # if ( !is.null(crs) ) raster::crs(ras) <- crs
+  # if ( !is.null(extent) ) raster::extent(ras) <- extent
 
   if ( !is.null(projectTo) ) {
     ras <- raster::projectRaster(from = ras, to = projectTo)
   }
   return(ras)
+
   if (FALSE) {
     ws_monitor <- yuba
     res <- 0.5
     crs <- '+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0'
     projectTo <- bs_raster
   }
+
 }
