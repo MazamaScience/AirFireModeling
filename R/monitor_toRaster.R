@@ -32,7 +32,7 @@ monitor_toRaster <- function(
                    y = roundCell(ws_monitor$meta$latitude, res),
                    z = t(ws_monitor$data[,-1]) )
   # Create raster
-  ras <- raster::rasterFromXYZ(xyz = M, crs = crs,res = res )
+  ras <- suppressWarnings({raster::rasterFromXYZ(xyz = M, crs = crs,res = res )})
 
   # Apply POSIX numeric names to raster layers
   names(ras) <- as.numeric(ws_monitor$data$datetime)
@@ -41,7 +41,7 @@ monitor_toRaster <- function(
   # if ( !is.null(extent) ) raster::extent(ras) <- extent
 
   if ( !is.null(projectTo) ) {
-    ras <- raster::projectRaster(from = ras, to = projectTo)
+    ras <- suppressWarnings(  raster::projectRaster(from = ras, to = projectTo))
   }
   return(ras)
 
