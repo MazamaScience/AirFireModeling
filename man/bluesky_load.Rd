@@ -2,45 +2,42 @@
 % Please edit documentation in R/bluesky_load.R
 \name{bluesky_load}
 \alias{bluesky_load}
-\title{Load BlueSky NetCDF file and return contents as a bs_grid.}
+\title{Load a BlueSky Model Raster}
 \usage{
-bluesky_load(dailyOutputDir = "standard", model = "PNW-1.33km",
-  modelRun = NULL, subDir = "combined", parameter = "pm25",
-  xlim = NULL, ylim = NULL, timesteps = NULL, download = TRUE,
-  cleanup = TRUE, filePath = NULL,
+bluesky_load(filePath = NULL, modelRun = NULL, parameter = "pm25",
+  cleanup = TRUE,
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
-  quiet = FALSE)
+  dailyOutputDir = "standard", model = "CANSAC-1.33km",
+  subDir = "forecast", verbose = TRUE)
 }
 \arguments{
+\item{filePath}{Absolute path of the local bluesky .nc file.}
+
+\item{modelRun}{Date code as "YYYYMMDDHH" (integer or character).}
+
+\item{parameter}{Parameter name.}
+
+\item{cleanup}{Logical specifying whether to remove the original files.}
+
+\item{baseUrl}{Base URL for BlueSky output.}
+
 \item{dailyOutputDir}{BlueSky web directory.}
 
 \item{model}{Model identifier.}
 
-\item{modelRun}{Date code as "YYYYMMDDHH" (integer or character).}
-
 \item{subDir}{Subdirectory path containing netcdf data.}
 
-\item{parameter}{Parameter name.}
+\item{verbose}{If \code{TRUE}, suppress status messages (if any), and the
+progress bar.
 
-\item{xlim}{Optional longitude range.}
+#' @description Read and/or downloads a BlueSky NetCDF
 
-\item{ylim}{Optional latitude range.}
+Data are searched for in the package internal \code{dataDir} which can be set
+with \code{setModelDataDir()}.
 
-\item{timesteps}{Optional vector of timesteps to be loaded. Defaults to all
-available timesteps in the file.}
-
-\item{download}{Logical specifying whether to download and convert data if it
-is not found locally.}
-
-\item{cleanup}{Logical specifying whether to remove the original files.}
-
-\item{filePath}{Absolute path of the local bluesky .nc file
-\emph{(not "_V2.nc")} for special occasions.}
-
-\item{baseUrl}{Base URL for BlueSky output.}
-
-\item{quiet}{If \code{TRUE}, suppress status messages (if any), and the
-progress bar.}
+If \code{timesteps} are specified, the returned \emph{bs_grid} object will
+contain data associated with those timesteps. Data missing in the original
+model run will be replaced with NA values.}
 }
 \value{
 List of class \code{bs_grid} with the following elements:
@@ -65,19 +62,10 @@ structure:
 }
 }
 \description{
-Reads in a "_V2" BlueSky output NetCDF file and ingests the
-data, returning it in a list of class \code{bs_grid}.
-
-Data are searched for in the package internal \code{dataDir} which can be set
-with \code{setModelDataDir()}. If no data are found in the \code{dataDir},
-and \code{download = TRUE} an attempt is made to download data.
-
-If \code{timesteps} are specified, the returned \emph{bs_grid} object will
-contain data associated with those timesteps. Data missing in the original
-model run will be replaced with NA values.
+Load a BlueSky Model Raster
 }
 \details{
-#' On 2019-10-11, vailable model identifiers include the following:
+On 2019-10-11, vailable model identifiers include the following:
 \itemize{
   \item{AK-12km}
   \item{CANSAC-1.33km}
@@ -97,16 +85,10 @@ model run will be replaced with NA values.
 \examples{
 \dontrun{
 setModelDataDir('~/Data/Bluesky')
-
-xlim <- c(-118, -114)
-ylim <- c(45, 48)
-bs_grid <- bluesky_load(
+bs <- bluesky_load(
   model = "PNW-1.33km",
-  modelRun = 2019100900,
-  xlim = xlim,
-  ylim = ylim
+  modelRun = 2019100900
 )
-grid_map(bs_grid, tMask = 1:24)
 }
 }
 \seealso{

@@ -7,7 +7,7 @@
 bluesky_download(dailyOutputDir = "standard", model = "PNW-1.33km",
   modelRun = NULL, subDir = "combined",
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
-  quiet = FALSE)
+  verbose = TRUE)
 }
 \arguments{
 \item{dailyOutputDir}{BlueSky web directory}
@@ -20,15 +20,15 @@ bluesky_download(dailyOutputDir = "standard", model = "PNW-1.33km",
 
 \item{baseUrl}{Base URL for BlueSky output.}
 
-\item{quiet}{If \code{TRUE}, suppress status messages (if any), and the
+\item{verbose}{If \code{FALSE}, suppress status messages (if any), and the
 progress bar.}
 }
 \value{
 File path of downloaded data.
 }
 \description{
-Downloads a copy of the specified BlueSky model run to the 
-package data directory. This file can then be converted into a more 
+Downloads a copy of the specified BlueSky model run to the
+package data directory. This file can then be converted into a more
 modernized format by bluesky2v2().
 
 #' On 2019-10-11, vailable model identifiers include the following:
