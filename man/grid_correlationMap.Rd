@@ -6,7 +6,8 @@
 \usage{
 grid_correlationMap(bs_grid, ws_monitor, monitorID = NULL,
   param = "pm25", xlim = NULL, ylim = NULL, tlim = NULL,
-  breaks = NULL, colors = NULL, zoom = 1.5, plotter = "base")
+  method = "pearson", breaks = NULL, colors = NULL, zoom = 1.5,
+  plotter = "base")
 }
 \arguments{
 \item{bs_grid}{bs_grid data list}
@@ -22,6 +23,8 @@ grid_correlationMap(bs_grid, ws_monitor, monitorID = NULL,
 \item{ylim}{latitude range to be plotted}
 
 \item{tlim}{time range tover which to calculation the correlation}
+
+\item{method}{method to calculate correlation. \code{pearson, kendall, spearm}.}
 
 \item{breaks}{used by \code{image()} function to partition correlation values into different colors}
 
