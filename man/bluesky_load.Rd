@@ -98,9 +98,5 @@ bs <- bluesky_load(
 }
 }
 \seealso{
-\link{bluesky_download}
-
-\link{bluesky_toV2}
-
 \link{setModelDataDir}
 }
