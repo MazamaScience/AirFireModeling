@@ -24,6 +24,7 @@ Imports:
     AirMonitorPlots,
     dplyr,
     geodist,
+    geosphere,
     ggplot2,
     lubridate,
     maps,
