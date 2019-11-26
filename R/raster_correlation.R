@@ -13,6 +13,7 @@ raster_correlation <-
   function(
     x,
     y,
+    plot = TRUE,
     res = NULL,
     method = 'kendall',
     p_value = FALSE,
@@ -23,10 +24,6 @@ raster_correlation <-
     MazamaCoreUtils::stopIfNull(y)
     MazamaCoreUtils::stopIfNull(method)
     MazamaCoreUtils::stopIfNull(p_value)
-
-    # if ( raster::isLonLat(x) | raster::isLonLat(y) ) {
-    #   stop('Raster needs latitude/longitutde coordinates.')
-    # }
 
     # Transform to same length
     # If resolution is unspecified use the largest resolution by default
@@ -65,12 +62,50 @@ raster_correlation <-
     }
 
     # Calculate correlation
-    correlation <- raster::corLocal( x[[1:layers]],
-                                     y[[1:layers]],
-                                     method = method,
-                                     test = p_value )
-    # TODO: Implement mapping logical, hide/resolve warnings
-    return(correlation)
+    corr <- suppressWarnings(
+      raster::corLocal( x[[1:layers]],
+                        y[[1:layers]],
+                        method = method,
+                        test = p_value )
+    )
+
+    # ggplot the correlation
+    if ( plot ) {
+      # Get correlation raster coordinate limits
+      limits <- raster::extent(corr)
+      xlim <- c(limits@xmin, limits@xmax)
+      ylim <- c(limits@ymin, limits@ymax)
+
+      # Get state and its counties to map
+      states <- ggplot2::map_data('state', xlim = xlim, ylim = ylim)
+      counties <- ggplot2::map_data('county', xlim = xlim, ylim = ylim)
+
+      # ggplot it
+      gg <- rasterVis::gplot(corr) +
+        ggplot2::geom_raster(ggplot2::aes(fill = .data$value)) +
+        ggplot2::geom_path(data = counties,
+                           ggplot2::aes( x = .data$long,
+                                         y = .data$lat,
+                                         group = .data$group ),
+                           alpha = 0.2,
+                           color = 'grey12' ) +
+        ggplot2::geom_polygon( data = states,
+                               fill = 'NA',
+                               color = 'black',
+                               ggplot2::aes( y = .data$lat,
+                                             x = .data$long,
+                                             group = .data$group ),
+        ) +
+        ggplot2::scale_fill_viridis_c(na.value = NA) +
+        ggplot2::theme_classic() +
+        ggplot2::labs(title = 'Correlation',
+                      x = 'Longitude', y = 'Latitude', fill = 'Coefficent') +
+        ggplot2::coord_fixed(xlim = xlim, ylim = ylim, ratio = 4/3)
+
+      show(gg)
+    }
+
+    return(corr)
 
     if ( FALSE ) {
       x <- ca_raster
