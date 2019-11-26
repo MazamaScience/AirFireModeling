@@ -84,7 +84,7 @@ monitor_forecast <- function(
     AirMonitorPlots::stat_nowcast(ggplot2::aes(color = .data$monitorID)) +
     ggplot2::labs(color = 'Legend')
 
-  show(gg)
+  print(gg)
 
   # Return combined monitors
   return(monitors)

@@ -3,6 +3,7 @@
 #'
 #' @param x A Raster* object
 #' @param y A Raster* object
+#' @param plot Logical. To plot or not.
 #' @param res An optional resolution to project both x, y to.
 #' @param method Correlation method. Default: 'kendall'.
 #' @param p_value Logical. If TRUE, return a p-value
@@ -102,7 +103,7 @@ raster_correlation <-
                       x = 'Longitude', y = 'Latitude', fill = 'Coefficent') +
         ggplot2::coord_fixed(xlim = xlim, ylim = ylim, ratio = 4/3)
 
-      show(gg)
+      print(gg)
     }
 
     return(corr)
