@@ -42,8 +42,8 @@ raster_correlation <-
     # Calculate approx area of each raster to determine which to project from -> to
     x_ext <- raster::extent(x)
     y_ext <- raster::extent(y)
-    x_area <- (x_ext@xmax - x_ext@xmin)*(x_ext@ymax - x_ext@ymin)
-    y_area <- (y_ext@xmax - y_ext@xmin)*(y_ext@ymax - y_ext@ymin)
+    x_area <- (x_ext@xmax - x_ext@xmin) * (x_ext@ymax - x_ext@ymin)
+    y_area <- (y_ext@xmax - y_ext@xmin) * (y_ext@ymax - y_ext@ymin)
 
     # Determine which raster surf area is larger, use the larger one
     if ( x_area < y_area ) {
