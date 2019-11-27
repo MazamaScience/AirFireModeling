@@ -37,6 +37,7 @@ Imports:
     raster, 
     rasterVis,
     RColorBrewer,
+    RCurl,
     rlang,
     sp,
     stringr
