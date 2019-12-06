@@ -4,7 +4,7 @@
 #'
 #' @param start A start date.
 #' @param end A end date.
-#' @param by Numeric. Represents hour to truncate models at.
+#' @param by Numeric vector. Represents hours to truncate models at.
 #' @param model Model name (i.e. 'CANSAC-1.33km').
 #' @param type Model type (i.e. 'forecast).
 #' @param base_url The base url of the model output directory.
@@ -16,12 +16,13 @@
 bluesky_aggregate <- function(
   start,
   end,
-  by = 6,
+  by = c(1,12),
   model = "CANSAC-4km",
   type = "forecast",
   base_url = "https://haze.airfire.org/bluesky-daily/output",
   sub_dir = "standard",
-  ...) {
+  ...
+  ) {
 
   # ----- Create time axis ------
   # Parse directory page for avaliable model runs
@@ -35,12 +36,28 @@ bluesky_aggregate <- function(
   #       The getURL function returns html with two listed directories for
   #       unknown reasons.
   aval_dates <- unlist(stringr::str_extract_all(html, '[0-9]{10}(?=/)'))[c(T,F)]
-  parsed_dates <- MazamaCoreUtils::parseDatetime(timezone = 'UTC', aval_dates)
+  parsed_dates <- MazamaCoreUtils::parseDatetime(aval_dates, timezone = "UTC")
+
+  # Check if dates are valid
+  if ( !(any(c(start, end) %in% stringr::str_extract(aval_dates, '[0-9]{1,8}'))) ) {
+    stop('Start and/or End dates are not avaliable.')
+  }
 
   # Calculate the median time difference of avaliable hours from directory
   # NOTE: Should probably find a better way to do this.
   t_diff <- median( (as.numeric(parsed_dates[c(F,T)]) -
                       as.numeric(parsed_dates[c(T,F)]))/(60**2) )
+
+  # Warn user if the selected time difference is less than it should be
+  if ( diff(by) + 1 < t_diff ) {
+    warning(
+      paste0(
+        'Minimum continous model difference is ',
+        t_diff,
+        ' hours. Consider a larger "by" to avoid aggregated model gaps.'
+      )
+    )
+  }
 
   # Parse start and end params. All timestamps are UTC.
   starttime <- MazamaCoreUtils::parseDatetime(start, timezone = "UTC")
@@ -57,19 +74,19 @@ bluesky_aggregate <- function(
  # ----- Download model -----
   raster_list <- list()
   for ( run in valid_dates )  {
-    try({
+    # try({
     raster_list[[run]] <- bluesky_load( modelRun = run,
                                         model = model,
                                         baseUrl = base_url,
                                         dailyOutputDir = sub_dir,
                                         subDir = type )
-    }, silent = TRUE)
+    # }, silent = TRUE)
   }
 
   # Convert raster stack list to brick
-  # NOTE: Use 'by' to determine which hours (layers) to use
-  # NOTE: Add ablility to choose hours X->Y rather than just 1->Y
-  raster_brick <- raster::brick(lapply(raster_list, function(r) r[[1:by]]))
+  raster_brick <- raster::brick(
+    lapply(raster_list, function(r) r[[by[1]:by[2]]])
+  )
 
   return(raster_brick)
 
@@ -77,7 +94,7 @@ bluesky_aggregate <- function(
   if (FALSE) {
     start <- 20191015
     end <- 20191017
-    by <- 24
+    by <- c(1,12)
     model <- 'PNW-4km'
     #'GFS-0.15deg-CanadaUSA-p25deg-68N'
     #"PNW1.33km-CMAQ"
@@ -87,6 +104,6 @@ bluesky_aggregate <- function(
     base_url <- "https://haze.airfire.org/bluesky-daily/output"
     sub_dir <- "standard"
 
-    X <- bluesky_aggregate(20191115, 20191118, by = 12, model = 'CANSAC-4km')
+    X1 <- bluesky_aggregate(20191115, 20191119, by = c(1,6), model = 'CANSAC-4km')
   }
 }
