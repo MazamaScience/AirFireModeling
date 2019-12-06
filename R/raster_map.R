@@ -5,6 +5,8 @@
 #' @param palette A color brewer palette (i.e. 'Greys', 'Blues', 'BuGn', 'YlOrRd', ...).
 #' @param breaks Color break locations.
 #' @param title A plot title.
+#' @param direction Color palette direction. Set -1 to reverse direction.
+#' @param timezone Timezone.
 #'
 #' @return a ggobject
 raster_map <-
@@ -12,7 +14,9 @@ raster_map <-
     raster,
     palette = 'Greys',
     breaks = 'default',
-    title = 'PM2.5'
+    title = 'PM2.5',
+    direction = 1,
+    timezone = 'UTC'
   ) {
 
     # Get raster coordinate limits
@@ -22,6 +26,9 @@ raster_map <-
 
     layer_time <- as.numeric(stringr::str_remove(names(raster), 'X'))
     class(layer_time) <- c('POSIX', 'POSIXct')
+    attr(layer_time, 'tzone') <- timezone
+    layer_time <- as.character.Date(layer_time)
+
 
     # Define color breaks
     if ( breaks == 'default' ) {
@@ -48,7 +55,9 @@ raster_map <-
                                            x = .data$long,
                                            group = .data$group ),
       ) +
-      ggplot2::scale_fill_brewer(na.value = NA, palette = palette) +
+      ggplot2::scale_fill_brewer( na.value = NA,
+                                  palette = palette,
+                                  direction = direction ) +
       ggplot2::theme_classic() +
       ggplot2::labs(title = title,
                     subtitle = layer_time,
