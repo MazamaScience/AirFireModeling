@@ -69,10 +69,10 @@ raster_subset <- function(
   }
 
   if ( FALSE ) {
-    raster <- X1
+    raster <- bluesky_load()
     args <- list('latitude' = 45, 'longitude' = 118, 'radius' = 20000)
-    raster_subset(raster, radius = 20000, latitude = 45, longitude = 118)
-    raster_subset(raster, polygon = p)
+    raster_subset(raster, radius = 20000, latitude = 38, longitude = -118)
+    raster_subset(raster, polygon = p) %>% raster::animate()
   }
 
 }
