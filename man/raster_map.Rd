@@ -4,7 +4,14 @@
 \alias{raster_map}
 \title{Plot a Raster Map}
 \usage{
-raster_map(raster, palette = "Greys", breaks = "default", title = "PM2.5")
+raster_map(
+  raster,
+  palette = "Greys",
+  breaks = "default",
+  title = "PM2.5",
+  direction = 1,
+  timezone = "UTC"
+)
 }
 \arguments{
 \item{raster}{A Raster* object.}
@@ -14,6 +21,10 @@ raster_map(raster, palette = "Greys", breaks = "default", title = "PM2.5")
 \item{breaks}{Color break locations.}
 
 \item{title}{A plot title.}
+
+\item{direction}{Color palette direction. Set -1 to reverse direction.}
+
+\item{timezone}{Timezone.}
 }
 \value{
 a ggobject

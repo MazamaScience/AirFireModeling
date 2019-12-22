@@ -4,20 +4,33 @@
 \alias{raster_subset}
 \title{Subset a Raster* by distance from a location}
 \usage{
-raster_subset(raster, longitude, latitude, radius = 20000)
+raster_subset(raster, ...)
 }
 \arguments{
 \item{raster}{A Raster* object.}
 
-\item{longitude}{A target longitude.}
-
-\item{latitude}{A target latitude.}
-
-\item{radius}{A radius to subset by (in meters)}
+\item{...}{Subsetting arguments}
 }
 \value{
 a Raster* object
 }
 \description{
 Subset a Raster* by distance from a location
+}
+\examples{
+\dontrun{
+# Load Bluesky
+bs <- bluesky_load()
+
+# Subset by radius
+raster_subset(bs, radius = 20000, latitude = 45.5, longitude = -123.32)
+
+# Subset with polygon
+# Create CA polygon
+ca <- maps::map('state', 'CA', fill = TRUE)
+ca_polygon <- maptools::map2SpatialPolygons(ca, IDs = ca$names, proj4string = raster::crs(bs))
+
+# Raster subset
+raster_subset(bs, polygon = ca_polygon)
+}
 }

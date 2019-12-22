@@ -7,7 +7,7 @@
 bluesky_aggregate(
   start,
   end,
-  by = 6,
+  by = c(1, 12),
   model = "CANSAC-4km",
   type = "forecast",
   base_url = "https://haze.airfire.org/bluesky-daily/output",
@@ -20,7 +20,7 @@ bluesky_aggregate(
 
 \item{end}{A end date.}
 
-\item{by}{Numeric. Represents hour to truncate models at.}
+\item{by}{Numeric vector. Represents hours to truncate models at.}
 
 \item{model}{Model name (i.e. 'CANSAC-1.33km').}
 
