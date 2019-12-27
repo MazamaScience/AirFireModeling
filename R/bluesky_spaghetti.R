@@ -50,9 +50,10 @@ bluesky_spaghetti <- function( raster,
   monitors <- PWFSLSmoke::monitor_combine(monitor_list)
 
 
-
+  # Create Target Distance field for line alpha
   monitors$meta$target_dist <- geosphere::distGeo(c(longitude, latitude), coords)
 
+  # Tidyify
   df <- PWFSLSmoke::monitor_toTidy(monitors)
 
   # Plot the monitors
