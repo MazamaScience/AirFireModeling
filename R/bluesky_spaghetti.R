@@ -49,14 +49,20 @@ bluesky_spaghetti <- function( raster,
   # Combine all the monitors
   monitors <- PWFSLSmoke::monitor_combine(monitor_list)
 
-  # Plot the monitors`
-  gg <- ggplot2::ggplot( data = PWFSLSmoke::monitor_toTidy(monitors),
+
+
+  monitors$meta$target_dist <- geosphere::distGeo(c(longitude, latitude), coords)
+
+  df <- PWFSLSmoke::monitor_toTidy(monitors)
+
+  # Plot the monitors
+  gg <- ggplot2::ggplot( data = df,
                          ggplot2::aes_(x = ~datetime, y = ~pm25) ) +
-    ggplot2::geom_line(ggplot2::aes_(color = ~monitorID)) +
+    ggplot2::geom_line(ggplot2::aes_(color  = ~target_dist, group = ~monitorID, alpha = ~-target_dist)) +
     ggplot2::labs( x = 'Datetime',
                    y = '\u03bcg / m\u00b3',
                    title = expression('PM'[2.5])) +
-    ggplot2::guides(color = FALSE)
+    ggplot2::guides(color = FALSE, alpha = FALSE)
 
 
   return(gg)
