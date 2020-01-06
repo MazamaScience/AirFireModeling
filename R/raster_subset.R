@@ -64,6 +64,29 @@ raster_subset <- function(
 
     return(ras)
 
+  } else if ( 'n' %in% names(args) ) { # Adjacent cell count
+
+    n <- args[['n']]
+    lat <- args[['latitude']]
+    lon <- args[['longitude']]
+
+    target_cell <- raster::cellFromXY(raster, c(lon, lat))
+
+    expand <- function(n) {
+      M <- matrix(1, ncol = n*2+1, nrow = n*2+1)
+      M[n+1,n+1] <- 0
+      return(M)
+    }
+
+    adj <- raster::adjacent( raster,
+                             cells = target_cell,
+                             direction = expand(n),
+                             include = TRUE )[,2]
+
+    ras <- raster::crop(raster, raster::extentFromCells(raster, cells = adj))
+
+    return(ras)
+
   } else {
     stop('Missing subset arguments.')
   }
