@@ -45,6 +45,7 @@ Suggests:
     knitr,
     testthat (>= 2.1.0)
 SystemRequirements: netcdf
+Encoding: UTF-8 
 Description: Utilities for working with USFS BlueSky model output
     and PM2.5 monitoring data available from AirNow, AIRSIS
     WRCC and others.
