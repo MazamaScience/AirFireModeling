@@ -1,3 +1,18 @@
+# AirFireModeling 0.2
+
+* Migrated to `raster` base 
+* Moved deprecated base to `old_R/`.
+* Added correlation rasters `raster_correlation()` 
+* Added `raster_spaghetti()`
+* Added `raster_subset()` and various subset capabilites
+* Added `raster_toMonitor()` and `monitor_toRaster()` conversion
+* Added `raster_map()`
+* Added `monitor_forecast()` for monitor forecast from rasters 
+* Added `bluesky_*()` functions for downloading and assimilating NetCDF's as rasters 
+* Added `skil_*()` functions
+* Added `bluesky_aggregate()` to aggregate multi-day-model runs by hours
+* Moved oher non-rewritten and useful functions to `utils/`. 
+
 # AirFireModeling 0.1.6
 
 * New `bluesky_modelInfo` tibble with model metadata.
