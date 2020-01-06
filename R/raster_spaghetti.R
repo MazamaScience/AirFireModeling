@@ -3,17 +3,20 @@
 #' @param raster A Raster* object
 #' @param longitude A target latitude
 #' @param latitude A target longitude
-#' @param radius A radial distance about the target location
+#' @param ... See details.
 #'
 #' @description Plot a spaghetti plot of all model adjacent cells to a target
 #' location
+#'
+#' @details \code{radius}: radial (meters) subset by distance from target location.
+#' \code{n}: integer subset by the targets adjacent cell count.
 #'
 #' @return a gg object
 #' @export
 raster_spaghetti <- function( raster,
                                longitude = NULL,
                                latitude = NULL,
-                               radius = 5000 ) {
+                               ...) {
 
   # Checks
   if ( !grepl('Raster', class(raster)[1]) ) {
@@ -24,12 +27,21 @@ raster_spaghetti <- function( raster,
     stop('Check Coordinates: Out of range.')
   }
 
-
-
   # NOTE: Look into including cell counts as well as radius in the future.
-
-  # Subset the raster to radius
-  subbed <- raster_subset(raster, longitude = longitude, latitude = latitude, radius = radius)
+  args <- list(...)
+  if ( 'radius' %in% names(args) ) {
+    subbed <- raster_subset( raster,
+                             longitude = longitude,
+                             latitude = latitude,
+                             radius = args[['radius']] )
+  } else if ('n' %in% names(args) ) {
+    subbed <- raster_subset( raster,
+                             longitude = longitude,
+                             latitude = latitude,
+                             n = args[['n']] )
+  } else {
+    stop('Must provide subset parameter')
+  }
 
   raster::crs(subbed) <- raster::crs(raster)
 
