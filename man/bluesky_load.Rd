@@ -4,11 +4,17 @@
 \alias{bluesky_load}
 \title{Load a BlueSky Model Raster}
 \usage{
-bluesky_load(filePath = NULL, modelRun = NULL, parameter = "pm25",
+bluesky_load(
+  filePath = NULL,
+  modelRun = NULL,
+  parameter = "pm25",
   cleanup = TRUE,
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
-  dailyOutputDir = "standard", model = "CANSAC-1.33km",
-  subDir = "forecast", verbose = TRUE)
+  dailyOutputDir = "standard",
+  model = "CANSAC-1.33km",
+  subDir = "forecast",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{filePath}{Absolute path of the local bluesky .nc file.}
@@ -92,9 +98,5 @@ bs <- bluesky_load(
 }
 }
 \seealso{
-\link{bluesky_download}
-
-\link{bluesky_toV2}
-
 \link{setModelDataDir}
 }

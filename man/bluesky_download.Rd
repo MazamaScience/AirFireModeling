@@ -4,10 +4,14 @@
 \alias{bluesky_download}
 \title{Download BlueSky model data from AirFire}
 \usage{
-bluesky_download(dailyOutputDir = "standard", model = "PNW-1.33km",
-  modelRun = NULL, subDir = "combined",
+bluesky_download(
+  dailyOutputDir = "standard",
+  model = "PNW-1.33km",
+  modelRun = NULL,
+  subDir = "combined",
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
-  verbose = TRUE)
+  verbose = TRUE
+)
 }
 \arguments{
 \item{dailyOutputDir}{BlueSky web directory}
@@ -29,7 +33,7 @@ File path of downloaded data.
 \description{
 Downloads a copy of the specified BlueSky model run to the
 package data directory. This file can then be converted into a more
-modernized format by bluesky2v2().
+modernized format by assimilation.
 
 #' On 2019-10-11, vailable model identifiers include the following:
 \itemize{

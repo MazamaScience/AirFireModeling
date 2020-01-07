@@ -61,8 +61,6 @@
 #' .../standard/NAM84-0.08deg/2016050600/forecast/data/...
 #' }
 #'
-#' @seealso \link{bluesky_download}
-#' @seealso \link{bluesky_toV2}
 #' @seealso \link{setModelDataDir}
 #' @examples
 #' \dontrun{
