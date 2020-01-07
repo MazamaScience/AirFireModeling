@@ -1,0 +1,57 @@
+---
+title: "Model Receptor Analysis"
+output: html_document
+params:
+  model: "CANSAC-4km"
+  modelRun: 20191119
+  monitorID: NULL
+  longitude: -121.46
+  latitude: 38.55
+  spatialDataDir: "~/Data/Spatial"
+  modelDataDir: "~/Data/Bluesky"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+lat <- params$latitude
+lon <- params$longitude
+model <- params$model
+modelRun <- params$modelRun
+```
+
+```{r}
+library(AirFireModeling)
+```
+
+```{r}
+setModelDataDir('~/Data/Bluesky')
+bs <- bluesky_load(modelRun = modelRun, cleanup = FALSE)
+bs
+```
+
+```{r}
+raster_spaghetti(bs, longitude = lon, latitude = lat, n = 2)
+```
+
+```{r}
+bs_cropped <- raster_subset(bs, longitude = lon, latitude = lat, radius = 100*1000)
+```
+
+```{r}
+rasterVis::levelplot(bs_cropped[[1:24]])
+```
+
+```{r}
+hm <- list(bs_cropped[[1]], bs_cropped[[2]])
+rplot <- function(r) {
+  gg <- rasterVis::gplot(r) +
+      ggplot2::geom_raster(ggplot2::aes(fill = cut(.data$value, c(0,12,25,50))))
+}
+lapply(hm, rplot)
+```
+
+```{r}
+g <- rasterVis::gplot(bs_cropped) +
+      ggplot2::geom_raster(ggplot2::aes(fill = cut(.data$value, c(0,12,25,50)))) + ggplot2::facet_wrap(~.data$variable)
+```
+
