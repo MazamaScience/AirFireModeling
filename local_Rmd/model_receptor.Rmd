@@ -9,10 +9,11 @@ params:
   latitude: 38.55
   spatialDataDir: "~/Data/Spatial"
   modelDataDir: "~/Data/Bluesky"
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 lat <- params$latitude
 lon <- params$longitude
 model <- params$model
@@ -30,28 +31,52 @@ bs
 ```
 
 ```{r}
-raster_spaghetti(bs, longitude = lon, latitude = lat, n = 2)
+shiny::renderPlot({
+  raster_spaghetti( bs, 
+                    longitude = lon, 
+                    latitude = lat, 
+                    n = input$cell_count, 
+                    snapToGrid = FALSE )
+})
 ```
 
 ```{r}
-bs_cropped <- raster_subset(bs, longitude = lon, latitude = lat, radius = 100*1000)
+shiny::sliderInput( "cell_count", 
+                    label = "Cell Count",
+                    min = 3, 
+                    max = 25, 
+                    value = 5, 
+                    step = 1 )
+```
+
+
+```{r}
+shiny::renderPlot({
+  bs_cropped <- raster_subset( bs, 
+                               longitude = lon, 
+                               latitude = lat, 
+                               radius = input$radius*1000)
+  raster_facet( bs_cropped[[input$hours[1]:input$hours[2]]], 
+                breaks = c(1,2,3,4,5,6,7,8,9,10) )
+  })
 ```
 
 ```{r}
-rasterVis::levelplot(bs_cropped[[1:24]])
+shiny::sliderInput( "radius", 
+                    label = "Radius (km)",
+                    min = 10, 
+                    max = 250, 
+                    value = 10, 
+                    step = 1 )
+
+shiny::sliderInput( 'hours', 
+                    label = 'Select Hours', 
+                    min  = 1, 
+                    max = 72, 
+                    value = c(1,12), 
+                    dragRange = TRUE, 
+                    )
+
 ```
 
-```{r}
-hm <- list(bs_cropped[[1]], bs_cropped[[2]])
-rplot <- function(r) {
-  gg <- rasterVis::gplot(r) +
-      ggplot2::geom_raster(ggplot2::aes(fill = cut(.data$value, c(0,12,25,50))))
-}
-lapply(hm, rplot)
-```
-
-```{r}
-g <- rasterVis::gplot(bs_cropped) +
-      ggplot2::geom_raster(ggplot2::aes(fill = cut(.data$value, c(0,12,25,50)))) + ggplot2::facet_wrap(~.data$variable)
-```
 
