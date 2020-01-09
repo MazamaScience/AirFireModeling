@@ -14,9 +14,9 @@
 #' @return a gg object
 #' @export
 raster_spaghetti <- function( raster,
-                               longitude = NULL,
-                               latitude = NULL,
-                               ...) {
+                              longitude = NULL,
+                              latitude = NULL,
+                              ...) {
 
   # Checks
   if ( !grepl('Raster', class(raster)[1]) ) {
@@ -38,7 +38,8 @@ raster_spaghetti <- function( raster,
     subbed <- raster_subset( raster,
                              longitude = longitude,
                              latitude = latitude,
-                             n = args[['n']] )
+                             n = args[['n']],
+                             snapToGrid = args[['snapToGrid']] )
   } else {
     stop('Must provide subset parameter')
   }
