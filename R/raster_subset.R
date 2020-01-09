@@ -73,6 +73,7 @@ raster_subset <- function(
     lon <- args[['longitude']]
     snapToGrid <- args[['snapToGrid']]
 
+    # Determine if snapToGrid is true
     s2g <- ifelse(is.logical(snapToGrid), snapToGrid, FALSE)
 
     if ( s2g ) {
@@ -96,22 +97,17 @@ raster_subset <- function(
 
     } else {
 
-      #TODO : FIX subsetting by N cells count
-
-      cell_coords <- raster::coordinates(raster)
-
-      cell_dist <- geosphere::distHaversine(c(lon, lat), cell_coords)
-
-      df <- data.frame(cell_coords, cell_dist)
-
-      ncells <- raster::cellFromXY(raster, df[order(df$cell_dist),][1:n,1:2])
-
-      ras_list <- list()
-      for ( i in 1:raster::nlayers(raster) ) {
-        ras_list[[i]] <- raster::rasterFromCells(raster[[i]], ncells)
-      }
-
-      ras <- raster::brick(ras_list)
+      # NOTE: Hacky way of solving raster even # cell count issue
+      # Get cell distances from target
+      coords <- raster::coordinates(raster)
+      dist <- geosphere::distHaversine(c(lon, lat), coords)
+      # Order the coords based on dist, select N
+      xy <- coords[order(dist),][1:n,]
+      cell <- raster::cellFromXY(raster, xy)
+      # Get timeseries from relevant cells
+      z <- raster[raster::rowColFromCell(raster, cell)]
+      # Create raster from coords and timeseries
+      ras <- raster::rasterFromXYZ(data.frame(xy, z), crs = raster::crs(raster))
 
       return(ras)
 
@@ -122,7 +118,7 @@ raster_subset <- function(
   }
 
   if ( FALSE ) {
-    raster <- bluesky_load()
+    raster <- bluesky_load(cleanup = FALSE)
     args <- list('latitude' = 45, 'longitude' = 118, 'radius' = 20000)
     raster_subset(raster, radius = 20000, latitude = 38, longitude = -118)
     raster_subset(raster, polygon = p) %>% raster::animate()
