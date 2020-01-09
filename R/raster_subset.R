@@ -27,6 +27,8 @@ raster_subset <- function(
   ...
 ) {
 
+  # TODO: Add proper checks
+
   args <- list(...)
 
   if ( 'radius' %in% names(args) ) {
@@ -69,23 +71,51 @@ raster_subset <- function(
     n <- args[['n']]
     lat <- args[['latitude']]
     lon <- args[['longitude']]
+    snapToGrid <- args[['snapToGrid']]
 
-    target_cell <- raster::cellFromXY(raster, c(lon, lat))
+    s2g <- ifelse(is.logical(snapToGrid), snapToGrid, FALSE)
 
-    expand <- function(n) {
-      M <- matrix(1, ncol = n*2+1, nrow = n*2+1)
-      M[n+1,n+1] <- 0
-      return(M)
+    if ( s2g ) {
+
+      target_cell <- raster::cellFromXY(raster, c(lon, lat))
+
+      expand <- function(n) {
+        M <- matrix(1, ncol = n*2+1, nrow = n*2+1)
+        M[n+1,n+1] <- 0
+        return(M)
+      }
+
+      adj <- raster::adjacent( raster,
+                               cells = target_cell,
+                               direction = expand(n),
+                               include = TRUE )[,2]
+
+      ras <- raster::crop(raster, raster::extentFromCells(raster, cells = adj))
+
+      return(ras)
+
+    } else {
+
+      #TODO : FIX subsetting by N cells count
+
+      cell_coords <- raster::coordinates(raster)
+
+      cell_dist <- geosphere::distHaversine(c(lon, lat), cell_coords)
+
+      df <- data.frame(cell_coords, cell_dist)
+
+      ncells <- raster::cellFromXY(raster, df[order(df$cell_dist),][1:n,1:2])
+
+      ras_list <- list()
+      for ( i in 1:raster::nlayers(raster) ) {
+        ras_list[[i]] <- raster::rasterFromCells(raster[[i]], ncells)
+      }
+
+      ras <- raster::brick(ras_list)
+
+      return(ras)
+
     }
-
-    adj <- raster::adjacent( raster,
-                             cells = target_cell,
-                             direction = expand(n),
-                             include = TRUE )[,2]
-
-    ras <- raster::crop(raster, raster::extentFromCells(raster, cells = adj))
-
-    return(ras)
 
   } else {
     stop('Missing subset arguments.')
