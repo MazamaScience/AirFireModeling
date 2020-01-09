@@ -11,7 +11,7 @@
 raster_facet <- function(
   raster,
   breaks = 'default',
-  palette = 'Set2',
+  palette = 'default',
   direction = 1,
   timezone = 'UTC'
 ) {
@@ -31,14 +31,18 @@ raster_facet <- function(
     breaks <- c(0,12, 35, 55, 150, 250, 350, 500)
   }
 
+  # Determine color scaler
+  if (palette == 'default' ) {
+    scale_colors <-  ggplot2::scale_fill_viridis_d( option = 'A',direction = direction )} else {
+      scale_colors <-              ggplot2::scale_fill_brewer( na.value = 'white', palette = palette, direction = direction )}
+
   # Facet Plot
   gg <- rasterVis::gplot(raster) +
     ggplot2::geom_raster(ggplot2::aes(fill = cut(.data$value, breaks = breaks))) +
     ggplot2::facet_wrap( ~.data$variable,
                          labeller = ggplot2::labeller(.default=t2str) ) +
-    ggplot2::scale_fill_brewer( na.value = 'white',
-                                palette = palette,
-                                direction = direction ) +
+    scale_colors +
+    ggplot2::scale_fill_viridis_d(option = 'A', direction = direction) +
     ggplot2::labs(x = 'Longitude', y = 'Latitude', fill = 'PM2.5') +
     ggplot2::theme_classic()
 
