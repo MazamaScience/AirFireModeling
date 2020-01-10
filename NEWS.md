@@ -11,7 +11,7 @@
 * Added `bluesky_*()` functions for downloading and assimilating NetCDF's as rasters 
 * Added `skil_*()` functions
 * Added `bluesky_aggregate()` to aggregate multi-day-model runs by hours
-* Moved oher non-rewritten and useful functions to `utils/`. 
+* Moved other non-rewritten and useful functions to `utils/`. 
 
 # AirFireModeling 0.1.6
 
