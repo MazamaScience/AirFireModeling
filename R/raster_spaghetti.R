@@ -19,7 +19,7 @@ raster_spaghetti <- function( raster,
                               ...) {
 
   # Checks
-  if ( !grepl('Raster', class(raster)[1]) ) {
+  if ( !grepl('[rR]aster.+', class(raster)) ) {
     stop(print('A valid Raster object is required.'))
   }
   if ( longitude < raster::xmin(raster) | longitude > raster::xmax(raster) |
@@ -61,8 +61,8 @@ raster_spaghetti <- function( raster,
 
   # Convert each raster to monitor at each cell coordinate
   monitor_list <- mapply(
-    function(x,y,n) {
-      raster_toMonitor(raster, x, y, monitorID = n)
+    function(x,y,z) {
+      raster_toMonitor(raster, x, y, monitorID = z)
     },
     coords[,1],
     coords[,2],

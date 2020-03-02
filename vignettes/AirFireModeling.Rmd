@@ -10,6 +10,7 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(fig.width=7, fig.height=7) 
 ```
 
 # Background
@@ -46,7 +47,7 @@ library(AirFireModeling)
 setModelDataDir('~/Data/Bluesky')
 
 # Load a single model run
-bs <- bluesky_load(modelRun = 20191228, model = 'CANSAC-4km')
+bs <- bluesky_load(modelRun = 20191115, model = 'CANSAC-4km', cleanup = FALSE)
 
 bs 
 ```
@@ -75,20 +76,26 @@ It's helpful to deconstruct this output.
 We can utilize various properties of the BlueSky Raster data model. For example, we can access various layers (think hours) of our `bs` model. Below is an example of mapping the 12th hour of the forecast atmospheric data. 
 ```{r}
 # Access the 12th hour raster layer
-twelve_hr <- bs[[12]]
+twelve_hr <- bs[[24]]
 
 # Add custom color breaks for visualization 
 cols <- c(0, 2, 5, 10, 25, 50, 100, 200)
 
 raster_map(twelve_hr, breaks = cols, direction = -1, palette = 'Spectral')
 ```
+##### Interactive Maps
+
+```{r}
+raster_leaflet(bs[[55]])
+```
+
 
 Furthermore, we can observe temporal specific spatial locations and regions using various subset method functions. Below is an example of observing a the data produced by the `bs` model in a Sacramento region. Specifically, we are observing the coordinates (`lat`,`lon`) and its `n=1` adjacent cells. 
 ```{r}
 # Sacramento Coordinates
 lat <- 38.55
 lon <- -121.46
-raster_spaghetti(bs, lon, lat, n = 1) 
+raster_spaghetti(bs, lon, lat, n = 10, snapToGrid = FALSE) 
 ```
 
 There are many more functions available in the _AirFireModeling_ package and used properly in conjunction with the _raster_ package, powerful spatiotemporal air quality analytics can be achieved. To begin observing and comparing more specific locations and regions, we will need to employ our second data model, _ws_monitor_'s.
@@ -118,6 +125,7 @@ monitor_leaflet(sc_mon)
 library(AirMonitorPlots)
 # Plot a ggplot2 timeseries of sc_mon
 ggplot_pm25Timeseries(sc_mon) + geom_pm25Points()
+# PWFSLSmoke::monitorPlot_timeseries(sc_mon)
 ```
 
 ### Exploring Raster & Monitor data
@@ -125,14 +133,14 @@ Together Raster and Monitor allow us to explore BlueSky modeling data from vario
 
 To gather BlueSky data from multiple model runs, we can use `bluesky_aggregate()`. This function is ideal for multi-day-model runs. Because BlueSky model runs are often produced bi-daily, we wish to use the first 12 hours of each model run for our time period and combine these together to produce a full duration model run. 
 ```{r}
-ca_bs <- bluesky_aggregate(start = 20191215, end = 20191220, model = 'CANSAC-4km', by = 12) 
+ca_bs <- bluesky_aggregate(start = 20191115, end = 20191120, model = 'CANSAC-4km', cleanup = FALSE) 
 ca_bs
 ```
 
 We will also explore our monitor data at a spatiotemporal level. First, we download our monitor data for a similar time period and restrict our monitors to California borders. Using `monitor_toRaster()` we can convert all our monitors location and timeseries data to a _RasterBrick_ object, with similar properties to our `ca_bs` raster by using the `projectTo` parameter. We can also choose to increase (decrease?) the resolution of or `ca_mons` in order to better interpolate our comparison and to more easily visualize sparse monitor locations. 
 ```{r}
 # Load CA state monitor location data
-ca_mons <- monitor_load(startdate = 20191215, enddate = 20191220) %>% 
+ca_mons <- monitor_load(startdate = 20191115, enddate = 20191120) %>% 
   monitor_subset(stateCodes = 'CA')
 
 # Convert CA state monitor location data into a raster of the same extent, resolution, properties as our bs raster

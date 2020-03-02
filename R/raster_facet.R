@@ -16,7 +16,10 @@ raster_facet <- function(
   timezone = 'UTC'
 ) {
 
-  # TODO: Add Proper checks
+  # Checks
+  if ( !grepl('[rR]aster.+', class(raster)) ) {
+    stop(print('A valid Raster object is required.'))
+  }
 
   # Function to turn numeric POSIX time to character string
   t2str <- function(s) {

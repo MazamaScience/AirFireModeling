@@ -2,11 +2,11 @@
 title: "Model Receptor Analysis"
 output: html_document
 params:
-  model: "PNW-1.33km"
-  modelRun: 20190919
+  model: "CANSAC-4km"
+  modelRun: 20191119
   monitorID: NULL
-  longitude: -119.47
-  latitude: 44.55
+  longitude: -121.46
+  latitude: 38.55
   spatialDataDir: "~/Data/Spatial"
   modelDataDir: "~/Data/Bluesky"
 runtime: shiny
@@ -52,6 +52,7 @@ bs <- bluesky_load(modelRun = modelRun, model = model, cleanup = FALSE)
 
 ## Time series
 Below is a time series of the coordinates `r paste0('+', lat, ',', lon)`.
+Specfically, this is a `spaghetti plot` of the coordinate location and it's `N` nearest cell count. This plot is intended to highlight the variance of the coordinates regional values.
 
 ```{r}
 shiny::sliderInput( "cell_count", 
@@ -91,6 +92,8 @@ shiny::sliderInput( "radius",
                     step = 1, 
                     width = '100%' )
 ```
+
+Below is a matrix plot of the coordinates and it's radial cells. Each element of the plot indicates a different hour and can be useful for determining which slices and radius contain important information.
 
 ```{r}
 shiny::renderPlot({

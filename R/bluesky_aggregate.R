@@ -9,7 +9,7 @@
 #' @param type Model type (i.e. 'forecast).
 #' @param base_url The base url of the model output directory.
 #' @param sub_dir The subdirectory of the output directory.
-#' @param ... TBD
+#' @param ... Optional parameters passed into `bluesky_load`.
 #'
 #' @return A Raster* brick
 #'
@@ -79,7 +79,8 @@ bluesky_aggregate <- function(
                                         model = model,
                                         baseUrl = base_url,
                                         dailyOutputDir = sub_dir,
-                                        subDir = type )
+                                        subDir = type,
+                                        ... )
     # }, silent = TRUE)
   }
 

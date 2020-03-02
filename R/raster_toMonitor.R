@@ -29,8 +29,17 @@ raster_toMonitor <- function(
   MazamaCoreUtils::stopIfNull(longitude)
   MazamaCoreUtils::stopIfNull(latitude)
 
+  # Checks
+  if ( !grepl('[rR]aster.+', class(raster)) ) {
+    stop(print('A valid Raster object is required.'))
+  }
+  if ( longitude < raster::xmin(raster) | longitude > raster::xmax(raster) |
+       latitude < raster::ymin(raster) | latitude > raster::ymax(raster) ) {
+    stop('Check Coordinates: Out of range.')
+  }
   if ( is.null(monitorID) ) {
     monitorID <- c('GEN_ID')
+    warning('No Monitor ID provided: using generated ID')
   }
 
   # TODO: buffer only accepts radial distance in meters. Look into adding cell
