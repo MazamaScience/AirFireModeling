@@ -1,4 +1,5 @@
 #' @importFrom stats median
+#' @importFrom future %plan%
 #' @export
 #' @title Aggregate BlueSky models by hour
 #'
@@ -74,21 +75,38 @@ bluesky_aggregate <- function(
 
  # ----- Download model -----
   raster_list <- list()
+  V <- version # Temp versioning for future(?)
   for ( run in valid_dates )  {
     # try({
-    raster_list[[run]] <- bluesky_load( modelRun = run,
-                                        model = model,
-                                        baseUrl = base_url,
-                                        dailyOutputDir = sub_dir,
-                                        subDir = type,
-                                        version = version,
-                                        ... )
+    raster_list[[run]] <- future::future({
+      setModelDataDir('~/Data/Bluesky')
+      bluesky_load( modelRun = run,
+                    model = model,
+                    baseUrl = base_url,
+                    dailyOutputDir = sub_dir,
+                    subDir = type,
+                    version = V,
+                    ... )
+    }) %plan% future::multiprocess
     # }, silent = TRUE)
   }
+  cat(paste0("Loading ", model, " "))
+  while(!future::resolved(raster_list[[1]])) {
+    cat("=")
+    Sys.sleep(2)
+  }
+  cat("\n")
+  raster_list <- future::values(raster_list)
 
   # Convert raster stack list to brick
   raster_brick <- raster::brick(
-    lapply(raster_list, function(r) r[[by[1]:by[2]]])
+    lapply(
+      X = raster_list,
+      FUN = function(r) {
+        data <- r
+        data[[by[1]:by[2]]]
+      }
+    )
   )
 
   return(raster_brick)

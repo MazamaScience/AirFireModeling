@@ -90,7 +90,7 @@ bluesky_download <- function(
 
   # ----- Create URL -----------------------------------------------------------
 
-  # NOTE: Check version. Blueky Version 4.1 requires slightly different naming
+  # NOTE: Check version. BlueSky Version 4.1 requires slightly different naming
 
     if ( is.null(subDir) ) {
       if ( version == "4.1" ) {
