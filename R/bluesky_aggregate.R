@@ -1,5 +1,5 @@
 #' @importFrom stats median
-#' @importFrom future %plan%
+#' @importFrom future `%plan%`
 #' @export
 #' @title Aggregate BlueSky models by hour
 #'
@@ -74,10 +74,12 @@ bluesky_aggregate <- function(
   valid_dates <- aval_dates[grepl(paste(run_dates, collapse = '|'), aval_dates)]
 
  # ----- Download model -----
+  # Create thread cluster
+  cl <- parallel::makeCluster(future::availableCores() - 1, timeout = 60)
+  future::plan(strategy = future::cluster, workers = cl)
   raster_list <- list()
   V <- version # Temp versioning for future(?)
   for ( run in valid_dates )  {
-    # try({
     raster_list[[run]] <- future::future({
       setModelDataDir('~/Data/Bluesky')
       bluesky_load( modelRun = run,
@@ -87,16 +89,19 @@ bluesky_aggregate <- function(
                     subDir = type,
                     version = V,
                     ... )
-    }) %plan% future::multiprocess
-    # }, silent = TRUE)
+    })
   }
+  # print loading bar
   cat(paste0("Loading ", model, " "))
   while(!future::resolved(raster_list[[1]])) {
     cat("=")
     Sys.sleep(2)
   }
   cat("\n")
+  # parallel load bluesky
   raster_list <- future::values(raster_list)
+  # close thread connections
+  future::autoStopCluster(cl)
 
   # Convert raster stack list to brick
   raster_brick <- raster::brick(

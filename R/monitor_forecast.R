@@ -20,6 +20,7 @@ monitor_forecast <- function(
   endtime = NULL,
   models = c('CANSAC-1.33km', 'CANSAC-4km'),
   subDir = 'forecast',
+  version = "3.5",
   buffer = 2000
 ) {
 
@@ -53,30 +54,42 @@ monitor_forecast <- function(
   modelRun <- strftime(model_starttime, "%Y%m%d00", tz = "UTC")
 
   # Load the bluesky rasters
+  # Create thread cluster
+  cl <- parallel::makeCluster(future::availableCores() - 1, timeout = 60)
+  future::plan(strategy = future::cluster, workers = cl)
+  V <- version # Temp versioning for future(?)
+
   bs_monitorList <- list()
   for ( model in models ) {
+    bs_monitorList[[model]] <- future::future({
+      setModelDataDir('~/Data/Bluesky')
+      bs_raster <- bluesky_load( modelRun = modelRun,
+                                 subDir = subDir,
+                                 model = model,
+                                 version = V )
 
-    bs_raster <- bluesky_load( modelRun = modelRun,
-                               subDir = subDir,
-                               model = model )
+      raster_toMonitor( raster = bs_raster,
+                        longitude = lon,
+                        latitude = lat,
+                        buffer = buffer,
+                        FUN = mean, # Mean of the buffer region
+                        monitorID = model )
 
-    bs_monitor <- raster_toMonitor( raster = bs_raster,
-                                    longitude = lon,
-                                    latitude = lat,
-                                    buffer = buffer,
-                                    FUN = mean, # Mean of the buffer region
-                                    monitorID = model )
-
-    bs_monitorList[[model]] <- bs_monitor
-
+    })
   }
+  # print loading bar
+  cat("Loading ")
+  while(!future::resolved(bs_monitorList[[1]])) {
+    cat("=")
+    Sys.sleep(2)
+  }
+  cat("\n")
 
   # Combine the bs_monitors and ws_monitor
-  monitors <-
-    PWFSLSmoke::monitor_combine(
-      list( ws_monitor, PWFSLSmoke::monitor_combine(bs_monitorList) )
-    )
-
+  monitors <- PWFSLSmoke::monitor_combine(
+    list( ws_monitor, PWFSLSmoke::monitor_combine(future::values(bs_monitorList)) )
+  )
+  future::autoStopCluster(cl)
   # ----- ggplot ---------------------------------------------------------------
 
   gg <- AirMonitorPlots::ggplot_pm25Timeseries(monitors) +
@@ -91,12 +104,14 @@ monitor_forecast <- function(
 
   # === Debug ===
   if ( FALSE ) {
+    library(PWFSLSmoke)
     ws_monitor <- monitor_load(20191115, 20191118, monitorIDs = '060670010_01')
     starttime = NULL
     endtime = NULL
     models = c('CANSAC-1.33km', 'CANSAC-4km')
     subDir = 'forecast'
     buffer = 2000
+    version = "3.5"
 
     setModelDataDir('~/Data/Bluesky')
     monitor_forecast(ws_monitor)
