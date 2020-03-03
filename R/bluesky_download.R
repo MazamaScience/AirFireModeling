@@ -55,6 +55,7 @@ bluesky_download <- function(
   dailyOutputDir = "standard",
   model = "PNW-1.33km",
   modelRun = NULL,
+  version = "3.5",
   subDir = "combined",
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
   verbose = TRUE
@@ -89,23 +90,58 @@ bluesky_download <- function(
 
   # ----- Create URL -----------------------------------------------------------
 
-  if ( is.null(subDir) ) {
-    fileURL <- paste0(baseUrl, "/",
-                      dailyOutputDir, "/",
-                      model, "/",
-                      modelRun, "/",
-                      "data/smoke_dispersion.nc")
-  } else {
-    fileURL <- paste0(baseUrl, "/",
-                      dailyOutputDir, "/",
-                      model, "/",
-                      modelRun, "/",
-                      subDir, "/",
-                      "data/smoke_dispersion.nc")
-  }
+  # NOTE: Check version. Blueky Version 4.1 requires slightly different naming
 
-  fileName <- paste0(model, "_", modelRun, ".nc")
-  filePath <- file.path(getModelDataDir(), fileName)
+    if ( is.null(subDir) ) {
+      if ( version == "4.1" ) {
+
+        fileURL <- paste0( baseUrl, "/",
+                           dailyOutputDir, "/",
+                           model, "/",
+                           modelRun, "/",
+                           "hysplit_conc.nc" ) # NOTE: Not in data/ dir
+
+      } else if ( version == "3.5" ) {
+
+        fileURL <- paste0( baseUrl, "/",
+                           dailyOutputDir, "/",
+                           model, "/",
+                           modelRun, "/",
+                          "data/smoke_dispersion.nc" )
+
+      } else {
+        stop("Invalid BlueSky version.")
+      }
+
+    } else {
+
+      if ( version == "4.1" ) {
+
+        fileURL <- paste0( baseUrl, "/",
+                           dailyOutputDir, "/",
+                           model, "/",
+                           modelRun, "/",
+                           subDir, "/",
+                           "hysplit_conc.nc" ) # NOTE: Not in data/ dir
+
+      } else if ( version == "3.5" ) {
+
+        fileURL <- paste0( baseUrl, "/",
+                           dailyOutputDir, "/",
+                           model, "/",
+                           modelRun, "/",
+                           subDir, "/",
+                           "data/smoke_dispersion.nc" )
+
+      } else {
+        stop("Invalid BlueSky version.")
+      }
+
+    }
+
+    fileName <- paste0(model, "_", modelRun, ".nc")
+    filePath <- file.path(getModelDataDir(), fileName)
+
 
   # ----- Download data --------------------------------------------------------
 

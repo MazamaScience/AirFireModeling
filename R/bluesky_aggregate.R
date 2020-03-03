@@ -21,6 +21,7 @@ bluesky_aggregate <- function(
   type = "forecast",
   base_url = "https://haze.airfire.org/bluesky-daily/output",
   sub_dir = "standard",
+  version = "3.5",
   ...
   ) {
 
@@ -80,6 +81,7 @@ bluesky_aggregate <- function(
                                         baseUrl = base_url,
                                         dailyOutputDir = sub_dir,
                                         subDir = type,
+                                        version = version,
                                         ... )
     # }, silent = TRUE)
   }

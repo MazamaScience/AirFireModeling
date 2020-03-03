@@ -2,13 +2,14 @@
 title: "Model Receptor Analysis"
 output: html_document
 params:
-  model: "CANSAC-4km"
-  modelRun: 20191119
+  model: "PNW-1.33km"
+  modelRun: 20200302
   monitorID: NULL
-  longitude: -121.46
-  latitude: 38.55
+  longitude: -120.25
+  latitude: 45.55
   spatialDataDir: "~/Data/Spatial"
   modelDataDir: "~/Data/Bluesky"
+  version: "4.1"
 runtime: shiny
 ---
 
@@ -23,6 +24,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 model <- params$model
 modelRun <- params$modelRun
+version <- params$version
 
 if ( !is.null(params$monitorID) ) {
   
@@ -44,7 +46,7 @@ if ( !is.null(params$monitorID) ) {
 
 ```{r}
 setModelDataDir('~/Data/Bluesky')
-bs <- bluesky_load(modelRun = modelRun, model = model, cleanup = FALSE)
+bs <- bluesky_load(modelRun = modelRun, model = model, version = version, cleanup = FALSE)
 ```
 #### Longitude: `r lon`   Latitude: `r lat`
 #### Model: `r model` 

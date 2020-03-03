@@ -23,6 +23,7 @@ Imports:
     abind,
     AirMonitorPlots,
     dplyr,
+    future,
     geodist,
     geosphere,
     ggplot2,

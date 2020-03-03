@@ -79,6 +79,7 @@ bluesky_load <- function(
   dailyOutputDir = "standard",
   model = 'CANSAC-1.33km',
   subDir = "forecast",
+  version = "3.5",
   verbose = TRUE
 ) {
 
@@ -143,6 +144,7 @@ bluesky_load <- function(
                                      modelRun = modelRun,
                                      subDir = subDir,
                                      baseUrl = baseUrl,
+                                     version = version,
                                      verbose = verbose )
 
     # Assimilate
