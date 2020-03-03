@@ -67,14 +67,12 @@ monitor_forecast <- function(
                                  subDir = subDir,
                                  model = model,
                                  version = V )
-
       raster_toMonitor( raster = bs_raster,
                         longitude = lon,
                         latitude = lat,
                         buffer = buffer,
                         FUN = mean, # Mean of the buffer region
                         monitorID = model )
-
     })
   }
   # print loading bar

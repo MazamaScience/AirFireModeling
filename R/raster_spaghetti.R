@@ -16,7 +16,7 @@
 raster_spaghetti <- function( raster,
                               longitude = NULL,
                               latitude = NULL,
-                              ...) {
+                              ... ) {
 
   # Checks
   if ( !grepl('[rR]aster.+', class(raster)) ) {
