@@ -23,7 +23,7 @@ raster_spaghetti <- function( raster,
     stop(print('A valid Raster object is required.'))
   }
   if ( longitude < raster::xmin(raster) | longitude > raster::xmax(raster) |
-       latitude < raster::ymin(raster) | latitude > raster::ymax(raster) ) {
+       latitude < raster::ymin(raster)  |  latitude > raster::ymax(raster) ) {
     stop('Check Coordinates: Out of range.')
   }
 
@@ -42,6 +42,42 @@ raster_spaghetti <- function( raster,
                              snapToGrid = args[['snapToGrid']] )
   } else {
     stop('Must provide subset parameter')
+  }
+
+  # color param
+  if ( 'color' %in% names(args) ) {
+    color <- args[['color']]
+  } else {
+    color <- 'dodgerblue4'
+  }
+
+  # Alpha Param
+  if ( 'alpha' %in% names(args) ) {
+    alpha <- args[['alpha']]
+  } else {
+    alpha <- ~-target_dist
+  }
+
+  # If monitor ID is provided, load it and plot it
+  if ( 'monitorID' %in% names(args) & !is.null(args[['monitorID']]) ) {
+    # Assume names of raster layers are POSIX dates
+    # Remove 'X' from string convert to numeric
+    datetime <- as.numeric(stringr::str_remove( string = names(raster),
+                                                pattern = 'X' ))
+    # TIMEZONES!
+    tzone <- c('UTC')
+    # Assimilate datetime class
+    class(datetime) <- c('POSIXct', 'POSIXt')
+    # Set TIMEZONE to UTC
+    attr(datetime, 'tzone') <- tzone
+    sd <- range(datetime)[1]
+    ed <- range(datetime)[2]
+    # Load monitor
+    monitor <- PWFSLSmoke::monitor_load(startdate = sd, enddate = ed, monitorIDs = args[['monitorID']])
+    df <- monitor$data
+    names(df) <- c('datetime', 'pm25')
+    # Plot
+    gg_monitor <- ggplot2::geom_line(ggplot2::aes_(x = ~datetime, y = ~pm25), data = df, linetype = 'dashed')
   }
 
   raster::crs(subbed) <- raster::crs(raster)
@@ -73,7 +109,6 @@ raster_spaghetti <- function( raster,
   # Combine all the monitors
   monitors <- PWFSLSmoke::monitor_combine(monitor_list)
 
-
   # Create Target Distance field for line alpha
   monitors$meta$target_dist <- geosphere::distGeo(c(longitude, latitude), coords)
 
@@ -84,14 +119,17 @@ raster_spaghetti <- function( raster,
   gg <- ggplot2::ggplot( data = df,
                          ggplot2::aes_(x = ~datetime, y = ~pm25) ) +
     # Organize by the distance. Less distance = Greater Alpha
-    ggplot2::geom_line(ggplot2::aes_(group = ~monitorID, alpha = ~-target_dist), color = 'dodgerblue4') +
+    ggplot2::geom_line( ggplot2::aes_(group = ~monitorID, alpha = alpha),
+                        color = color ) +
     ggplot2::labs( x = 'Datetime',
                    y = '\u03bcg / m\u00b3',
-                   title = expression('PM'[2.5])) +
+                   title = expression('PM'[2.5]) ) +
     ggplot2::guides(alpha = FALSE)
 
-
-  return(gg)
-
+  if ( exists('gg_monitor') ) {
+    return(gg + gg_monitor)
+  } else {
+    return(gg)
+  }
 }
 
