@@ -78,16 +78,17 @@ bluesky_aggregate <- function(
   cl <- parallel::makeCluster(future::availableCores() - 1, timeout = 60)
   future::plan(strategy = future::cluster, workers = cl)
   raster_list <- list()
-  V <- version # Temp versioning for future(?)
+  v <- version # Temp versioning for future(?)
+  model_dir <- getModelDataDir()
   for ( run in valid_dates )  {
     raster_list[[run]] <- future::future({
-      setModelDataDir('~/Data/Bluesky')
+      setModelDataDir(model_dir)
       bluesky_load( modelRun = run,
                     model = model,
                     baseUrl = base_url,
                     dailyOutputDir = sub_dir,
                     subDir = type,
-                    version = V,
+                    version = v,
                     ... )
     })
   }
