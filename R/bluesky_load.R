@@ -149,25 +149,24 @@ bluesky_load <- function(
                                        baseUrl = baseUrl,
                                        version = version,
                                        verbose = verbose )
-
       # Assimilate
       nc_path <- bluesky_assimilate( raw_nc_path,
                                      cleanup = cleanup )
     }
-
     # Rasterize
     model_brick <- raster::brick(nc_path)
 
     return(model_brick)
 
-
   } else {
     # if multiple models are provided i.e. model = c('CANSAC...', 'PNW...', etc)
     cl <- parallel::makeCluster(future::availableCores() - 1, timeout = 60)
     future::plan(strategy = future::cluster, workers = cl)
-    brick_list <- list()
+    # temp params for future vars
     v <- version
     model_dir <- getModelDataDir()
+    # create model brick list
+    brick_list <- list()
     for ( i in model ) {
       brick_list[[i]] <- future::future({
         setModelDataDir(model_dir)
@@ -181,24 +180,22 @@ bluesky_load <- function(
         # Assimilate
         nc_path <- bluesky_assimilate( raw_nc_path,
                                        cleanup = cleanup )
+        # rasterize
         raster::brick(nc_path)
       })
     }
-
-    cat("Loading ")
+    # Cat the loading
+    cat("Loading Multiple Models ")
     while(!future::resolved(brick_list[[1]])) {
       cat("=")
       Sys.sleep(2)
     }
     cat("\n")
-
+    # Get values (parallel)
     brick_list <- future::values(brick_list)
-
     future::autoStopCluster(cl)
 
     return(brick_list)
 
   }
-
-
 }
