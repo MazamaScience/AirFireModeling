@@ -124,37 +124,81 @@ bluesky_load <- function(
   if ( !is.logical(verbose) )
     verbose <- TRUE
 
-  # ----- Handle user files -----
-  if ( !is.null(filePath) ) {
-    if( file.exists(filePath) ) {
-      # Assimilate
-      nc_path <- bluesky_assimilate( filePath = filePath,
-                                     cleanup = FALSE )
-    } else {
-      stop(paste0(
-        "Could not find ", filePath, ".  ",
-        "Did you specify an absolute path?"
-      ))
-    }
-  # ----- Handle download -----
-  } else {
-    # Bluesky download
-    raw_nc_path <- bluesky_download( dailyOutputDir = dailyOutputDir,
-                                     model = model,
-                                     modelRun = modelRun,
-                                     subDir = subDir,
-                                     baseUrl = baseUrl,
-                                     version = version,
-                                     verbose = verbose )
+  # Option to download multiple models at once
+  if ( length(model) == 1 ) {
 
-    # Assimilate
-    nc_path <- bluesky_assimilate( raw_nc_path,
-                                   cleanup = cleanup )
+    # ----- Handle user files -----
+    if ( !is.null(filePath) ) {
+      if( file.exists(filePath) ) {
+        # Assimilate
+        nc_path <- bluesky_assimilate( filePath = filePath,
+                                       cleanup = FALSE )
+      } else {
+        stop(paste0(
+          "Could not find ", filePath, ".  ",
+          "Did you specify an absolute path?"
+        ))
+      }
+      # ----- Handle download -----
+    } else {
+      # Bluesky download
+      raw_nc_path <- bluesky_download( dailyOutputDir = dailyOutputDir,
+                                       model = model,
+                                       modelRun = modelRun,
+                                       subDir = subDir,
+                                       baseUrl = baseUrl,
+                                       version = version,
+                                       verbose = verbose )
+
+      # Assimilate
+      nc_path <- bluesky_assimilate( raw_nc_path,
+                                     cleanup = cleanup )
+    }
+
+    # Rasterize
+    model_brick <- raster::brick(nc_path)
+
+    return(model_brick)
+
+
+  } else {
+    # if multiple models are provided i.e. model = c('CANSAC...', 'PNW...', etc)
+    cl <- parallel::makeCluster(future::availableCores() - 1, timeout = 60)
+    future::plan(strategy = future::cluster, workers = cl)
+    brick_list <- list()
+    v <- version
+    model_dir <- getModelDataDir()
+    for ( i in model ) {
+      brick_list[[i]] <- future::future({
+        setModelDataDir(model_dir)
+        raw_nc_path <- bluesky_download( dailyOutputDir = dailyOutputDir,
+                                         model = i,
+                                         modelRun = modelRun,
+                                         subDir = subDir,
+                                         baseUrl = baseUrl,
+                                         version = v,
+                                         verbose = verbose )
+        # Assimilate
+        nc_path <- bluesky_assimilate( raw_nc_path,
+                                       cleanup = cleanup )
+        raster::brick(nc_path)
+      })
+    }
+
+    cat("Loading ")
+    while(!future::resolved(brick_list[[1]])) {
+      cat("=")
+      Sys.sleep(2)
+    }
+    cat("\n")
+
+    brick_list <- future::values(brick_list)
+
+    future::autoStopCluster(cl)
+
+    return(brick_list)
+
   }
 
-  # Rasterize
-  model_brick <- raster::brick(nc_path)
-
-  return(model_brick)
 
 }
