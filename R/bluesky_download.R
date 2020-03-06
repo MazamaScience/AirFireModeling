@@ -88,7 +88,7 @@ bluesky_download <- function(
     verbose <- TRUE
 
   # ----- Create URL -----------------------------------------------------------
-
+  # Create directory URL
   dir_url <- paste0( baseUrl, "/",
                  dailyOutputDir, "/",
                  model, "/",
