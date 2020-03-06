@@ -57,16 +57,16 @@ monitor_forecast <- function(
   # Create thread cluster
   cl <- parallel::makeCluster(future::availableCores() - 1, timeout = 60)
   future::plan(strategy = future::cluster, workers = cl)
-  v <- version # Temp versioning for future(?)
-  model_dir <- getModelDataDir()
+  V <- version # Temp versioning for future(?)
+
   bs_monitorList <- list()
   for ( model in models ) {
     bs_monitorList[[model]] <- future::future({
-      setModelDataDir(model_dir)
+      setModelDataDir('~/Data/Bluesky')
       bs_raster <- bluesky_load( modelRun = modelRun,
                                  subDir = subDir,
                                  model = model,
-                                 version = v )
+                                 version = V )
       raster_toMonitor( raster = bs_raster,
                         longitude = lon,
                         latitude = lat,
