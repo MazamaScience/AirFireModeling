@@ -105,7 +105,7 @@ bluesky_download <- function(
       stop('Invalid Directory: Cannot parse BlueSky output version.')
     }
     if ( verbose ) {
-      message(paste0('Auto-detected BlueSky Output Version: ', version))
+      message(paste0('Auto-detected ', model, ' BlueSky Output Version: ', version))
     }
     return(version)
   }

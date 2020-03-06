@@ -44,11 +44,17 @@ bluesky_locationPlot <- function( modelRun,
     sd <- range(datetime)[1]
     ed <- range(datetime)[2]
     # Load monitor
-    monitor_list[[monitorID]] <- future::future({
-      PWFSLSmoke::monitor_load( startdate = sd,
-                                enddate = ed,
-                                monitorIDs = monitorID )
-      })
+    monitor_list[[monitorID]] <- PWFSLSmoke::monitor_load( startdate = sd,
+                                                           enddate = ed,
+                                                           monitorIDs = monitorID )
+
+    if ( is.null(latitude) | is.null(longitude) ) {
+      latitude <- monitor_list[[monitorID]]$meta$latitude
+      longitude <- monitor_list[[monitorID]]$meta$longitude
+      message(paste0('Using Monitor Location ', latitude, ' ', longitude))
+    } else {
+      message('Overwriting Monitor Location with params: longitude, latitude')
+    }
   }
 
   # Convert bluesky rasters to monitors via coordinates
@@ -73,7 +79,13 @@ bluesky_locationPlot <- function( modelRun,
   gg <- AirMonitorPlots::ggplot_pm25Timeseries(ws_data = df) +
     AirMonitorPlots::geom_pm25Points(ggplot2::aes(color = .data$monitorID)) +
     AirMonitorPlots::stat_nowcast(ggplot2::aes(color = .data$monitorID)) +
+    ggplot2::labs(color = 'Legend')
 
-  gg
+  return(gg)
+
+  if ( FALSE ) {
+    monitorID = '410650007_01'
+    bluesky_locationPlot(20200301, monitorID = monitorID, models = c('PNW-1.33km', 'PNW-4km', 'CANSAC-4km'))
+  }
 
 }
