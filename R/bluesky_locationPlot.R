@@ -1,4 +1,4 @@
-#' Title
+#' Downlaod and Plot BlueSky location models
 #'
 #' @param modelRun Date code as "YYYYMMDDHH".
 #' @param latitude A target latitude
@@ -7,11 +7,14 @@
 #' @param models A list of models to plot
 #' @param ... additional parameters passed into \code{bluesky_load()}
 #'
-#' @return
+#' @return A ggplot object
 #' @export
 #'
 #' @examples
-bluesky_modelsPlot <- function( modelRun,
+#' \dontrun {
+#' bluesky_multiplot(20191212, latitude, longitude, version = "4.1", monitorID = '530770016_01')
+#' }
+bluesky_locationPlot <- function( modelRun,
                                latitude = NULL,
                                longitude = NULL,
                                monitorID = NULL,
