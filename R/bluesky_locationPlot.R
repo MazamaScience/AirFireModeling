@@ -80,7 +80,8 @@ bluesky_locationPlot <- function( modelRun,
   gg <- AirMonitorPlots::ggplot_pm25Timeseries(ws_data = df) +
     AirMonitorPlots::geom_pm25Points(ggplot2::aes(color = .data$monitorID)) +
     AirMonitorPlots::stat_nowcast(ggplot2::aes(color = .data$monitorID)) +
-    ggplot2::labs(color = 'Legend')
+    ggplot2::labs(color = 'Legend') +
+    ggplot2::theme(legend.position = 'bottom', legend.margin = ggplot2::margin(), legend.box = 'vertical')
 
   return(gg)
 
