@@ -20,7 +20,6 @@ monitor_forecast <- function(
   endtime = NULL,
   models = c('CANSAC-1.33km', 'CANSAC-4km'),
   subDir = 'forecast',
-  version = "3.5",
   buffer = 2000
 ) {
 
@@ -57,7 +56,6 @@ monitor_forecast <- function(
   # Create thread cluster
   cl <- parallel::makeCluster(future::availableCores() - 1, timeout = 60)
   future::plan(strategy = future::cluster, workers = cl)
-  V <- version # Temp versioning for future(?)
 
   bs_monitorList <- list()
   for ( model in models ) {
@@ -65,8 +63,7 @@ monitor_forecast <- function(
       setModelDataDir('~/Data/Bluesky')
       bs_raster <- bluesky_load( modelRun = modelRun,
                                  subDir = subDir,
-                                 model = model,
-                                 version = V )
+                                 model = model )
       raster_toMonitor( raster = bs_raster,
                         longitude = lon,
                         latitude = lat,

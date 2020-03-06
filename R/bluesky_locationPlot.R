@@ -15,11 +15,11 @@
 #' bluesky_multiplot(20191212, latitude, longitude, version = "4.1", monitorID = '530770016_01')
 #' }
 bluesky_locationPlot <- function( modelRun,
-                               latitude = NULL,
-                               longitude = NULL,
-                               monitorID = NULL,
-                               models = c('PNW-1.33km', 'PNW-4km'),
-                               ... ) {
+                                  latitude = NULL,
+                                  longitude = NULL,
+                                  monitorID = NULL,
+                                  models = c('PNW-1.33km', 'PNW-4km'),
+                                  ... ) {
 
   # load BlueSky models
   bs_list <- bluesky_load(modelRun = modelRun, model = models, ...)
@@ -68,11 +68,12 @@ bluesky_locationPlot <- function( modelRun,
   # close thread connections
   future::autoStopCluster(cl)
 
+  df <- PWFSLSmoke::monitor_toTidy(monitors)
   # Plot it
-  gg <- AirMonitorPlots::ggplot_pm25Timeseries(PWFSLSmoke::monitor_toTidy(monitors)) +
+  gg <- AirMonitorPlots::ggplot_pm25Timeseries(ws_data = df) +
     AirMonitorPlots::geom_pm25Points(ggplot2::aes(color = .data$monitorID)) +
     AirMonitorPlots::stat_nowcast(ggplot2::aes(color = .data$monitorID)) +
 
-  return(gg)
+  gg
 
 }

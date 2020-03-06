@@ -55,7 +55,6 @@ bluesky_download <- function(
   dailyOutputDir = "standard",
   model = "PNW-1.33km",
   modelRun = NULL,
-  version = "3.5",
   subDir = "combined",
   baseUrl = "https://haze.airfire.org/bluesky-daily/output",
   verbose = TRUE
@@ -90,78 +89,62 @@ bluesky_download <- function(
 
   # ----- Create URL -----------------------------------------------------------
 
-  # NOTE: Check version. BlueSky Version 4.1 requires slightly different naming
+  dir_url <- paste0( baseUrl, "/",
+                 dailyOutputDir, "/",
+                 model, "/",
+                 modelRun, "/",
+                 ifelse(is.null(subDir), NULL, paste0(subDir, "/")) )
 
-    if ( is.null(subDir) ) {
-      if ( version == "4.1" ) {
-
-        fileURL <- paste0( baseUrl, "/",
-                           dailyOutputDir, "/",
-                           model, "/",
-                           modelRun, "/",
-                           "hysplit_conc.nc" ) # NOTE: Not in data/ dir
-
-      } else if ( version == "3.5" ) {
-
-        fileURL <- paste0( baseUrl, "/",
-                           dailyOutputDir, "/",
-                           model, "/",
-                           modelRun, "/",
-                          "data/smoke_dispersion.nc" )
-
-      } else {
-        stop("Invalid BlueSky version.")
-      }
-
+  # NOTE: Detect bluesky output version via summary.json
+  detect_version <- function(dir_url) {
+    content <- readLines(dir_url)
+    if ( any(stringr::str_detect(content, 'summary.json')) ) {
+      summary <- jsonlite::fromJSON(paste0(dir_url, 'summary.json'))
+      version <- summary$output_version
     } else {
-
-      if ( version == "4.1" ) {
-
-        fileURL <- paste0( baseUrl, "/",
-                           dailyOutputDir, "/",
-                           model, "/",
-                           modelRun, "/",
-                           subDir, "/",
-                           "hysplit_conc.nc" ) # NOTE: Not in data/ dir
-
-      } else if ( version == "3.5" ) {
-
-        fileURL <- paste0( baseUrl, "/",
-                           dailyOutputDir, "/",
-                           model, "/",
-                           modelRun, "/",
-                           subDir, "/",
-                           "data/smoke_dispersion.nc" )
-
-      } else {
-        stop("Invalid BlueSky version.")
-      }
-
+      stop('Invalid Directory: Cannot parse BlueSky output version.')
     }
+    if ( verbose ) {
+      message(paste0('Auto-detected BlueSky Output Version: ', version))
+    }
+    return(version)
+  }
 
-    fileName <- paste0(model, "_", modelRun, ".nc")
-    filePath <- file.path(getModelDataDir(), fileName)
-
+  fileName <- paste0(model, "_", modelRun, ".nc")
+  filePath <- file.path(getModelDataDir(), fileName)
 
   # ----- Download data --------------------------------------------------------
-
   if ( !file.exists(filePath) ) {
+    version <- detect_version(dir_url)
 
-    result <- try({
-      utils::download.file(url = fileURL, destfile = filePath, quiet = !verbose)
-    }, silent = FALSE)
-
-    if ( "try-error" %in% class(result) ) {
-      err_msg <- geterrmessage()
-      if ( stringr::str_detect(err_msg,"cannot open destfile") ) {
-        # Option to stop with a different message
-      } else if ( stringr::str_detect(err_msg,"404 Not Found") ) {
-        # Option to stop with a different message
-      } else {
-        # Option to stop with a different message
-      }
+    # Use detected bluesky output version to construct .nc file url
+    if ( version == '1.0.0' ) {
+      fileUrl <- paste0(dir_url, 'data/smoke_dispersion.nc')
+      tryCatch(
+        expr = {
+          utils::download.file(url = fileUrl,  destfile = filePath, quiet = !verbose)
+        },
+        error = function(e) {
+          stop(paste0('Error downloading: ', model))
+        }
+      )
+    } else if ( version == '2.0.0' ) {
+      fileUrl <- paste0(dir_url, 'hysplit_conc.nc')
+      tryCatch(
+        expr = {
+          utils::download.file(url = fileUrl, destfile = filePath, quiet = !verbose)
+        },
+        error = function(e) {
+          stop(paste0('Error downloading: ', model))
+        }
+      )
+    } else {
+      stop('Error Downloadind: Invalid BlueSky output version')
     }
 
+  } else {
+    message(paste0('BlueSky Model Exists at: ', filePath))
+    message('Loading ...')
   }
 
   # ----- Return ---------------------------------------------------------------

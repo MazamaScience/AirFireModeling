@@ -22,7 +22,6 @@ bluesky_aggregate <- function(
   type = "forecast",
   base_url = "https://haze.airfire.org/bluesky-daily/output",
   sub_dir = "standard",
-  version = "3.5",
   ...
   ) {
 
@@ -78,7 +77,6 @@ bluesky_aggregate <- function(
   cl <- parallel::makeCluster(future::availableCores() - 1, timeout = 60)
   future::plan(strategy = future::cluster, workers = cl)
   raster_list <- list()
-  v <- version # Temp versioning for future(?)
   model_dir <- getModelDataDir()
   for ( run in valid_dates )  {
     raster_list[[run]] <- future::future({
@@ -88,7 +86,6 @@ bluesky_aggregate <- function(
                     baseUrl = base_url,
                     dailyOutputDir = sub_dir,
                     subDir = type,
-                    version = v,
                     ... )
     })
   }

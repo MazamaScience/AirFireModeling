@@ -79,7 +79,6 @@ bluesky_load <- function(
   dailyOutputDir = "standard",
   model = 'CANSAC-1.33km',
   subDir = "forecast",
-  version = "3.5",
   verbose = TRUE
 ) {
 
@@ -147,7 +146,6 @@ bluesky_load <- function(
                                        modelRun = modelRun,
                                        subDir = subDir,
                                        baseUrl = baseUrl,
-                                       version = version,
                                        verbose = verbose )
       # Assimilate
       nc_path <- bluesky_assimilate( raw_nc_path,
@@ -162,8 +160,6 @@ bluesky_load <- function(
     # if multiple models are provided i.e. model = c('CANSAC...', 'PNW...', etc)
     cl <- parallel::makeCluster(future::availableCores() - 1, timeout = 60)
     future::plan(strategy = future::cluster, workers = cl)
-    # temp params for future vars
-    v <- version
     model_dir <- getModelDataDir()
     # create model brick list
     brick_list <- list()
@@ -175,7 +171,6 @@ bluesky_load <- function(
                                          modelRun = modelRun,
                                          subDir = subDir,
                                          baseUrl = baseUrl,
-                                         version = v,
                                          verbose = verbose )
         # Assimilate
         nc_path <- bluesky_assimilate( raw_nc_path,
