@@ -3,7 +3,7 @@ title: "Model Receptor"
 author: "Mazama Science"
 params:
   model: "PNW-1.33km"
-  modelRun: 20200302
+  modelRun: 20200305
   monitorID: "060192009_01"
   longitude: -120.25
   latitude: 45.55
