@@ -30,7 +30,7 @@ bluesky_aggregate(
 
 \item{sub_dir}{The subdirectory of the output directory.}
 
-\item{...}{TBD}
+\item{...}{Optional parameters passed into `bluesky_load`.}
 }
 \value{
 A Raster* brick

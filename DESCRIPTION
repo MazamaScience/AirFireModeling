@@ -1,6 +1,6 @@
 Type: Package
 Package: AirFireModeling
-Version: 0.2
+Version: 0.2.1
 Title: Utilities for Working with Monitoring Data and Smoke Model Output
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")), 
@@ -30,6 +30,7 @@ Imports:
     geosphere,
     ggplot2,
     jsonlite,
+    leaflet,
     lubridate,
     maps,
     mapproj,
@@ -48,14 +49,17 @@ Imports:
     stringr
 Suggests:
     knitr,
-    testthat (>= 2.1.0)
+    markdown,
+    testthat (>= 2.1.0),
+    rmarkdown,
+    roxygen2
 SystemRequirements: netcdf
-Encoding: UTF-8 
 Description: Utilities for working with USFS BlueSky model output
     and PM2.5 monitoring data available from AirNow, AIRSIS
     WRCC and others.
 License: GPL-3
 VignetteBuilder: knitr
 Repository: CRAN
+Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.0.2

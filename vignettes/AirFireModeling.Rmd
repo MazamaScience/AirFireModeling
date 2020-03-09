@@ -28,7 +28,12 @@ The package includes functionality to make it easier to:
 
 # Purpose
 The _AirFireModeling_ package is intended to simplify the comparison of on-ground air-quality monitor data with generated air-quality forecast models provided via the BlueSky Modeling Framework. Comparing output models is an important step to improve the accuracy and _AirFireModeling_ includes general capabilities and a standardized data model for defining various model preformance metrics.
-Fundamentally, the _AirFireModeling_ package provides functions for _spatial grid_ to _location time series_ conversion, and vice-versa. The package should be particularly useful when using very large datasets that can not be loaded into the computer’s memory. Functions will work correctly, because they they process large files in chunks, i.e., they read, compute, and write blocks of data, without loading all values into memory at once. 
+Fundamentally, the _AirFireModeling_ package provides functions for 
+_spatial grid_ to _location time series_ conversion, and vice-versa. The package 
+should be particularly useful when using very large datasets that can not be 
+loaded into the computer's memory. Functions will work correctly, because they 
+they process large files in chunks, i.e., they read, compute, and write blocks 
+of data, without loading all values into memory at once. 
 
 # Introduction
 ### Overview 
@@ -38,7 +43,7 @@ The BlueSky Model data exists as a gridded spatial timeseries. Every grid cell i
 There are two main data models to recognize in this package: _Raster* _ and _ws_monitor_ objects. Each object has its own properties and scope. Generally, BlueSky _Raster* _ objects are compatible with the **raster** package and _ws_monitor_ objects are compatible with monitor functionality from packages such as **PWFSLSmoke**.  
 
 #### Rasters
-The **raster** package provides classes and functions to manipulate geographic (spatial) data in ’raster’ format.  Raster data divides space into cells (rectangles; pixels) of equal size (in units of the coordinate reference system).  Such continuous spatial data are also referred to as ’grid’ data, and be contrasted with discrete (object based) spatial data (points, lines, polygons).
+The **raster** package provides classes and functions to manipulate geographic (spatial) data in "raster" format.  Raster data divides space into cells (rectangles; pixels) of equal size (in units of the coordinate reference system).  Such continuous spatial data are also referred to as ’grid’ data, and be contrasted with discrete (object based) spatial data (points, lines, polygons).
 ```{r}
 # Load the library
 library(AirFireModeling)

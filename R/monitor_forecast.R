@@ -1,5 +1,6 @@
 #' @export
 #' @importFrom utils tail
+#' @importFrom PWFSLSmoke monitor_isMonitor monitor_isEmpty
 #' @importFrom rlang .data
 #'
 #' @title Compare forecasts
@@ -97,19 +98,24 @@ monitor_forecast <- function(
   # Return combined monitors
   return(monitors)
 
-  # === Debug ===
-  if ( FALSE ) {
-    library(PWFSLSmoke)
-    ws_monitor <- monitor_load(20191115, 20191118, monitorIDs = '060670010_01')
-    starttime = NULL
-    endtime = NULL
-    models = c('CANSAC-1.33km', 'CANSAC-4km')
-    subDir = 'forecast'
-    buffer = 2000
-    version = "3.5"
-
-    setModelDataDir('~/Data/Bluesky')
-    monitor_forecast(ws_monitor)
-  }
-
 }
+
+# ===== DEBUGGING ==============================================================
+
+if ( FALSE ) {
+  
+  library(PWFSLSmoke)
+  
+  ws_monitor <- monitor_load(20191115, 20191118, monitorIDs = '060670010_01')
+  starttime = NULL
+  endtime = NULL
+  models = c('CANSAC-1.33km', 'CANSAC-4km')
+  subDir = 'forecast'
+  buffer = 2000
+  version = "3.5"
+  
+  setModelDataDir('~/Data/Bluesky')
+  monitor_forecast(ws_monitor)
+  
+}
+

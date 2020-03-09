@@ -1,4 +1,8 @@
-# AirFireModeling 0.2
+# AirFireModeling 0.2.1
+
+* Minor cleanup to pass R CMD check.
+
+# AirFireModeling 0.2.0
 
 * Migrated to `raster` base 
 * Moved deprecated base to `old_R/`.

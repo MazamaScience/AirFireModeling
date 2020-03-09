@@ -11,9 +11,13 @@
 #' @export
 #'
 #' @examples
-#' \dontrun {
-#'    monitorID = '410650007_01'
-#'    bluesky_locationPlot( 20200301, monitorID = monitorID, models = c('PNW-1.33km', 'PNW-4km', 'CANSAC-4km'))
+#' \dontrun{
+#' monitorID = '410650007_01'
+#' bluesky_locationPlot(
+#'   modelRun = 20200301, 
+#'   monitorID = monitorID, 
+#'   models = c('PNW-1.33km', 'PNW-4km', 'CANSAC-4km')
+#' )
 #' }
 bluesky_locationPlot <- function( modelRun,
                                   latitude = NULL,
