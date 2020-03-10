@@ -19,10 +19,10 @@
 #' \dontrun{
 #' setModelDataDir('~/Data/Bluesky')
 #' filePath <- bluesky_download(model = "PNW-4km", modelRun = 2019100900)
-#' bluesky_assimilate(filePath)
+#' bluesky_toCommonFormat(filePath)
 #' }
 
-bluesky_assimilate <- function(
+bluesky_toCommonFormat <- function(
   filePath = NULL,
   cleanup = TRUE
 ) {

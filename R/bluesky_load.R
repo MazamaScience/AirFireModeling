@@ -130,7 +130,7 @@ bluesky_load <- function(
       if ( file.exists(v2_path) ) {
         return(raster::brick(v2_path))
       } else {
-        bluesky_assimilate(filePath, cleanup = cleanup)
+        bluesky_toCommonFormat(filePath, cleanup = cleanup)
         return(raster::brick(v2_path))
       }
     } else {
@@ -140,7 +140,7 @@ bluesky_load <- function(
                                     subDir = subDir,
                                     baseUrl = baseUrl,
                                     verbose = verbose )
-      v2_path <- bluesky_assimilate( raw_path, cleanup = cleanup )
+      v2_path <- bluesky_toCommonFormat( raw_path, cleanup = cleanup )
       return(raster::brick(v2_path))
     }
   }

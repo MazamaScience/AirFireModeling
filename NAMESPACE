@@ -2,12 +2,12 @@
 
 export("%>%")
 export(bluesky_aggregate)
-export(bluesky_assimilate)
 export(bluesky_availiableModels)
 export(bluesky_download)
 export(bluesky_load)
 export(bluesky_locationPlot)
 export(bluesky_modelInfo)
+export(bluesky_toCommonFormat)
 export(getModelDataDir)
 export(monitor_forecast)
 export(monitor_toRaster)
