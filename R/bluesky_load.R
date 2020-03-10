@@ -123,74 +123,143 @@ bluesky_load <- function(
   if ( !is.logical(verbose) )
     verbose <- TRUE
 
-  # Option to download multiple models at once
-  if ( length(model) == 1 ) {
-
-    # ----- Handle user files -----
-    if ( !is.null(filePath) ) {
-      if( file.exists(filePath) ) {
-        # Assimilate
-        nc_path <- bluesky_assimilate( filePath = filePath,
-                                       cleanup = FALSE )
+  .model_load <- function(filePath, model_name) {
+    if ( is.null(filePath) ) filePath <- 'DNE'
+    if ( file.exists(filePath) ) {
+      v2_path <- stringr::str_replace(filePath, '.nc', '_V2.nc')
+      if ( file.exists(v2_path) ) {
+        return(raster::brick(v2_path))
       } else {
-        stop(paste0(
-          "Could not find ", filePath, ".  ",
-          "Did you specify an absolute path?"
-        ))
+        bluesky_assimilate(filePath, cleanup = cleanup)
+        return(raster::brick(v2_path))
       }
-      # ----- Handle download -----
     } else {
-      # Bluesky download
-      raw_nc_path <- bluesky_download( dailyOutputDir = dailyOutputDir,
-                                       model = model,
-                                       modelRun = modelRun,
-                                       subDir = subDir,
-                                       baseUrl = baseUrl,
-                                       verbose = verbose )
-      # Assimilate
-      nc_path <- bluesky_assimilate( raw_nc_path,
-                                     cleanup = cleanup )
+      raw_path <- bluesky_download( dailyOutputDir = dailyOutputDir,
+                                    model = model_name,
+                                    modelRun = modelRun,
+                                    subDir = subDir,
+                                    baseUrl = baseUrl,
+                                    verbose = verbose )
+      v2_path <- bluesky_assimilate( raw_path, cleanup = cleanup )
+      return(raster::brick(v2_path))
     }
-    # Rasterize
-    model_brick <- raster::brick(nc_path)
+  }
 
-    return(model_brick)
+  # Option to download multiple models at once
+  # if only single model load normal else load parallel
+  # if ( length(model) == 1 ) {
+  #
+  #   if ( !is.null(filePath) ) {
+  #
+  #     # !filepath provided ->
+  #     #  if file path exists ->
+  #     #   if v2 exists -> return raster load
+  #     #   not v2 -> assimilate and load
+  #     #  not exist ->
+  #     #   downalod and assimilate
+  #     # filepath  provided ->
+  #     #  load (no assimilate)
+  #     return(.model_load(filePath))
+  #   }
+  #
+  # } else { # Load Parallel
 
-  } else {
-    # if multiple models are provided i.e. model = c('CANSAC...', 'PNW...', etc)
-    cl <- parallel::makeCluster(future::availableCores() - 1, timeout = 60)
+    cl <- parallel::makeCluster(future::availableCores() - 1)
     future::plan(strategy = future::cluster, workers = cl)
     model_dir <- getModelDataDir()
-    # create model brick list
-    brick_list <- list()
+
+    model_list <- list()
+
     for ( i in model ) {
-      brick_list[[i]] <- future::future({
+      model_list[[i]] <- future::future({
         setModelDataDir(model_dir)
-        raw_nc_path <- bluesky_download( dailyOutputDir = dailyOutputDir,
-                                         model = i,
-                                         modelRun = modelRun,
-                                         subDir = subDir,
-                                         baseUrl = baseUrl,
-                                         verbose = verbose )
-        # Assimilate
-        nc_path <- bluesky_assimilate( raw_nc_path,
-                                       cleanup = cleanup )
-        # rasterize
-        raster::brick(nc_path)
-      })
+        .model_load(filePath, model_name = i)
+        })
     }
-    # Cat the loading
-    cat("Loading Multiple Models ")
-    while(!future::resolved(brick_list[[1]])) {
+
+    cat("Loading ")
+    while(!future::resolved(model_list[[1]])) {
       cat("=")
       Sys.sleep(2)
     }
     cat("\n")
-    # Get values (parallel)
-    brick_list <- future::values(brick_list)
-    future::autoStopCluster(cl)
 
-    return(brick_list)
+    models <- future::values(model_list)
+    parallel::stopCluster(cl)
 
-  }
+    return(models)
+
+
+
 }
+
+
+#
+#     # ----- Handle user files -----
+#     if ( !is.null(filePath) ) {
+#       if( file.exists(filePath) ) {
+#         # Assimilate
+#         nc_path <- bluesky_assimilate( filePath = filePath,
+#                                        cleanup = FALSE )
+#       } else {
+#         stop(paste0(
+#           "Could not find ", filePath, ".  ",
+#           "Did you specify an absolute path?"
+#         ))
+#       }
+#       # ----- Handle download -----
+#     } else {
+#       # Bluesky download
+#       raw_nc_path <- bluesky_download( dailyOutputDir = dailyOutputDir,
+#                                        model = model,
+#                                        modelRun = modelRun,
+#                                        subDir = subDir,
+#                                        baseUrl = baseUrl,
+#                                        verbose = verbose )
+#       # Assimilate
+#       nc_path <- bluesky_assimilate( raw_nc_path,
+#                                      cleanup = cleanup )
+#     }
+#     # Rasterize
+#     model_brick <- raster::brick(nc_path)
+#
+#     return(model_brick)
+#
+#   } else {
+#     # if multiple models are provided i.e. model = c('CANSAC...', 'PNW...', etc)
+#     cl <- parallel::makeCluster(future::availableCores() - 1, timeout = 60)
+#     future::plan(strategy = future::cluster, workers = cl)
+#     model_dir <- getModelDataDir()
+#     # create model brick list
+#     brick_list <- list()
+#     for ( i in model ) {
+#       brick_list[[i]] <- future::future({
+#         setModelDataDir(model_dir)
+#         raw_nc_path <- bluesky_download( dailyOutputDir = dailyOutputDir,
+#                                          model = i,
+#                                          modelRun = modelRun,
+#                                          subDir = subDir,
+#                                          baseUrl = baseUrl,
+#                                          verbose = verbose )
+#         # Assimilate
+#         nc_path <- bluesky_assimilate( raw_nc_path,
+#                                        cleanup = cleanup )
+#         # rasterize
+#         raster::brick(nc_path)
+#       })
+#     }
+#     # Cat the loading
+#     cat("Loading Multiple Models ")
+#     while(!future::resolved(brick_list[[1]])) {
+#       cat("=")
+#       Sys.sleep(2)
+#     }
+#     cat("\n")
+#     # Get values (parallel)
+#     brick_list <- future::values(brick_list)
+#     future::autoStopCluster(cl)
+#
+#     return(brick_list)
+#
+#   }
+#}
