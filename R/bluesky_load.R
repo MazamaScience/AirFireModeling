@@ -123,28 +123,6 @@ bluesky_load <- function(
   if ( !is.logical(verbose) )
     verbose <- TRUE
 
-  .model_load <- function(filePath, model_name) {
-    if ( is.null(filePath) ) filePath <- 'DNE'
-    if ( file.exists(filePath) ) {
-      v2_path <- stringr::str_replace(filePath, '.nc', '_V2.nc')
-      if ( file.exists(v2_path) ) {
-        return(raster::brick(v2_path))
-      } else {
-        bluesky_toCommonFormat(filePath, cleanup = cleanup)
-        return(raster::brick(v2_path))
-      }
-    } else {
-      raw_path <- bluesky_download( dailyOutputDir = dailyOutputDir,
-                                    model = model_name,
-                                    modelRun = modelRun,
-                                    subDir = subDir,
-                                    baseUrl = baseUrl,
-                                    verbose = verbose )
-      v2_path <- bluesky_toCommonFormat( raw_path, cleanup = cleanup )
-      return(raster::brick(v2_path))
-    }
-  }
-
   cl <- parallel::makeCluster(future::availableCores() - 1)
   future::plan(strategy = future::cluster, workers = cl)
   model_dir <- getModelDataDir()
@@ -154,7 +132,7 @@ bluesky_load <- function(
   for ( i in model ) {
     model_list[[i]] <- future::future({
       setModelDataDir(model_dir)
-      .model_load(filePath, model_name = i)
+      .load_brick(filePath, i, modelRun, dailyOutputDir, subDir, baseUrl, verbose, cleanup, model_dir)
     })
   }
 

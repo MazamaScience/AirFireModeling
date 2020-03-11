@@ -97,9 +97,18 @@ bluesky_toCommonFormat <- function(
   time_str <- paste0(tflag[1,], sprintf(fmt = "%06d", tflag[2,]))
 
   # Create POSIXct time
-  time <- MazamaCoreUtils::parseDatetime(time_str,
+  time <- tryCatch(
+    expr = {
+      MazamaCoreUtils::parseDatetime(time_str,
                                          timezone = "UTC",
                                          isJulian = TRUE)
+    },
+    warning = function(e) {
+      warning(e)
+      message('Error Parsing NetCDF data: Corrupt Download.')
+      message('If problem persists, try deleting the NetCDF and downloading again.')
+    }
+  )
 
   # ----- Create new ncdf4 object ----------------------------------------------
 

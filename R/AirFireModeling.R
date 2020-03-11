@@ -238,3 +238,40 @@ bluesky_availiableModels <- function(longitude, latitude) {
   return(models)
 
 }
+
+#' Internal Model Load
+#'
+#' @param path
+#' @param model_name
+#' @param model_run
+#' @param output_dir
+#' @param sub_dir
+#' @param url
+#' @param verbose
+#' @param clean
+#'
+#' @return
+#' @export
+#' @examples
+.load_brick <- function(path, model_name, model_run, output_dir, sub_dir, url, verbose, clean, model_dir) {
+  setModelDataDir(model_dir)
+  if ( is.null(path) ) path <- 'DNE'
+  if ( file.exists(path) ) {
+    v2_path <- stringr::str_replace(path, '.nc', '_V2.nc')
+    if ( file.exists(v2_path) ) {
+      return(raster::brick(v2_path))
+    } else {
+      bluesky_toCommonFormat(path, cleanup = clean)
+      return(raster::brick(v2_path))
+    }
+  } else {
+    raw_path <- bluesky_download( dailyOutputDir = output_dir,
+                                  model = model_name,
+                                  modelRun = model_run,
+                                  subDir = sub_dir,
+                                  baseUrl = url,
+                                  verbose = verbose )
+    v2_path <- bluesky_toCommonFormat( raw_path, cleanup = clean )
+    return(raster::brick(v2_path))
+  }
+}
