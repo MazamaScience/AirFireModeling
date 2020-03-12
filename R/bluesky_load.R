@@ -79,6 +79,8 @@ bluesky_load <- function(
   dailyOutputDir = "standard",
   model = 'CANSAC-1.33km',
   subDir = "forecast",
+  xlim = NULL,
+  ylim = NULL,
   verbose = TRUE
 ) {
 
@@ -132,7 +134,30 @@ bluesky_load <- function(
   for ( i in model ) {
     model_list[[i]] <- future::future({
       setModelDataDir(model_dir)
-      .load_brick(filePath, i, modelRun, dailyOutputDir, subDir, baseUrl, verbose, cleanup, model_dir)
+      model_brick <- .load_brick(filePath, i, modelRun, dailyOutputDir, subDir, baseUrl, verbose, cleanup, model_dir)
+
+      # Handle Xlim and Ylim
+      if ( !is.null(xlim) || !is.null(ylim) ) {
+
+        if ( is.null(ylim) ) {
+          ylim <- c(raster::ymin(model_brick), raster::ymax(model_brick))
+        }
+        if ( is.null(xlim) ) {
+          xlim <- c(raster::xmin(model_brick), raster::xmax(model_brick))
+        }
+
+        # if ( abs(xlim[1]) < abs(raster::xmin(model_brick)) | abs(xlim[2]) > abs(raster::xmax(model_brick)) ) {
+        #   stop('xlim out of coordinate domain.')
+        # }
+
+        cells <- raster::cellFromXY(model_brick, cbind(xlim, ylim))
+        ext <- raster::extentFromCells(model_brick, cells)
+        return(raster::crop(model_brick, ext))
+
+      } else {
+        return(model_brick)
+      }
+
     })
   }
 
