@@ -1,8 +1,29 @@
+#' @title Aggregate Raster Models
+#'
+#' @param model Model identifier(s).
+#' @param startdate Desired start date (integer or character in ymd[hms] format or POSIXct).
+#' @param enddate Desired end date (integer or character in ymd[hms] format or POSIXct).
+#' @param by Numeric vector. Represents hours to truncate models at.
+#' @param xlim Optional longitude range.
+#' @param ylim Optional latitude range.
+#' @param local Absolute paths of the local NetCDF (.nc) files.
+#' @param dirURL Model output web directory. Default is BlueSky standard output.
+#' @param type Model type directory, i.e. 'forecast', 'combined', etc.
+#' @param clean Logical specifying whether to remove the non-common format NetCDF.
+#' @param verbose If \code{FALSE}, suppress status messages (if any).
+#'
+#' @return A raster object.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' }
 raster_aggregate <- function(
   model = 'PNW-4km',
   startdate,
   enddate,
-  by = c(1,12), # maybe try "12 hours"
+  by = c(1,12), # maybe try "12 hours"?
   xlim = NULL,
   ylim = NULL,
   local = NULL,

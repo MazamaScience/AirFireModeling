@@ -1,9 +1,33 @@
+#' @title Load a Raster Model
+#'
+#' @param model Model identifier(s).
+#' @param run Date code as "YYYYMMDDHH" (integer or character).
+#' @param xlim Optional longitude range.
+#' @param ylim Optional latitude range.
+#' @param local Absolute path of the local NetCDF (.nc) file
+#' @param dirURL Model output web directory. Default is BlueSky standard output.
+#' @param type Model type directory, i.e. 'forecast', 'combined', etc.
+#' @param clean Logical specifying whether to remove the non-common format NetCDF.
+#' @param verbose If \code{FALSE}, suppress status messages (if any).
+#'
+#' @return A raster object, or a list of raster objects
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Set Model download directory (Required)
+#' setModelDataDir('~/Data/Bluesky')
+#' # Load from server
+#' model <- raster_load('PNW-1.33km', run = 20200303, xlim = c(-125, -115))
+#' # Load from local NetCDF
+#' model <- raster_load('~/Data/Bluesky/PNW-4km_2020030100.nc')
+#' }
 raster_load <- function(
   model = 'PNW-4km',
   run = NULL,
   xlim = NULL,
   ylim = NULL,
-  dirLocal = NULL,
+  local = NULL,
   dirURL = 'https://haze.airfire.org/bluesky-daily/output/standard',
   type = 'forecast',
   clean = FALSE,
@@ -11,7 +35,6 @@ raster_load <- function(
 ) {
 
   # ----- Validate parameters --------------------------------------------------
-  MazamaCoreUtils::stopIfNull(model)
   MazamaCoreUtils::stopIfNull(dirURL)
 
   if ( is.null(run) ) { # Use todays date if run is null
@@ -49,18 +72,35 @@ raster_load <- function(
   model_list <- list()
 
   # Create a list of models to load parallel
-  for ( i in model ) {
-    model_list[[i]] <- future::future({
-      setModelDataDir(data_dir)
-      .bluesky_load(model, run, xlim, ylim, dirLocal, dirURL, type, clean, verbose)
-    })
+  if ( length(model) >= 1 && is.null(local) ) {
+    for ( i in model ) {
+      model_list[[i]] <- future::future({
+        setModelDataDir(data_dir)
+        .bluesky_load(i, run, xlim, ylim, local, dirURL, type, clean, verbose)
+      })
+    }
+    cat("Loading Model")
+    while(!future::resolved(model_list[[1]])) {
+      cat(".")
+      Sys.sleep(2)
+    }
+    cat("\n")
   }
-  cat("Loading ")
-  while(!future::resolved(model_list[[1]])) {
-    cat(".")
-    Sys.sleep(2)
+
+  if ( length(local) >= 1 ) {
+    for ( i in local ) {
+      model_list[[i]] <- future::future({
+        setModelDataDir(data_dir)
+        .bluesky_load(model, run, xlim, ylim, i, dirURL, type, clean, verbose)
+      })
+    }
+    cat("Loading Local Model ")
+    while(!future::resolved(model_list[[1]])) {
+      cat(".")
+      Sys.sleep(2)
+    }
+    cat("\n")
   }
-  cat("\n")
 
   models <- future::values(model_list)
   parallel::stopCluster(cl)
