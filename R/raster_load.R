@@ -11,8 +11,6 @@ raster_load <- function(
 ) {
 
   # ----- Validate parameters --------------------------------------------------
-
-
   MazamaCoreUtils::stopIfNull(model)
   MazamaCoreUtils::stopIfNull(dirURL)
 
@@ -59,7 +57,7 @@ raster_load <- function(
   }
   cat("Loading ")
   while(!future::resolved(model_list[[1]])) {
-    cat("=")
+    cat(".")
     Sys.sleep(2)
   }
   cat("\n")

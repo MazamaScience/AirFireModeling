@@ -31,7 +31,7 @@ bluesky_toCommonFormat <- function(
 
   MazamaCoreUtils::stopIfNull(filePath)
 
-  if ( !is.logical(cleanup) )
+  if ( !is.logical(clean) )
     clean<- TRUE
 
   # Checks
@@ -144,7 +144,7 @@ bluesky_toCommonFormat <- function(
   # Close the file
   ncdf4::nc_close(nc)
 
-  if (cleanup) {
+  if (clean) {
     unlink(raw_nc_path)
   }
 
