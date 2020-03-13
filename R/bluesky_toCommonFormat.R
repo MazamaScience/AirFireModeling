@@ -3,7 +3,7 @@
 #' @title Convert BlueSky NetCDF output to modernized NetCDF
 #'
 #' @param filePath Absolute path of file to be converted.
-#' @param cleanup Logical specifying whether to remove the original netcdf file.
+#' @param clean Logical specifying whether to remove the original netcdf file.
 #'
 #' @description Converts BlueSky model output from its original format to a more
 #' modernized NetCDF format with dimension axes for longitude, latitude,
@@ -24,7 +24,7 @@
 
 bluesky_toCommonFormat <- function(
   filePath = NULL,
-  cleanup = TRUE
+  clean= TRUE
 ) {
 
   # ----- Validate parameters --------------------------------------------------
@@ -32,7 +32,7 @@ bluesky_toCommonFormat <- function(
   MazamaCoreUtils::stopIfNull(filePath)
 
   if ( !is.logical(cleanup) )
-    cleanup <- TRUE
+    clean<- TRUE
 
   # Checks
   if ( grepl(x = filePath, pattern = '.+_V2.nc$') ) {

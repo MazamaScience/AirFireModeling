@@ -146,9 +146,12 @@ bluesky_load <- function(
           xlim <- c(raster::xmin(model_brick), raster::xmax(model_brick))
         }
 
-        # if ( abs(xlim[1]) < abs(raster::xmin(model_brick)) | abs(xlim[2]) > abs(raster::xmax(model_brick)) ) {
-        #   stop('xlim out of coordinate domain.')
-        # }
+        if ( xlim[1] > raster::xmax(model_brick) || xlim[2] < raster::xmin(model_brick) ) {
+          stop('xlim out of model coordinate domain.')
+        }
+        if ( ylim[1] > raster::ymin(model_brick) || ylim[2] > raster::ymax(model_brick) ) {
+          stop('ylim out of model coordinate domain.')
+        }
 
         cells <- raster::cellFromXY(model_brick, cbind(xlim, ylim))
         ext <- raster::extentFromCells(model_brick, cells)
@@ -157,7 +160,6 @@ bluesky_load <- function(
       } else {
         return(model_brick)
       }
-
     })
   }
 
@@ -171,7 +173,11 @@ bluesky_load <- function(
   models <- future::values(model_list)
   parallel::stopCluster(cl)
 
-  return(models)
+  if ( length(model_list) == 1 ) {
+    return(models[[1]]) # return model
+  } else {
+    return(models) # Return *list* of models
+  }
 
 }
 

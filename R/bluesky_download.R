@@ -52,34 +52,32 @@
 #' }
 
 bluesky_download <- function(
-  dailyOutputDir = "standard",
-  model = "PNW-1.33km",
-  modelRun = NULL,
-  subDir = "combined",
-  baseUrl = "https://haze.airfire.org/bluesky-daily/output",
+  model = 'PNW-4km',
+  run = NULL,
+  dirURL = 'https://haze.airfire.org/bluesky-daily/output/standard',
+  type = 'forecast',
   verbose = TRUE
-) {
-
+  ) {
   # ----- Validate parameters --------------------------------------------------
-
-  MazamaCoreUtils::stopIfNull(dailyOutputDir)
-  MazamaCoreUtils::stopIfNull(model)
-  MazamaCoreUtils::stopIfNull(modelRun)
-  MazamaCoreUtils::stopIfNull(subDir)
-  MazamaCoreUtils::stopIfNull(baseUrl)
+#
+#   MazamaCoreUtils::stopIfNull(dailyOutputDir)
+#   MazamaCoreUtils::stopIfNull(model)
+#   MazamaCoreUtils::stopIfNull(modelRun)
+#   MazamaCoreUtils::stopIfNull(subDir)
+#   MazamaCoreUtils::stopIfNull(baseUrl)
 
   # Just in case
-  if ( length(model) > 1 || length(modelRun) > 1 ) {
+  if ( length(model) > 1 || length(run) > 1 ) {
     warning(paste0(
-      "'model' or 'modelRun' has multiple values -- ",
+      "'model' or 'run' has multiple values -- ",
       "first value being used."
     ))
     model <- model[1]
-    modelRun <- as.character(modelRun[1])
+    run <- as.character(run[1])
   }
 
   # Verify YYYYmmddHH
-  if ( !stringr::str_detect(modelRun, "[0-9]{10}") ) {
+  if ( !stringr::str_detect(run, "[0-9]{10}") ) {
     stop("'modelRun' parameter must have 10 digits")
   }
 
@@ -89,11 +87,11 @@ bluesky_download <- function(
 
   # ----- Create URL -----------------------------------------------------------
   # Create directory URL
-  dir_url <- paste0( baseUrl, "/",
-                 dailyOutputDir, "/",
+  dir_url <- paste0( dirURL, "/",
                  model, "/",
-                 modelRun, "/",
-                 ifelse(is.null(subDir), NULL, paste0(subDir, "/")) )
+                 run, "/",
+                 ifelse(is.null(type), NULL, paste0(type, "/")) )
+
 
   # NOTE: Detect bluesky output version via summary.json
   detect_version <- function(dir_url) {
@@ -110,7 +108,7 @@ bluesky_download <- function(
     return(version)
   }
 
-  fileName <- paste0(model, "_", modelRun, ".nc")
+  fileName <- paste0(model, "_", run, ".nc")
   filePath <- file.path(getModelDataDir(), fileName)
 
   # ----- Download data --------------------------------------------------------

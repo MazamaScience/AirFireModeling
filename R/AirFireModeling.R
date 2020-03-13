@@ -253,25 +253,61 @@ bluesky_availiableModels <- function(longitude, latitude) {
 #' @return
 #' @export
 #' @examples
-.load_brick <- function(path, model_name, model_run, output_dir, sub_dir, url, verbose, clean, model_dir) {
-  setModelDataDir(model_dir)
-  if ( is.null(path) ) path <- 'DNE'
-  if ( file.exists(path) ) {
-    v2_path <- stringr::str_replace(path, '.nc', '_V2.nc')
-    if ( file.exists(v2_path) ) {
-      return(raster::brick(v2_path))
-    } else {
-      bluesky_toCommonFormat(path, cleanup = clean)
-      return(raster::brick(v2_path))
+# .load_brick <- function(path, model_name, model_run, output_dir, sub_dir, url, verbose, clean, model_dir) {
+#   setModelDataDir(model_dir)
+#   if ( is.null(path) ) path <- 'DNE'
+#   if ( file.exists(path) ) {
+#     v2_path <- stringr::str_replace(path, '.nc', '_V2.nc')
+#     if ( file.exists(v2_path) ) {
+#       return(raster::brick(v2_path))
+#     } else {
+#       bluesky_toCommonFormat(path, cleanup = clean)
+#       return(raster::brick(v2_path))
+#     }
+#   } else {
+#     raw_path <- bluesky_download( dailyOutputDir = output_dir,
+#                                   model = model_name,
+#                                   modelRun = model_run,
+#                                   subDir = sub_dir,
+#                                   baseUrl = url,
+#                                   verbose = verbose )
+#     v2_path <- bluesky_toCommonFormat( raw_path, cleanup = clean )
+#     return(raster::brick(v2_path))
+#   }
+# }
+
+.bluesky_load <- function(model, run, xlim, ylim, dirLocal, dirURL, type, clean, verbose) {
+  setModelDataDir(getModelDataDir())
+  bs_raw <- bluesky_download(model, run, dirURL, type, verbose)
+  bs <- bluesky_toCommonFormat(bs_raw, clean = clean)
+  # Handle ylim and xlim
+  # NOTE: raster bricks are not all loaded into memory, only their reference.
+  if ( !is.null(xlim) || !is.null(ylim) ) {
+    tmp_brick <- raster::brick(bs)
+    if ( is.null(ylim) ) {
+      ylim <- c(raster::ymin(tmp_brick), raster::ymax(tmp_brick))
     }
+    if ( is.null(xlim) ) {
+      xlim <- c(raster::xmin(tmp_brick), raster::xmax(tmp_brick))
+    }
+    # if ( xlim[1] > raster::xmax(tmp_brick) || xlim[2] < raster::xmin(tmp_brick) ) {
+    #   stop('xlim out of model coordinate domain.')
+    # }
+    # if ( ylim[1] > raster::ymin(tmp_brick) || ylim[2] > raster::ymax(tmp_brick) ) {
+    #   stop('ylim out of model coordinate domain.')
+    # }
+    if ( !any(findInterval(xlim, c(raster::xmin(tmp_brick), raster::xmax(tmp_brick)))) ) {
+      stop('xlim out of model coordinate domain.')
+    }
+    if ( !any(findInterval(ylim, c(raster::ymin(tmp_brick), raster::ymax(tmp_brick)))) ) {
+      stop('ylim out of model coordinate domain.')
+    }
+    cells <- raster::cellFromXY(tmp_brick, cbind(xlim, ylim))
+    ext <- raster::extentFromCells(tmp_brick, cells)
+    return(raster::crop(tmp_brick, ext))
   } else {
-    raw_path <- bluesky_download( dailyOutputDir = output_dir,
-                                  model = model_name,
-                                  modelRun = model_run,
-                                  subDir = sub_dir,
-                                  baseUrl = url,
-                                  verbose = verbose )
-    v2_path <- bluesky_toCommonFormat( raw_path, cleanup = clean )
-    return(raster::brick(v2_path))
+    return(raster::brick(bs))
   }
+
+
 }
