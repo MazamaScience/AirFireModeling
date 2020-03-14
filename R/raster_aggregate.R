@@ -6,7 +6,7 @@
 #' @param by Numeric vector. Represents hours to truncate models at.
 #' @param xlim Optional longitude range.
 #' @param ylim Optional latitude range.
-#' @param local Absolute paths of the local NetCDF (.nc) files.
+#' @param local Absolute or relative paths of the local NetCDF (.nc) files.
 #' @param dirURL Model output web directory. Default is BlueSky standard output.
 #' @param type Model type directory, i.e. 'forecast', 'combined', etc.
 #' @param clean Logical specifying whether to remove the non-common format NetCDF.

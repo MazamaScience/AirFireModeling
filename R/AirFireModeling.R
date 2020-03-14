@@ -222,12 +222,11 @@ removeModelDataDir <- function() {
 #' @param latitude the target latitude
 #'
 #' @return vectors of model(s)
-bluesky_availiableModels <- function(longitude, latitude) {
+bluesky_whichModel <- function(longitude, latitude) {
 
   # Use the information found in bluesky_modelInfo
-  models <-
-    bluesky_modelInfo %>%
-    dplyr::filter(
+  models <- dplyr::filter(
+      bluesky_modelInfo,
       longitude >= .data$MIN_LONGITUDE &
         longitude <= .data$MAX_LONGITUDE &
         latitude >= .data$MIN_LATITUDE &
@@ -237,6 +236,18 @@ bluesky_availiableModels <- function(longitude, latitude) {
 
   return(models)
 
+}
+
+#' List model downloads
+#'
+#' @param path
+#'
+#' @return
+#' @export
+#'
+#' @examples
+bluesky_downloads <- function(path = getModelDataDir(), full = FALSE, ...) {
+  list.files(path = path, full.names = full, no.. = TRUE, patten = '.nc', ...)
 }
 
 #' Internal Model Load
