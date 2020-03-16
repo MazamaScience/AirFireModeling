@@ -262,7 +262,6 @@ bluesky_downloads <- function(path = getModelDataDir(), full = FALSE, ...) {
 #' @param clean
 #'
 #' @return
-#' @export
 #' @examples
 .bluesky_load <- function(model, run, xlim, ylim, local, dirURL, type, clean, verbose) {
 

@@ -72,7 +72,7 @@ raster_load <- function(
   model_list <- list()
 
   # Create a list of models to load parallel
-  if ( length(model) >= 1 && is.null(local) ) {
+  if ( (length(model) >= 1) && is.null(local) && (length(run) <= 1) ) {
     for ( i in model ) {
       model_list[[i]] <- future::future({
         setModelDataDir(data_dir)
@@ -100,6 +100,15 @@ raster_load <- function(
       Sys.sleep(2)
     }
     cat("\n")
+  }
+
+  if ( length(run) >= 1 ) {
+    for ( i in run ) {
+      model_list[[i]] <- future::future({
+        setModelDataDir(data_dir)
+        .bluesky_load(model, i, xlim, ylim, local, dirURL, type, clean, verbose)
+      })
+    }
   }
 
   models <- future::values(model_list)
