@@ -1,11 +1,11 @@
 #' Downlaod and Plot BlueSky location models
 #'
-#' @param modelRun Date code as "YYYYMMDDHH".
+#' @param run Date code as "YYYYMMDDHH".
 #' @param latitude A target latitude, optional if \code{monitorID} provided
 #' @param longitude A target longitude, optional if \code{monitorID} provided
 #' @param monitorID (Optional) a monitorID to plot along same model run period.
 #' @param models A list of models to plot
-#' @param ... additional parameters passed into \code{bluesky_load()}
+#' @param ... additional parameters passed into \code{raster_load()}
 #'
 #' @return A ggplot object
 #' @export
@@ -13,21 +13,21 @@
 #' @examples
 #' \dontrun{
 #' monitorID = '410650007_01'
-#' bluesky_locationPlot(
-#'   modelRun = 20200301, 
-#'   monitorID = monitorID, 
+#' raster_coordinatePlot(
+#'   run = 20200301,
+#'   monitorID = monitorID,
 #'   models = c('PNW-1.33km', 'PNW-4km', 'CANSAC-4km')
 #' )
 #' }
-bluesky_locationPlot <- function( modelRun,
-                                  latitude = NULL,
-                                  longitude = NULL,
-                                  monitorID = NULL,
-                                  models = c('PNW-1.33km', 'PNW-4km'),
-                                  ... ) {
+ raster_coordinatePlot <- function( run,
+                                    latitude = NULL,
+                                    longitude = NULL,
+                                    monitorID = NULL,
+                                    models = c('PNW-1.33km', 'PNW-4km'),
+                                    ... ) {
 
   # load BlueSky models
-  bs_list <- bluesky_load(modelRun = modelRun, model = models, ...)
+  bs_list <- raster_load(model = models, run = run)
 
   # Create clusters
   cl <- parallel::makeCluster(future::availableCores() - 1, timeout = 60)
