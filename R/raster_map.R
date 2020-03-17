@@ -12,8 +12,7 @@
 #' @param timezone The timezone to parse the dates. Default is UTC.
 #' @param verbose Show messages.
 #'
-#' @details
-#' If a list of Raster\* objects is provided, a small-multiples plot will be returned.
+#' @details If a list of Raster\* objects is provided, a small-multiples plot will be returned.
 #' The \code{index} is typically associated with a time-axis or RasterLayer,
 #' e.g \code{index = 1} is the first hour of a model.
 #'

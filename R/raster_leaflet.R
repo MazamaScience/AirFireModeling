@@ -9,6 +9,7 @@
 #' @return a leaflet map
 raster_leaflet <- function(
   raster,
+  index = 1,
   compare = NULL,
   palette = 'Spectral',
   direction = -1
@@ -41,7 +42,7 @@ raster_leaflet <- function(
       leaf <- leaflet::leaflet() %>%
         leaflet::addTiles() %>%
         leaflet::addRasterImage( raster,
-                                 colors = pal,
+                                colors = pal,
                                  opacity = 0.8,
                                  group = t2str(names(raster)) ) %>%
         leaflet::addRasterImage( compare,

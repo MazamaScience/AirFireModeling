@@ -240,12 +240,15 @@ bluesky_whichModel <- function(longitude, latitude) {
 
 #' @title List Downloaded Models
 #'
-#' @param path The path in which models are listed.
+#' @param path The path in which models are located.
+#' @param pattern A regex pattern to use for filtering model files
+#' @param full Logical. Show the full path of the model (used for local loading).
+#' @param ... Additional arguments to be passed to \code{list.files()}.
 #'
 #' @return A list of downloaded models
 #' @export
-bluesky_downloads <- function(path = getModelDataDir(), full = FALSE, ...) {
-  list.files(path = path, full.names = full, no.. = TRUE, pattern = '.nc', ...)
+bluesky_downloaded <- function(path = getModelDataDir(), pattern = '.nc', full = FALSE, ...) {
+  list.files(path = path, full.names = full, no.. = TRUE, pattern = pattern)
 }
 
 #' @title Internal Model Load Function
