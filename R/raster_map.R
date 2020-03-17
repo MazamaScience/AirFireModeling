@@ -1,14 +1,31 @@
+#' @title Plot Model Maps
+#'
+#' @description Plot a mapped region of a Raster object. Automatically downloads
+#' region shape files.
+#'
+#' @param raster A Raster\* object or a list of Raster\* objects.
+#' @param index The index of the Raster* object. See details.
+#' @param palette The color palette used to map cell values.
+#' @param breaks The breaks used to define the map cell color.
+#' @param title (Optional) A plot title.
+#' @param direction Numeric. \code{direction = -1} reverses color palette.
+#' @param timezone The timezone to parse the dates. Default is UTC.
+#' @param verbose Show messages.
+#'
+#' @details
+#' If a list of Raster\* objects is provided, a small-multiples plot will be returned.
+#' The \code{index} is typically associated with a time-axis or RasterLayer,
+#' e.g \code{index = 1} is the first hour of a model.
+#'
+#' @return a ggplot object
 #' @export
-#' @title Plot a Raster Map
 #'
-#' @param raster A Raster* object.
-#' @param palette A color brewer palette (i.e. 'Greys', 'Blues', 'BuGn', 'YlOrRd', ...).
-#' @param breaks Color break locations.
-#' @param title A plot title.
-#' @param direction Color palette direction. Set -1 to reverse direction.
-#' @param timezone Timezone.
-#'
-#' @return a ggobject
+#' @examples
+#' \dontrun{
+#' setModelDataDir('~/Data/Bluesky/')
+#' bs <- raster_load()
+#' raster_map(bs)
+#' }
 raster_map <-
   function(
     raster,
@@ -21,6 +38,7 @@ raster_map <-
     verbose = TRUE
   ) {
 
+    # NOTE: Sub-internal function for plotting an individual ggplot2 raster layer
     .plot_map <- function(r) {
       # Get layer coordinate limits
       limits <- raster::extent(r)
@@ -71,7 +89,7 @@ raster_map <-
     }
 
     if ( class(raster) == 'list' ) {
-      if ( verbose ) message('A list')
+      if ( verbose ) message(paste0('Plotting ', length(raster), ' models ...'))
       layer_list <- lapply(
         X = raster,
         FUN = function(r) {
@@ -84,14 +102,12 @@ raster_map <-
 
       cl <- parallel::makeCluster(future::availableCores() - 1)
       future::plan(strategy = future::cluster, workers = cl)
-
       gg_list <- future.apply::future_lapply(
         X = layer_list,
         FUN = function(r) {
           .plot_map(r)
         }
       )
-
       parallel::stopCluster(cl)
 
       return(cowplot::plot_grid(plotlist = gg_list))

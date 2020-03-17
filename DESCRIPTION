@@ -1,6 +1,6 @@
 Type: Package
 Package: AirFireModeling
-Version: 0.2.1
+Version: 0.2.5
 Title: Utilities for Working with Monitoring Data and Smoke Model Output
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")), 
@@ -24,8 +24,10 @@ Depends:
 Imports:
     abind,
     AirMonitorPlots,
+    cowplot, 
     dplyr,
     future,
+    future.apply,
     geodist,
     geosphere,
     ggplot2,

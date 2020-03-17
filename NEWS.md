@@ -1,3 +1,11 @@
+# AirFireModeling 0.2.5
+
+* Updated to multithreaded capability 
+* New names - `bluesky_` is replaced with `raster_` functions with the execption of those specific to the BlueSky model.
+* `raster_` functions vectorised to support lists of parameters 
+* Updated the parameters for consistency
+* Added `bluesky_downloads()`
+
 # AirFireModeling 0.2.1
 
 * Minor cleanup to pass R CMD check.
