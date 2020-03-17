@@ -238,31 +238,34 @@ bluesky_whichModel <- function(longitude, latitude) {
 
 }
 
-#' List model downloads
+#' @title List Downloaded Models
 #'
-#' @param path
+#' @param path The path in which models are listed.
 #'
-#' @return
+#' @return A list of downloaded models
 #' @export
-#'
-#' @examples
 bluesky_downloads <- function(path = getModelDataDir(), full = FALSE, ...) {
-  list.files(path = path, full.names = full, no.. = TRUE, patten = '.nc', ...)
+  list.files(path = path, full.names = full, no.. = TRUE, pattern = '.nc', ...)
 }
 
-#' Internal Model Load
+#' @title Internal Model Load Function
 #'
-#' @param path
-#' @param model_name
-#' @param model_run
-#' @param output_dir
-#' @param sub_dir
-#' @param url
-#' @param verbose
-#' @param clean
+#' @description This function encapsulates the process of downloading, and formatting
+#' necessary for BlueSky model outputs. Additionally, it checks already existing
+#' models and loads those if avaliable.
 #'
-#' @return
-#' @examples
+#' @keywords internal
+#'
+#' @param model A model. i.e 'PNW-1.33km' or 'CANSAC-4km'.
+#' @param run The model run date. YYYYmmddHH format required.
+#' @param xlim A vector of coordinate longitude bounds.
+#' @param ylime A vector of coordinate latitude bounds.
+#' @param local A path to a downloaded NetCDF model.
+#' @param dirUrl the database URL.
+#' @param clean Option to clean, or delete, the non-formatted model.
+#' @param verbose Logical to display messages.
+#'
+#' @return A RasterBrick
 .bluesky_load <- function(model, run, xlim, ylim, local, dirURL, type, clean, verbose) {
 
   if ( is.null(local) ) {
@@ -308,6 +311,16 @@ bluesky_downloads <- function(path = getModelDataDir(), full = FALSE, ...) {
   } else {
     return(raster::brick(bs))
   }
+}
 
-
+.load_check <- function(f, msg) {
+  cat("\n")
+  cat(msg)
+  cat("\n")
+  while(!future::resolved(f)) {
+    cat(".")
+    Sys.sleep(1.5)
+  }
+  cat("\n")
+  NULL
 }

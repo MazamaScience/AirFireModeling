@@ -1,4 +1,4 @@
-#' @title Load a Raster Model
+#' @title Load/Download a Raster Model
 #'
 #' @param model Model identifier(s).
 #' @param run Date code as "YYYYMMDDHH" (integer or character).
@@ -9,6 +9,12 @@
 #' @param type Model type directory, i.e. 'forecast', 'combined', etc.
 #' @param clean Logical specifying whether to remove the non-common format NetCDF.
 #' @param verbose If \code{FALSE}, suppress status messages (if any).
+#'
+#' @description Load or download models and automatically convert NetCDF (.nc) format to
+#' a spatio-temporal \code{Raster*} object.
+#'
+#' @details \code{model}, \code{run}, and \code{local} are all vectorised
+#' parameters. As such, loading a model is executed using multiple CPU threads.
 #'
 #' @return A raster object, or a list of raster objects
 #' @export
@@ -49,7 +55,7 @@ raster_load <- function(
     }
   }
   # Verify YYYYmmddHH
-  if ( !stringr::str_detect(run, '[0-9]') ) {
+  if ( !stringr::str_detect(run, '[0-9]{10}') ) {
     stop("'run' parameter must have 10 digits")
   }
   # Default to cleanup
@@ -71,6 +77,7 @@ raster_load <- function(
 
   model_list <- list()
 
+  # NOTE: CHECK LOGIC
   # Create a list of models to load parallel
   if ( (length(model) >= 1) && is.null(local) && (length(run) <= 1) ) {
     for ( i in model ) {
@@ -79,40 +86,30 @@ raster_load <- function(
         .bluesky_load(i, run, xlim, ylim, local, dirURL, type, clean, verbose)
       })
     }
-    cat("Loading Model")
-    while(!future::resolved(model_list[[1]])) {
-      cat(".")
-      Sys.sleep(2)
-    }
-    cat("\n")
-  }
-
-  if ( length(local) >= 1 ) {
+    .load_check(model_list[[1]], paste0('Loading Model: ', paste(model, collapse = ', ')))
+  } else if ( length(local) >= 1 ) { # Check if to load multiple local files
     for ( i in local ) {
       model_list[[i]] <- future::future({
         setModelDataDir(data_dir)
         .bluesky_load(model, run, xlim, ylim, i, dirURL, type, clean, verbose)
       })
     }
-    cat("Loading Local Model ")
-    while(!future::resolved(model_list[[1]])) {
-      cat(".")
-      Sys.sleep(2)
-    }
-    cat("\n")
-  }
-
-  if ( length(run) >= 1 ) {
+    .load_check(model_list[[1]], paste0('Loading Local Files: ', paste(local, collapse = ', ')))
+  } else if ( length(run) >= 1 ) {
     for ( i in run ) {
-      model_list[[i]] <- future::future({
+      model_list[[paste0(model,"_",i)]] <- future::future({
         setModelDataDir(data_dir)
         .bluesky_load(model, i, xlim, ylim, local, dirURL, type, clean, verbose)
       })
     }
+    .load_check(model_list[[1]], paste0('Loading Model Runs: ', paste(run, collapse = ', ')))
+  } else {
+    stop('Check parameters.')
   }
 
   models <- future::values(model_list)
   parallel::stopCluster(cl)
+
   return(models)
 
 }
