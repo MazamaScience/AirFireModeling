@@ -26,20 +26,14 @@ raster_subset <- function(
   raster,
   ...
 ) {
-
-  # TODO: Add proper checks
-
+  # Catch params
   args <- list(...)
-
-  .subset <-function(raster, args ) {
-
+  # NOTE: Sub-Internal subset function to parse raster with args.
+  .subset <- function(raster, args ) {
     if ( 'radius' %in% names(args) ) {
       if ( 'longitude' %in% names(args) && 'latitude' %in% names(args) ) {
-
         # Convert raster object to data frame
-        df <- suppressWarnings(
-          raster::rasterToPoints(raster)
-        )
+        df <- suppressWarnings(raster::rasterToPoints(raster))
         r <- args[['radius']]
         lat <- args[['latitude']]
         lon <- args[['longitude']]
@@ -51,54 +45,38 @@ raster_subset <- function(
         ras <- suppressWarnings(
           raster::rasterFromXYZ(in_radius)
         )
-
         return(ras)
-
       } else {
         stop('Radial subsetting requires a target coordinates - latitude, longitude.')
       }
-
     } else if ( 'polygon' %in% names(args) ) {
-
       p <- args[['polygon']]
       # Mask using spatial polygon
       ras <- suppressWarnings(
         raster::mask(raster, p)
       )
-
       return(ras)
-
     } else if ( 'n' %in% names(args) ) { # Adjacent cell count
-
       n <- args[['n']]
       lat <- args[['latitude']]
       lon <- args[['longitude']]
       snapToGrid <- args[['snapToGrid']]
-
       # Determine if snapToGrid is true
       s2g <- ifelse(is.logical(snapToGrid), snapToGrid, FALSE)
-
       if ( s2g ) {
-
         target_cell <- raster::cellFromXY(raster, c(lon, lat))
-
         expand <- function(n) {
           M <- matrix(1, ncol = n*2+1, nrow = n*2+1)
           M[n+1,n+1] <- 0
           return(M)
         }
-
         adj <- raster::adjacent( raster,
                                  cells = target_cell,
                                  direction = expand(n),
                                  include = TRUE )[,2]
-
         ras <- raster::crop(raster, raster::extentFromCells(raster, cells = adj))
-
         return(ras)
-
       } else {
-
         # NOTE: Hacky way of solving raster even # cell count issue
         # Get cell distances from target
         coords <- raster::coordinates(raster)
@@ -110,19 +88,14 @@ raster_subset <- function(
         z <- raster[raster::rowColFromCell(raster, cell)]
         # Create raster from coords and timeseries
         ras <- raster::rasterFromXYZ(data.frame(xy, z), crs = raster::crs(raster))
-
         return(ras)
-
       }
-
     } else {
       stop('Missing subset arguments.')
     }
   }
-
   cl <- parallel::makeCluster(future::availableCores() - 1)
   future::plan(strategy = future::cluster, workers = cl)
-
   if ( class(raster) == 'list' ) {
     models <- future.apply::future_lapply(
       X = raster,
@@ -133,10 +106,6 @@ raster_subset <- function(
   } else {
     models <- .subset(raster, args)
   }
-
   parallel::stopCluster(cl)
-
-
   return(models)
-
 }
