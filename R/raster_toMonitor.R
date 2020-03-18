@@ -56,8 +56,9 @@ raster_toMonitor <- function(
     #   stop('Check Coordinates: Out of range.')
     # }
     if ( is.null(monitorID) ) {
-      monitorID <- stringr::str_extract(r@file@name, '(?<=[/])([^/]+)(?=\\_\\d+.[^.]+)')
-      warning('No Monitor ID provided: using generated ID')
+      # If no monitorID provided, use the model name and date from file string
+      monitorID <- stringr::str_extract(r@file@name, '(?<=[/])([^/]+)(?=\\_[^.]+)')
+      message('No Monitor ID provided: using generated ID')
     }
 
     # Create target Spatial Point
@@ -101,8 +102,8 @@ raster_toMonitor <- function(
     for ( i in raster ) {
       monitor[[(i@file@name)]] <-
         .toMonitor(i, longitude, latitude, buffer, monitorID, FUN)
-
     }
+    monitor <- PWFSLSmoke::monitor_combine(monitor) # combine multiple monitors
   } else if ( stringr::str_detect(class(raster), 'Raster*') ) {
     monitor <- .toMonitor(raster, longitude, latitude, buffer, monitorID, FUN)
   } else {
