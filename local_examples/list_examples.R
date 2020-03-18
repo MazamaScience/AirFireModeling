@@ -11,3 +11,5 @@ n_sub <- raster_subset(pnw_models,n = 20, longitude = -120, latitude = 45)
 r_sub <- raster_subset(pnw_models, radius = 10000, longitude = -120, latitude = 45)
 
 monitors <- raster_toMonitor(pnw_models, longitude = -120, latitude = 45)
+
+ct <- raster_coordinateTrace(pnw_models, -120, 45)
