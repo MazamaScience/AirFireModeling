@@ -26,6 +26,7 @@ raster_subset <- function(
   raster,
   ...
 ) {
+
   # Catch params
   args <- list(...)
   # NOTE: Sub-Internal subset function to parse raster with args.
@@ -103,8 +104,10 @@ raster_subset <- function(
         .subset(r, args)
       }
     )
-  } else {
+  } else if ( stringr::str_detect(class(raster), 'Raster*') ) {
     models <- .subset(raster, args)
+  } else {
+    stop('Invalid raster object.')
   }
   parallel::stopCluster(cl)
   return(models)
