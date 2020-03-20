@@ -13,3 +13,5 @@ r_sub <- raster_subset(pnw_models, radius = 10000, longitude = -120, latitude = 
 monitors <- raster_toMonitor(pnw_models, longitude = -120, latitude = 45)
 
 ct <- raster_coordinateTrace(pnw_models, -120, 45)
+
+calculated <- raster_calculate(pnw_models, function(x) { x * 10 })

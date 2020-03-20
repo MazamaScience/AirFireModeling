@@ -86,7 +86,7 @@ raster_coordinateTrace <- function( raster,
     )
     # NOTE: Hacky solution to split and recombine to avoid errors with combining multiple
     # identical target monitors.
-    target_monitor <- PWFSLSmoke::monitor_subsetBy(monitor[[1]], monitorID == monitor[[1]]$meta$monitorID[2])
+    target_monitor <- PWFSLSmoke::monitor_subsetBy(monitors[[1]], monitorID == monitors[[1]]$meta$monitorID[2])
     # Split the model monitor from the target monitor
     model_monitors <- lapply(
       X = monitors,
@@ -113,8 +113,13 @@ raster_coordinateTrace <- function( raster,
   gg <- AirMonitorPlots::ggplot_pm25Timeseries(ws_data) +
     AirMonitorPlots::geom_pm25Points(ggplot2::aes(color = .data$monitorID)) +
     AirMonitorPlots::stat_nowcast(ggplot2::aes(color = .data$monitorID)) +
-    ggplot2::labs(color = 'Legend') +
-    ggplot2::theme(legend.position = 'bottom', legend.margin = ggplot2::margin(), legend.box = 'vertical')
+    ggplot2::labs(color = '') +
+    ggplot2::theme( legend.position = c(1,1),
+                    legend.margin = ggplot2::margin(),
+                    legend.justification = c(1, 1),
+                    legend.direction = 'vertical',
+                    legend.box = "vertical",
+                    legend.background = ggplot2::element_rect(fill = 'transparent', color = 'transparent') )
 
   return(gg)
 }

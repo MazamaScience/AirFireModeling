@@ -7,6 +7,7 @@
 #' @param buffer A radial buffer about the buffer, in meters.
 #' @param monitorID An optional monitor identification name.
 #' @param FUN A function to collapse cells if buffer > 0.
+#' @param combine Logical. If to
 #'
 #' @description Time series associated with multiple grid cells are merged into a single
 #' time series by using \code{FUN} to collapse a given grid cell count, or
@@ -21,31 +22,14 @@ raster_toMonitor <- function(
   latitude = NULL,
   buffer = 1000,
   monitorID = NULL,
-  FUN = mean
+  FUN = mean,
+  combine = TRUE
 ) {
-
-  # ----- Validate parameters --------------------------------------------------
-  # MazamaCoreUtils::stopIfNull(raster)
-  # MazamaCoreUtils::stopIfNull(longitude)
-  # MazamaCoreUtils::stopIfNull(latitude)
-  #
-  # # Checks
-  # if ( !grepl('[rR]aster.+', class(raster)) ) {
-  #   stop(print('A valid Raster object is required.'))
-  # }
-  # if ( longitude < raster::xmin(raster) | longitude > raster::xmax(raster) |
-  #      latitude < raster::ymin(raster) | latitude > raster::ymax(raster) ) {
-  #   stop('Check Coordinates: Out of range.')
-  # }
-  # if ( is.null(monitorID) ) {
-  #   monitorID <- c('GEN_ID')
-  #   warning('No Monitor ID provided: using generated ID')
-  # }
 
   # TODO: buffer only accepts radial distance in meters. Look into adding cell
   #       count for determining monitor collapse.
 
-  .toMonitor <- function(  r,
+  ._toMonitor <- function(  r,
                            longitude = NULL,
                            latitude = NULL,
                            buffer = 1000,
@@ -103,7 +87,10 @@ raster_toMonitor <- function(
       monitor[[(i@file@name)]] <-
         .toMonitor(i, longitude, latitude, buffer, monitorID, FUN)
     }
-    monitor <- PWFSLSmoke::monitor_combine(monitor) # combine multiple monitors
+    # combine multiple monitors
+    if ( combine ) {
+      monitor <- PWFSLSmoke::monitor_combine(monitor)
+    }
   } else if ( stringr::str_detect(class(raster), 'Raster*') ) {
     monitor <- .toMonitor(raster, longitude, latitude, buffer, monitorID, FUN)
   } else {
