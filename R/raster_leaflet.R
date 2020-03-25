@@ -2,11 +2,23 @@
 #' @title Raster Leaflet Map
 #'
 #' @param raster A Raster* object
+#' @param index The index of the Raster* object. See details.
 #' @param compare An optional comparison Raster
 #' @param palette A color palette, default is Spectral
 #' @param direction Color palette direction. -1 is reverse.
+#' 
+#' @description Create a leaflet interactive map using a model Raster Image.
+#' 
+#' @details The \code{index} is typically associated with a time-axis or RasterLayer,
+#' e.g \code{index = 1} is the first hour of a model.
 #'
 #' @return a leaflet map
+#' @examples 
+#' \dontrun{
+#' bs <- raster_load()
+#' # Show 6th hour
+#' raster_leaflet(bs, index = 6)
+#' }
 raster_leaflet <- function(
   raster,
   index = 1,
@@ -20,9 +32,8 @@ raster_leaflet <- function(
   }
 
   if ( raster::nlayers(raster) || raster::nlayers(compare) ) {
-    warning('Raster* Layers > 1: Using first layer instead.')
-    raster <- raster[[1]]
-    compare <- compare[[1]]
+    raster <- raster[[index]]
+    compare <- compare[[index]]
   }
 
   t2str <- function(s) {

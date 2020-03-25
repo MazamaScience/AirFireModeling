@@ -29,7 +29,7 @@ raster_toMonitor <- function(
   # TODO: buffer only accepts radial distance in meters. Look into adding cell
   #       count for determining monitor collapse.
 
-  ._toMonitor <- function(  r,
+  .toMonitor <- function(  r,
                            longitude = NULL,
                            latitude = NULL,
                            buffer = 1000,

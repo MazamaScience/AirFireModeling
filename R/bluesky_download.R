@@ -1,17 +1,15 @@
 #' @export
 #' @title Download BlueSky model data from AirFire
 #'
-#' @param dailyOutputDir BlueSky web directory
 #' @param model Model identifier.
-#' @param modelRun Date code as "YYYYMMDDHH".
-#' @param subDir Subdirectory path containing netcdf data.
-#' @param baseUrl Base URL for BlueSky output.
+#' @param run Date code as "YYYYMMDDHH".
+#' @param type Subdirectory path containing netcdf data, i.e. 'forcast'.
+#' @param dirURL Base URL for BlueSky output.
 #' @param verbose If \code{FALSE}, suppress status messages (if any), and the
 #' progress bar.
 #'
 #' @description Downloads a copy of the specified BlueSky model run to the
-#' package data directory. This file can then be converted into a more
-#' modernized format by assimilation.
+#' package data directory. This file can then be converted into a common format.
 #'
 #' #' On 2019-10-11, vailable model identifiers include the following:
 #' \itemize{
@@ -45,11 +43,6 @@
 #' @return File path of downloaded data.
 #'
 #' @seealso \link{setModelDataDir}
-#' @examples
-#' \dontrun{
-#' setModelDataDir("~/Data/Bluesky")
-#' bluesky_download(model = "PNW-4km", modelRun = 2019100900)
-#' }
 
 bluesky_download <- function(
   model = 'PNW-4km',
@@ -59,13 +52,7 @@ bluesky_download <- function(
   verbose = TRUE
   ) {
   # ----- Validate parameters --------------------------------------------------
-#
-#   MazamaCoreUtils::stopIfNull(dailyOutputDir)
-#   MazamaCoreUtils::stopIfNull(model)
-#   MazamaCoreUtils::stopIfNull(modelRun)
-#   MazamaCoreUtils::stopIfNull(subDir)
-#   MazamaCoreUtils::stopIfNull(baseUrl)
-
+  # TODO: Write valid checks
   # Just in case
   if ( length(model) > 1 || length(run) > 1 ) {
     warning(paste0(

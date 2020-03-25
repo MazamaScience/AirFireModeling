@@ -12,7 +12,7 @@
 #' @param endtime an optional end time to subset with
 #' @param models a list of valid monitors to plot
 #' @param subDir Subdirectory path containing netcdf data. (Passed to
-#' \code{bluesky_load()})
+#' \code{raster_load()})
 #' @param buffer a radial buffer around the selected monitor to collapse the
 #' model about.
 monitor_forecast <- function(
@@ -42,7 +42,7 @@ monitor_forecast <- function(
   lat <- ws_monitor$meta$latitude
 
   # TODO: Auto gather avaliable bluesky models
-  in_model <- bluesky_availiableModels(longitude = lon, latitude = lat)
+  in_model <- bluesky_whichModel(longitude = lon, latitude = lat)
 
   # Monitor enddate
   monitor_endtime <- utils::tail(ws_monitor$data$datetime, 1)
@@ -52,6 +52,7 @@ monitor_forecast <- function(
   # NOTE:  Both monitor data and model runs specify time in UTC
   model_starttime <- lubridate::floor_date(monitor_endtime, unit = "day")
   modelRun <- strftime(model_starttime, "%Y%m%d00", tz = "UTC")
+  model_dir <- getModelDataDir()
 
   # Load the bluesky rasters
   # Create thread cluster
@@ -61,9 +62,9 @@ monitor_forecast <- function(
   bs_monitorList <- list()
   for ( model in models ) {
     bs_monitorList[[model]] <- future::future({
-      setModelDataDir('~/Data/Bluesky')
-      bs_raster <- bluesky_load( modelRun = modelRun,
-                                 subDir = subDir,
+      setModelDataDir(model_dir)
+      bs_raster <- raster_load( run = modelRun,
+                                type = subDir,
                                  model = model )
       raster_toMonitor( raster = bs_raster,
                         longitude = lon,
