@@ -19,18 +19,7 @@ Subset a Raster* by distance from a location
 }
 \examples{
 \dontrun{
-# Load Bluesky
-bs <- bluesky_load()
-
-# Subset by radius
-raster_subset(bs, radius = 20000, latitude = 45.5, longitude = -123.32)
-
-# Subset with polygon
-# Create CA polygon
-ca <- maps::map('state', 'CA', fill = TRUE)
-ca_polygon <- maptools::map2SpatialPolygons(ca, IDs = ca$names, proj4string = raster::crs(bs))
-
-# Raster subset
-raster_subset(bs, polygon = ca_polygon)
+model <- raster_load()
+pnw_4km_subbed <- raster_subset(model, n = 200, longitude = -120, latitude = 45)
 }
 }

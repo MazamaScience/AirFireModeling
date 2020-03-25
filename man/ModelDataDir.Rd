@@ -4,7 +4,9 @@
 \name{ModelDataDir}
 \alias{ModelDataDir}
 \title{Directory for Modeling Data}
-\format{Absolute path string.}
+\format{
+Absolute path string.
+}
 \description{
 This package maintains an internal directory location which
 users can set using \code{setModelDataDir()}. All package functions use this

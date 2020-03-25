@@ -2,33 +2,52 @@
 % Please edit documentation in R/raster_map.R
 \name{raster_map}
 \alias{raster_map}
-\title{Plot a Raster Map}
+\title{Plot Model Maps}
 \usage{
 raster_map(
   raster,
+  index = 1,
   palette = "Greys",
   breaks = "default",
   title = "PM2.5",
   direction = 1,
-  timezone = "UTC"
+  timezone = "UTC",
+  verbose = TRUE
 )
 }
 \arguments{
-\item{raster}{A Raster* object.}
+\item{raster}{A Raster\* object or a list of Raster\* objects.}
 
-\item{palette}{A color brewer palette (i.e. 'Greys', 'Blues', 'BuGn', 'YlOrRd', ...).}
+\item{index}{The index of the Raster* object. See details.}
 
-\item{breaks}{Color break locations.}
+\item{palette}{The color palette used to map cell values.}
 
-\item{title}{A plot title.}
+\item{breaks}{The breaks used to define the map cell color.}
 
-\item{direction}{Color palette direction. Set -1 to reverse direction.}
+\item{title}{(Optional) A plot title.}
 
-\item{timezone}{Timezone.}
+\item{direction}{Numeric. \code{direction = -1} reverses color palette.}
+
+\item{timezone}{The timezone to parse the dates. Default is UTC.}
+
+\item{verbose}{Show messages.}
 }
 \value{
-a ggobject
+a ggplot object
 }
 \description{
-Plot a Raster Map
+Plot a mapped region of a Raster object. Automatically downloads
+region shape files.
+}
+\details{
+If a list of Raster\* objects is provided, a small-multiples plot will be returned.
+The \code{index} is typically associated with a time-axis or RasterLayer,
+e.g \code{index = 1} is the first hour of a model.
+}
+\examples{
+\dontrun{
+setModelDataDir('~/Data/Bluesky/')
+bs <- raster_load()
+raster_map(bs)
+}
 }

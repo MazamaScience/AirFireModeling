@@ -5,7 +5,9 @@
 \alias{AirFireModeling}
 \alias{AirFireModelingEnv}
 \title{Utilities for working with USFS AirFire BlueSky model output}
-\format{An object of class \code{environment} of length 1.}
+\format{
+An object of class \code{environment} of length 1.
+}
 \usage{
 AirFireModelingEnv
 }

@@ -4,10 +4,18 @@
 \alias{raster_leaflet}
 \title{Raster Leaflet Map}
 \usage{
-raster_leaflet(raster, compare = NULL, palette = "Spectral", direction = -1)
+raster_leaflet(
+  raster,
+  index = 1,
+  compare = NULL,
+  palette = "Spectral",
+  direction = -1
+)
 }
 \arguments{
 \item{raster}{A Raster* object}
+
+\item{index}{The index of the Raster* object. See details.}
 
 \item{compare}{An optional comparison Raster}
 
@@ -19,5 +27,16 @@ raster_leaflet(raster, compare = NULL, palette = "Spectral", direction = -1)
 a leaflet map
 }
 \description{
-Raster Leaflet Map
+Create a leaflet interactive map using a model Raster Image.
+}
+\details{
+The \code{index} is typically associated with a time-axis or RasterLayer,
+e.g \code{index = 1} is the first hour of a model.
+}
+\examples{
+\dontrun{
+bs <- raster_load()
+# Show 6th hour
+raster_leaflet(bs, index = 6)
+}
 }

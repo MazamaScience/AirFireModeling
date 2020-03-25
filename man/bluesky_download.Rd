@@ -5,24 +5,21 @@
 \title{Download BlueSky model data from AirFire}
 \usage{
 bluesky_download(
-  dailyOutputDir = "standard",
-  model = "PNW-1.33km",
-  modelRun = NULL,
-  subDir = "combined",
-  baseUrl = "https://haze.airfire.org/bluesky-daily/output",
+  model = "PNW-4km",
+  run = NULL,
+  dirURL = "https://haze.airfire.org/bluesky-daily/output/standard",
+  type = "forecast",
   verbose = TRUE
 )
 }
 \arguments{
-\item{dailyOutputDir}{BlueSky web directory}
-
 \item{model}{Model identifier.}
 
-\item{modelRun}{Date code as "YYYYMMDDHH".}
+\item{run}{Date code as "YYYYMMDDHH".}
 
-\item{subDir}{Subdirectory path containing netcdf data.}
+\item{dirURL}{Base URL for BlueSky output.}
 
-\item{baseUrl}{Base URL for BlueSky output.}
+\item{type}{Subdirectory path containing netcdf data, i.e. 'forcast'.}
 
 \item{verbose}{If \code{FALSE}, suppress status messages (if any), and the
 progress bar.}
@@ -32,8 +29,7 @@ File path of downloaded data.
 }
 \description{
 Downloads a copy of the specified BlueSky model run to the
-package data directory. This file can then be converted into a more
-modernized format by assimilation.
+package data directory. This file can then be converted into a common format.
 
 #' On 2019-10-11, vailable model identifiers include the following:
 \itemize{
@@ -62,12 +58,6 @@ structure:
 .../standard/NAM84-0.08deg/2016050600/carryover/data/...
 .../standard/NAM84-0.08deg/2016050600/combined/data/...
 .../standard/NAM84-0.08deg/2016050600/forecast/data/...
-}
-}
-\examples{
-\dontrun{
-setModelDataDir("~/Data/Bluesky")
-bluesky_download(model = "PNW-4km", modelRun = 2019100900)
 }
 }
 \seealso{

@@ -23,7 +23,7 @@ monitor_forecast(
 \item{models}{a list of valid monitors to plot}
 
 \item{subDir}{Subdirectory path containing netcdf data. (Passed to
-\code{bluesky_load()})}
+\code{raster_load()})}
 
 \item{buffer}{a radial buffer around the selected monitor to collapse the
 model about.}

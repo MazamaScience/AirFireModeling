@@ -10,7 +10,8 @@ raster_toMonitor(
   latitude = NULL,
   buffer = 1000,
   monitorID = NULL,
-  FUN = mean
+  FUN = mean,
+  combine = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ raster_toMonitor(
 \item{monitorID}{An optional monitor identification name.}
 
 \item{FUN}{A function to collapse cells if buffer > 0.}
+
+\item{combine}{Logical. If to}
 }
 \value{
 A \emph{ws_monitor} object representing a single monitor.

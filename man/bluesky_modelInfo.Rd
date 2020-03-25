@@ -4,7 +4,9 @@
 \name{bluesky_modelInfo}
 \alias{bluesky_modelInfo}
 \title{BlueSky Model Information}
-\format{A tibble}
+\format{
+A tibble
+}
 \usage{
 bluesky_modelInfo
 }
