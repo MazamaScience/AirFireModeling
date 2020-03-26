@@ -125,9 +125,10 @@ raster_load <- function(
 #' @param model A model. i.e 'PNW-1.33km' or 'CANSAC-4km'.
 #' @param run The model run date. YYYYmmddHH format required.
 #' @param xlim A vector of coordinate longitude bounds.
-#' @param ylime A vector of coordinate latitude bounds.
+#' @param ylim A vector of coordinate latitude bounds.
 #' @param local A path to a downloaded NetCDF model.
-#' @param dirUrl the database URL.
+#' @param dirURL the database URL.
+#' @param type A type of model, formely subDir. i.e. 'forecast'
 #' @param clean Option to clean, or delete, the non-formatted model.
 #' @param verbose Logical to display messages.
 #'

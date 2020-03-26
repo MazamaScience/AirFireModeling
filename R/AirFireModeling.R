@@ -215,10 +215,11 @@ removeModelDataDir <- function() {
 #' @title Show loading for futures
 #' @param f a future
 #' @param msg a message to display
+#' @param verbose logical. to display
 #'
 #' @return NULL
 load_check <- function(f, msg, verbose) {
-  if (!verbose) {
+  if ( verbose ) {
   message(msg)
   while(!future::resolved(f)) {
     message(".",appendLF = F)
