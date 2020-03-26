@@ -197,8 +197,7 @@ setModelDataDir <- function(dataDir) {
   return(invisible(old))
 }
 
-#' @keywords internal
-#' @export
+#' @keywords Internal
 #' @title Remove package data directory
 #' @description Resets the package data directory to NULL. Used for internal
 #' testing.
@@ -209,6 +208,25 @@ setModelDataDir <- function(dataDir) {
 removeModelDataDir <- function() {
   old <- AirFireModelingEnv$dataDir
   AirFireModelingEnv$dataDir <- NULL
+}
+
+#' @keywords Internal
+#'
+#' @title Show loading for futures
+#' @param f a future
+#' @param msg a message to display
+#'
+#' @return NULL
+load_check <- function(f, msg, verbose) {
+  if (!verbose) {
+  message(msg)
+  while(!future::resolved(f)) {
+    message(".",appendLF = F)
+    Sys.sleep(1.5)
+  }
+  message('')
+  }
+  NULL
 }
 
 #' @export
@@ -249,81 +267,4 @@ bluesky_whichModel <- function(longitude, latitude) {
 #' @export
 bluesky_downloaded <- function(path = getModelDataDir(), pattern = '.nc', full = FALSE, ...) {
   list.files(path = path, full.names = full, no.. = TRUE, pattern = pattern)
-}
-
-#' @title Internal Model Load Function
-#'
-#' @description This function encapsulates the process of downloading, and formatting
-#' necessary for BlueSky model outputs. Additionally, it checks already existing
-#' models and loads those if avaliable.
-#'
-#' @keywords internal
-#'
-#' @param model A model. i.e 'PNW-1.33km' or 'CANSAC-4km'.
-#' @param run The model run date. YYYYmmddHH format required.
-#' @param xlim A vector of coordinate longitude bounds.
-#' @param ylime A vector of coordinate latitude bounds.
-#' @param local A path to a downloaded NetCDF model.
-#' @param dirUrl the database URL.
-#' @param clean Option to clean, or delete, the non-formatted model.
-#' @param verbose Logical to display messages.
-#'
-#' @return A RasterBrick
-.bluesky_load <- function(model, run, xlim, ylim, local, dirURL, type, clean, verbose) {
-
-  if ( is.null(local) ) {
-
-    setModelDataDir(getModelDataDir())
-    bs_raw <- bluesky_download(model, run, dirURL, type, verbose)
-    bs <- bluesky_toCommonFormat(bs_raw, clean = clean)
-
-  } else {
-
-    if ( file.exists(local) ) {
-      v2_path <- stringr::str_replace(local, '.nc', '_V2.nc')
-      if ( file.exists(v2_path) ) {
-        bs <- v2_path
-      } else {
-        warning('Converting NetCDF to common format. See help(bluesky_toCommonFormat()) for details.')
-        bs <- bluesky_toCommonFormat(local, clean = FALSE)
-      }
-    } else {
-      stop('Local NetCDF does not exist. Please check the local file location.')
-    }
-
-  }
-  # Handle ylim and xlim
-  # NOTE: raster bricks are not all loaded into memory, only their reference.
-  if ( !is.null(xlim) || !is.null(ylim) ) {
-    tmp_brick <- raster::brick(bs)
-    if ( is.null(ylim) ) {
-      ylim <- c(raster::ymin(tmp_brick), raster::ymax(tmp_brick))
-    }
-    if ( is.null(xlim) ) {
-      xlim <- c(raster::xmin(tmp_brick), raster::xmax(tmp_brick))
-    }
-    if ( !any(findInterval(xlim, c(raster::xmin(tmp_brick), raster::xmax(tmp_brick)))) ) {
-      stop('xlim out of model coordinate domain.')
-    }
-    if ( !any(findInterval(ylim, c(raster::ymin(tmp_brick), raster::ymax(tmp_brick)))) ) {
-      stop('ylim out of model coordinate domain.')
-    }
-    cells <- raster::cellFromXY(tmp_brick, cbind(xlim, ylim))
-    ext <- raster::extentFromCells(tmp_brick, cells)
-    return(raster::crop(tmp_brick, ext))
-  } else {
-    return(raster::brick(bs))
-  }
-}
-
-.load_check <- function(f, msg) {
-  cat("\n")
-  cat(msg)
-  cat("\n")
-  while(!future::resolved(f)) {
-    cat(".")
-    Sys.sleep(1.5)
-  }
-  cat("\n")
-  NULL
 }
