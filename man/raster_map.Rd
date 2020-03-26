@@ -2,9 +2,33 @@
 % Please edit documentation in R/raster_map.R
 \name{raster_map}
 \alias{raster_map}
+\alias{raster_map.Raster}
+\alias{raster_map.list}
 \title{Plot Model Maps}
 \usage{
 raster_map(
+  raster,
+  index = 1,
+  palette = "Greys",
+  breaks = "default",
+  title = "PM2.5",
+  direction = 1,
+  timezone = "UTC",
+  verbose = TRUE
+)
+
+\method{raster_map}{Raster}(
+  raster,
+  index = 1,
+  palette = "Greys",
+  breaks = "default",
+  title = "PM2.5",
+  direction = 1,
+  timezone = "UTC",
+  verbose = TRUE
+)
+
+\method{raster_map}{list}(
   raster,
   index = 1,
   palette = "Greys",
@@ -44,6 +68,13 @@ If a list of Raster\* objects is provided, a small-multiples plot will be return
 The \code{index} is typically associated with a time-axis or RasterLayer,
 e.g \code{index = 1} is the first hour of a model.
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{Raster}: A Raster object implementation.
+
+\item \code{list}: A multithreaded implementation for iterating over lists.
+}}
+
 \examples{
 \dontrun{
 setModelDataDir('~/Data/Bluesky/')

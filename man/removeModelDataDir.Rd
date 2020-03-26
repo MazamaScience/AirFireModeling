@@ -20,4 +20,4 @@ getModelDataDir
 
 setModelDataDir
 }
-\keyword{internal}
+\keyword{Internal}

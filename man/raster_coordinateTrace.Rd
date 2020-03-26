@@ -2,9 +2,15 @@
 % Please edit documentation in R/raster_coordinateTrace.R
 \name{raster_coordinateTrace}
 \alias{raster_coordinateTrace}
+\alias{raster_coordinateTrace.list}
+\alias{raster_coordinateTrace.Raster}
 \title{Plot a raster coordinate-temporal values}
 \usage{
 raster_coordinateTrace(raster, longitude, latitude, monitorID = NULL, ...)
+
+\method{raster_coordinateTrace}{list}(raster, longitude, latitude, monitorID = NULL, ...)
+
+\method{raster_coordinateTrace}{Raster}(raster, longitude, latitude, monitorID = NULL, ...)
 }
 \arguments{
 \item{raster}{A Raster\* object or a list of Raster\* objects.}
@@ -23,3 +29,10 @@ A ggplot object
 \description{
 Plot a raster coordinate-temporal values
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{list}: A multithreaded implementation for lists of Raster* objects.
+
+\item \code{Raster}: A Raster* object implementation.
+}}
+
