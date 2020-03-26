@@ -45,7 +45,7 @@ raster_aggregate <- function(
   t_diff <- diff(parsed_dates)[parsed_dates == lubridate::ymd_hms(enddate, truncated = 6)]
   # Warn user if the selected time difference is less than it should be
   if ( diff(by) + 1 < as.numeric(t_diff) ) {
-    warning(
+    message(
       paste0(
         'Minimum continous model difference is ',
         t_diff,
@@ -76,13 +76,7 @@ raster_aggregate <- function(
       .bluesky_load(model, i, xlim, ylim, local, dirURL, type, clean, verbose)
     })
   }
-
-  cat("Loading ")
-  while(!future::resolved(model_run[[1]])) {
-    cat(".")
-    Sys.sleep(2)
-  }
-  cat("\n")
+  load_check(model_run[[1]], 'Loading Aggregated Model', verbose)
 
   models <- future::values(model_run)
   parallel::stopCluster(cl)
