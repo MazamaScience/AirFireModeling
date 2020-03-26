@@ -64,22 +64,16 @@ raster_aggregate <- function(
                          format = '%Y%m%d%H',
                          tz = 'UTC' )
 
-  cl <- parallel::makeCluster(future::availableCores() - 1)
-  future::plan(strategy = future::cluster, workers = cl)
   model_dir <- getModelDataDir()
-
-  model_run <- list()
-
-  for ( i in run_dates ) {
-    model_run[[i]] <- future::future({
-      setModelDataDir(model_dir)
-      .bluesky_load(model, i, xlim, ylim, local, dirURL, type, clean, verbose)
-    })
-  }
-  load_check(model_run[[1]], 'Loading Aggregated Model', verbose)
-
-  models <- future::values(model_run)
-  parallel::stopCluster(cl)
+  setModelDataDir(model_dir)
+  models <- raster_load( model = model,
+                         run = run_dates,
+                         xlim = xlim,
+                         ylim = ylim,
+                         local = local,
+                         dirURL = dirURL,
+                         type = type,
+                         verbose = verbose )
 
   # Convert raster stack list to brick
   model_brick <- raster::brick(
