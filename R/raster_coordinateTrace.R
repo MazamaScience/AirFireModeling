@@ -18,6 +18,10 @@ raster_coordinateTrace <- function( raster,
   UseMethod('raster_coordinateTrace', raster)
 }
 
+## If the monitor id is null, do not download a target monitor and return ??
+## If the monitor id is nearest, download the nearest model and combine
+## else if monitor id is defined and valid, download model and combine
+
 #' @describeIn raster_coordinateTrace A multithreaded implementation for lists of Raster* objects.
 #' @export
 raster_coordinateTrace.list <- function( raster,
@@ -33,7 +37,7 @@ raster_coordinateTrace.list <- function( raster,
     FUN = function(r) {
       tryCatch(
         expr = {
-          .load_target_monitor(r, longitude, latitude)
+          .load_target_monitor(r, longitude, latitude, monitorID)
         },
         error = function(e) {
           PWFSLSmoke::createEmptyMonitor()
@@ -43,14 +47,20 @@ raster_coordinateTrace.list <- function( raster,
   )
   # NOTE: Hacky solution to split and recombine to avoid errors with combining multiple
   # identical target monitors.
-  target_monitor <- PWFSLSmoke::monitor_subsetBy(monitors[[1]], monitorID == monitors[[1]]$meta$monitorID[2])
+  target_monitor <- PWFSLSmoke::monitor_subsetBy(
+    monitors[[1]],
+    monitorID == monitors[[1]]$meta$monitorID[2]
+  )
   # Split the model monitor from the target monitor
   model_monitors <- lapply(
     X = monitors,
     FUN = function(x) {
       tryCatch(
         expr = {
-          PWFSLSmoke::monitor_subsetBy(x, monitorID != target_monitor$meta$monitorID)
+          PWFSLSmoke::monitor_subsetBy(
+            x,
+            monitorID != target_monitor$meta$monitorID
+            )
         },
         error = function(e) {
           PWFSLSmoke::createEmptyMonitor()
@@ -72,7 +82,8 @@ raster_coordinateTrace.list <- function( raster,
                     legend.justification = c(1, 1),
                     legend.direction = 'vertical',
                     legend.box = "vertical",
-                    legend.background = ggplot2::element_rect(fill = 'transparent', color = 'transparent') )
+                    legend.background = ggplot2::element_rect(fill = 'transparent',
+                                                              color = 'transparent') )
 
   return(gg)
 }
@@ -80,10 +91,10 @@ raster_coordinateTrace.list <- function( raster,
 #' @describeIn raster_coordinateTrace A Raster* object implementation.
 #' @export
 raster_coordinateTrace.Raster <- function( raster,
-                                         longitude,
-                                         latitude,
-                                         monitorID = NULL,
-                                         ... ) {
+                                           longitude,
+                                           latitude,
+                                           monitorID = NULL,
+                                           ... ) {
   ws_data <- .load_target_monitor(raster, longitude, latitude, monitorID)
 
   gg <- AirMonitorPlots::ggplot_pm25Timeseries(ws_data) +
@@ -95,7 +106,8 @@ raster_coordinateTrace.Raster <- function( raster,
                     legend.justification = c(1, 1),
                     legend.direction = 'vertical',
                     legend.box = "vertical",
-                    legend.background = ggplot2::element_rect(fill = 'transparent', color = 'transparent') )
+                    legend.background = ggplot2::element_rect(fill = 'transparent',
+                                                              color = 'transparent') )
 
   return(gg)
 
@@ -117,7 +129,8 @@ raster_coordinateTrace.Raster <- function( raster,
   }
 
   # Parse dates stored in model
-  model_dates <- as.numeric(stringr::str_remove(r@data@names, pattern = 'X')) # model dates stored in layer name
+  # NOTE: model dates stored in layer name
+  model_dates <- as.numeric(stringr::str_remove(r@data@names, pattern = 'X'))
   class(model_dates) <- c('POSIXct', 'POSIXt')
   attr(model_dates, 'tzone') <- 'UTC'
   # Load All monitors for model dates
@@ -136,10 +149,12 @@ raster_coordinateTrace.Raster <- function( raster,
                                                cbind(lon, lat) )
     nearest_monitorID <- ws_monitor$meta$monitorID[which.min(monitors_dist)]
     target_dist <- monitors_dist[which.min(monitors_dist)]
-    target_monitor <- PWFSLSmoke::monitor_subset(ws_monitor, monitorIDs = nearest_monitorID)
+    target_monitor <- PWFSLSmoke::monitor_subset(ws_monitor,
+                                                 monitorIDs = nearest_monitorID)
 
   } else {
-    target_monitor <- PWFSLSmoke::monitor_subset(ws_monitor, monitorIDs = monitorID)
+    target_monitor <- PWFSLSmoke::monitor_subset(ws_monitor,
+                                                 monitorIDs = monitorID)
   }
 
   # Overwrite coordinates unless specified
