@@ -19,6 +19,7 @@ raster_coordinateTrace <- function( raster,
 }
 
 #' @describeIn raster_coordinateTrace A multithreaded implementation for lists of Raster* objects.
+#' @export
 raster_coordinateTrace.list <- function( raster,
                                          longitude,
                                          latitude,
@@ -77,6 +78,7 @@ raster_coordinateTrace.list <- function( raster,
 }
 
 #' @describeIn raster_coordinateTrace A Raster* object implementation.
+#' @export
 raster_coordinateTrace.Raster <- function( raster,
                                          longitude,
                                          latitude,

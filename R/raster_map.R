@@ -37,6 +37,7 @@ raster_map <- function( raster,
 }
 
 #' @describeIn raster_map A Raster object implementation.
+#' @export
 raster_map.Raster <-function( raster,
                               index = 1,
                               palette = 'Greys',
@@ -56,6 +57,7 @@ raster_map.Raster <-function( raster,
 }
 
 #' @describeIn raster_map A multithreaded implementation for iterating over lists.
+#' @export
 raster_map.list <- function( raster,
                              index = 1,
                              palette = 'Greys',
