@@ -1,6 +1,29 @@
-# AirFireModeling 0.1.7
+# AirFireModeling 0.2.5
 
-* Ready for USFS AirFire internal release
+* Updated to multithreaded capability 
+* New names - `bluesky_` is replaced with `raster_` functions with the execption of those specific to the BlueSky model.
+* `raster_` functions vectorised to support lists of parameters 
+* Updated the parameters for consistency
+* Added `bluesky_downloads()`
+
+# AirFireModeling 0.2.1
+
+* Minor cleanup to pass R CMD check.
+
+# AirFireModeling 0.2.0
+
+* Migrated to `raster` base 
+* Moved deprecated base to `old_R/`.
+* Added correlation rasters `raster_correlation()` 
+* Added `raster_spaghetti()`
+* Added `raster_subset()` and various subset capabilites
+* Added `raster_toMonitor()` and `monitor_toRaster()` conversion
+* Added `raster_map()`
+* Added `monitor_forecast()` for monitor forecast from rasters 
+* Added `bluesky_*()` functions for downloading and assimilating NetCDF's as rasters 
+* Added `skil_*()` functions
+* Added `bluesky_aggregate()` to aggregate multi-day-model runs by hours
+* Moved other non-rewritten and useful functions to `utils/`. 
 
 # AirFireModeling 0.1.6
 

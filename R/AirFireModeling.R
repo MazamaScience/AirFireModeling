@@ -23,7 +23,7 @@ AirFireModelingEnv$dataDir <- NULL
 #' row.
 bluesky_modelInfo <- dplyr::bind_rows(
   list(
-    
+
     "NAM84-0.15deg" = list(
       model = "NAM84-0.15deg",
       CENTER_LATITUDE   =  38.5,
@@ -38,7 +38,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
       MIN_LONGITUDE     = -130.0
       # TODO:  Add more information to all entries as needed
     ),
-    
+
     "GFS-0.15deg-CanadaUSA-p25deg-68N" = list(
       model = "GFS-0.15deg-CanadaUSA-p25deg-68N",
       CENTER_LATITUDE   =  47,
@@ -52,7 +52,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
       MAX_LONGITUDE     = -50.0,
       MIN_LONGITUDE     = -170.0
     ),
-    
+
     "AK-12km" = list(
       model = "AK-12km",
       CENTER_LATITUDE   =  62.5,
@@ -66,7 +66,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
       MAX_LONGITUDE     = -135.50,
       MIN_LONGITUDE     = -174.50
     ),
-    
+
     "NAM-3km" = list(
       model = "NAM-3km",
       CENTER_LATITUDE   =  37.5,
@@ -80,7 +80,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
       MAX_LONGITUDE     = -60.0,
       MIN_LONGITUDE     = -130.0
     ),
-    
+
     "CANSAC-4km" = list(
       model = "CANSAC-4km",
       CENTER_LATITUDE   =  38.8,
@@ -94,7 +94,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
       MAX_LONGITUDE     = -109.50,
       MIN_LONGITUDE     = -128.50
     ),
-    
+
     "CANSAC-1.33km" = list(
       model = "CANSAC-1.33km",
       CENTER_LATITUDE   =  37.25,
@@ -108,7 +108,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
       MAX_LONGITUDE     = -114.0,
       MIN_LONGITUDE     = -124.0
     ),
-    
+
     "PNW-4km" = list(
       model = "PNW-4km",
       CENTER_LATITUDE   =  45.00,
@@ -122,7 +122,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
       MAX_LONGITUDE     = -108.05,
       MIN_LONGITUDE     = -128.55
     ),
-    
+
     "PNW-1.33km" = list(
       model = "PNW-1.33km",
       CENTER_LATITUDE   =  45.55,
@@ -136,7 +136,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
       MAX_LONGITUDE     = -114.175,
       MIN_LONGITUDE     = -126.325
     )
-    
+
   ) # END of list()
 ) # EMD of dplyr::bind_rows()
 
@@ -197,8 +197,7 @@ setModelDataDir <- function(dataDir) {
   return(invisible(old))
 }
 
-#' @keywords internal
-#' @export
+#' @keywords Internal
 #' @title Remove package data directory
 #' @description Resets the package data directory to NULL. Used for internal
 #' testing.
@@ -209,6 +208,26 @@ setModelDataDir <- function(dataDir) {
 removeModelDataDir <- function() {
   old <- AirFireModelingEnv$dataDir
   AirFireModelingEnv$dataDir <- NULL
+}
+
+#' @keywords Internal
+#'
+#' @title Show loading for futures
+#' @param f a future
+#' @param msg a message to display
+#' @param verbose logical. to display
+#'
+#' @return NULL
+load_check <- function(f, msg, verbose) {
+  if ( verbose ) {
+  message(msg)
+  while(!future::resolved(f)) {
+    message(".",appendLF = F)
+    Sys.sleep(1.5)
+  }
+  message('')
+  }
+  NULL
 }
 
 #' @export
@@ -222,19 +241,31 @@ removeModelDataDir <- function() {
 #' @param latitude the target latitude
 #'
 #' @return vectors of model(s)
-bluesky_availiableModels <- function(longitude, latitude) {
+bluesky_whichModel <- function(longitude, latitude) {
 
-  # Use the information found in bluesky_modelInfo  
-  models <-
-    bluesky_modelInfo %>%
-    dplyr::filter(
+  # Use the information found in bluesky_modelInfo
+  models <- dplyr::filter(
+      bluesky_modelInfo,
       longitude >= .data$MIN_LONGITUDE &
         longitude <= .data$MAX_LONGITUDE &
         latitude >= .data$MIN_LATITUDE &
         latitude <= .data$MAX_LATITUDE
     ) %>%
     dplyr::pull(.data$model)
-  
+
   return(models)
-  
+
+}
+
+#' @title List Downloaded Models
+#'
+#' @param path The path in which models are located.
+#' @param pattern A regex pattern to use for filtering model files
+#' @param full Logical. Show the full path of the model (used for local loading).
+#' @param ... Additional arguments to be passed to \code{list.files()}.
+#'
+#' @return A list of downloaded models
+#' @export
+bluesky_downloaded <- function(path = getModelDataDir(), pattern = '.nc', full = FALSE, ...) {
+  list.files(path = path, full.names = full, no.. = TRUE, pattern = pattern)
 }

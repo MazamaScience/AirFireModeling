@@ -1,9 +1,10 @@
 Type: Package
 Package: AirFireModeling
-Version: 0.1.7
+Version: 0.2.5
 Title: Utilities for Working with Monitoring Data and Smoke Model Output
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")), 
+    person("Hans", "Martin", email="hans@mazamascience.com", role=c("aut")),
     person("Rohan", "Aras", email="rohana@uw.edu", role=c("aut")),
     person("Zach", "Dingels", email="dingelsz@uw.edu", role=c("aut")),
     person("Jimin", "Kim", email="jk55@uw.edu", role=c("aut")),
@@ -11,6 +12,7 @@ Authors@R: c(
     person("Rex", "Thompson", email="rexs.thompson@gmail.com", role=c("aut"))
     )
 Author: Jonathan Callahan [aut, cre],
+    Hans Martin [aut],
     Rohan Aras [aut],
     Zach Dingels [aut],
     Jimin Kim [aut],
@@ -22,9 +24,15 @@ Depends:
 Imports:
     abind,
     AirMonitorPlots,
+    cowplot, 
     dplyr,
+    future,
+    future.apply,
     geodist,
+    geosphere,
     ggplot2,
+    jsonlite,
+    leaflet,
     lubridate,
     maps,
     mapproj,
@@ -32,16 +40,21 @@ Imports:
     magrittr,
     MazamaCoreUtils (>= 0.4.0),
     MazamaSpatialUtils,
+    parallel,
     PWFSLSmoke,
     raster, 
     rasterVis,
     RColorBrewer,
+    RCurl,
     rlang,
     sp,
     stringr
 Suggests:
     knitr,
-    testthat (>= 2.1.0)
+    markdown,
+    testthat (>= 2.1.0),
+    rmarkdown,
+    roxygen2
 SystemRequirements: netcdf
 Description: Utilities for working with USFS BlueSky model output
     and PM2.5 monitoring data available from AirNow, AIRSIS
@@ -49,5 +62,6 @@ Description: Utilities for working with USFS BlueSky model output
 License: GPL-3
 VignetteBuilder: knitr
 Repository: CRAN
+Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0

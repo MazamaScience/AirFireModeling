@@ -1,0 +1,133 @@
+---
+title: "Model Receptor"
+author: "Mazama Science"
+params:
+  model: "PNW-1.33km"
+  modelRun: 20200305
+  monitorID: "060192009_01"
+  longitude: -120.25
+  latitude: 45.55
+  spatialDataDir: "~/Data/Spatial"
+  modelDataDir: "~/Data/Bluesky"
+  version: "4.1"
+output: html_document
+---
+
+
+
+```{r setup, include=FALSE}
+library(AirFireModeling)
+library(PWFSLSmoke)
+library(plotly)
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+
+model <- params$model
+modelRun <- params$modelRun
+monitorID <- params$monitorID
+version <- params$version
+lon <- params$longitude
+lat <- params$latitude
+modelDir <- params$modelDataDir
+spatialDir <- params$spatialDataDir
+```
+
+## Model: `r model`
+
+Model Date: `r lubridate::ymd(modelRun)`
+
+Longitude: `r lon`
+
+Latitude: `r lat`
+
+Monitor: `r monitorID`
+
+```{r downlaod}
+setModelDataDir(modelDir)
+bs <- bluesky_load( modelRun = modelRun, 
+                    model = model, 
+                    #version = version, 
+                    cleanup = FALSE )
+```
+
+### 4-Nearest Cells
+
+```{r four-nearest-cells,  fig.width = 13}
+four_gg <- raster_spaghetti( bs, 
+                  longitude = lon, 
+                  latitude = lat, 
+                  n = 4, 
+                  snapToGrid = FALSE, 
+                  monitorID = monitorID )
+four_gg
+```
+
+### 9-Nearest Cells
+
+```{r nine-nearest-cells,  fig.width = 13}
+nine_gg <- raster_spaghetti( bs, 
+                  longitude = lon, 
+                  latitude = lat, 
+                  n = 9, 
+                  snapToGrid = FALSE, 
+                  monitorID = monitorID, 
+                  color = 'red' )
+nine_gg
+```
+
+### 16-Nearest Cells
+
+```{r sixteen-nearest-cells,  fig.width = 13}
+sixteen_gg <- raster_spaghetti( bs, 
+                  longitude = lon, 
+                  latitude = lat, 
+                  n = 16, 
+                  snapToGrid = FALSE, 
+                  monitorID = monitorID, 
+                  color = 'purple' )
+sixteen_gg
+```
+
+### 25-Nearest Cells
+
+```{r twentyfive-nearest-cells,  fig.width = 13}
+twentyfive_gg <- raster_spaghetti( bs, 
+                  longitude = lon, 
+                  latitude = lat, 
+                  n = 25, 
+                  snapToGrid = FALSE, 
+                  monitorID = monitorID, 
+                  color = 'orange' )
+twentyfive_gg
+```
+
+```{r raster-crop}
+bs_cropped <- raster_subset( bs, 
+                             longitude = lon, 
+                             latitude = lat, 
+                             radius = 100*1000 )
+```
+
+### First 24-hours of BlueSky `r model` Model
+
+```{r first-day,  fig.width = 13, fig.height = 14}
+breaks <- seq(from = 0, to = 250, length.out = 12)
+raster_facet( bs_cropped[[1:24]], breaks = breaks, direction = -1)
+```
+
+### Second 24-hours of BlueSky `r model` Model
+
+```{r second-day,  fig.width = 13, fig.height = 14}
+breaks <- seq(from = 0, to = 250, length.out = 12)
+raster_facet( bs_cropped[[25:48]], breaks = breaks, direction = -1)
+```
+
+### Third 24-hours of BlueSky `r model` Model
+
+```{r third-day, fig.width = 13, fig.height = 14}
+breaks <- seq(from = 0, to = 250, length.out = 12)
+raster_facet( bs_cropped[[49:72]], breaks = breaks, direction = -1)
+```
+
+
+
