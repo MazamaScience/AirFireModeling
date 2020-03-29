@@ -6,12 +6,12 @@
 \usage{
 raster_load(
   model = "PNW-4km",
-  run = NULL,
+  modelRun = NULL,
   xlim = NULL,
   ylim = NULL,
-  local = NULL,
-  dirURL = "https://haze.airfire.org/bluesky-daily/output/standard",
-  type = "forecast",
+  localPath = NULL,
+  baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
+  modelType = "forecast",
   clean = FALSE,
   verbose = TRUE
 )
@@ -19,17 +19,17 @@ raster_load(
 \arguments{
 \item{model}{Model identifier(s).}
 
-\item{run}{Date code as "YYYYMMDDHH" (integer or character).}
+\item{modelRun}{Date code as "YYYYMMDDHH" (integer or character).}
 
 \item{xlim}{Optional longitude range.}
 
 \item{ylim}{Optional latitude range.}
 
-\item{local}{Absolute path of the local NetCDF (.nc) file}
+\item{localPath}{Absolute path of the local NetCDF (.nc) file}
 
-\item{dirURL}{Model output web directory. Default is BlueSky standard output.}
+\item{baseUrl}{Model output web directory. Default is BlueSky standard output.}
 
-\item{type}{Model type directory, i.e. 'forecast', 'combined', etc.}
+\item{modelType}{Model type directory, i.e. 'forecast', 'combined', etc.}
 
 \item{clean}{Logical specifying whether to remove the non-common format NetCDF.}
 
@@ -43,16 +43,16 @@ Load or download models and automatically convert NetCDF (.nc) format to
 a spatio-temporal \code{Raster*} object.
 }
 \details{
-\code{model}, \code{run}, and \code{local} are all vectorised
+\code{model}, \code{modelRun}, and \code{localPath} are all vectorised
 parameters. As such, loading a model is executed using multiple CPU threads.
 }
 \examples{
 \dontrun{
 # Set Model download directory (Required)
-setModelDataDir('~/Data/Bluesky')
+setModelDataDir('~/Data/BlueSky')
 # Load from server
-model <- raster_load('PNW-1.33km', run = 20200303, xlim = c(-125, -115))
+model <- raster_load('PNW-1.33km', modelRun = 20200303, xlim = c(-125, -115))
 # Load from local NetCDF
-model <- raster_load('~/Data/Bluesky/PNW-4km_2020030100.nc')
+model <- raster_load('~/Data/BlueSky/PNW-4km_2020030100.nc')
 }
 }

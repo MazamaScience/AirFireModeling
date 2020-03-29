@@ -9,7 +9,6 @@
 #' @return A Raster* object
 #' @export
 #'
-#' @examples
 raster_calculate <- function(raster, FUN) {
   if ( class(raster) == 'list' ) {
     cl <- parallel::makeCluster(future::availableCores() - 1)

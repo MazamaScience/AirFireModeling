@@ -1,3 +1,11 @@
+# AirFireModeling 0.2.6
+
+* Internal documentation cleanup.
+* Using consistent capitalization whenever "BlueSky" or "v2" is used.
+* Renamed various variables to use "well described nouns".
+* Renamed various `bluesky_` functions to use "well described verbs".
+* Using a more pedantic coding style in some functions.
+
 # AirFireModeling 0.2.5
 
 * Updated to multithreaded capability 

@@ -2,9 +2,9 @@
 #' @title Download BlueSky model data from AirFire
 #'
 #' @param model Model identifier.
-#' @param run Date code as "YYYYMMDDHH".
-#' @param type Subdirectory path containing netcdf data, i.e. 'forcast'.
-#' @param dirURL Base URL for BlueSky output.
+#' @param modelRun Date code as "YYYYMMDDHH".
+#' @param modelType Subdirectory path containing netcdf data, i.e. 'forcast'.
+#' @param baseUrl Base URL for BlueSky output.
 #' @param verbose If \code{FALSE}, suppress status messages (if any), and the
 #' progress bar.
 #'
@@ -30,7 +30,6 @@
 #'
 #' Users will typically call bluesky_load() which in turn calls this function.
 #'
-#'
 #' BlueSky output files are found in directories with the following
 #' structure:
 #'
@@ -43,94 +42,122 @@
 #' @return File path of downloaded data.
 #'
 #' @seealso \link{setModelDataDir}
+#' @examples
+#' \dontrun{
+#' library(AirFireModeling)
+#'
+#' setModelDataDir('~/Data/BlueSky')
+#' filePath <- bluesky_download(model = "PNW-4km", modelRun = 2019100900)
+#' bluesky_toCommonFormat(filePath)
+#' bluesky_downloaded()
+#' }
 
 bluesky_download <- function(
   model = 'PNW-4km',
-  run = NULL,
-  dirURL = 'https://haze.airfire.org/bluesky-daily/output/standard',
-  type = 'forecast',
+  modelRun = NULL,
+  baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
+  modelType = 'forecast',
   verbose = TRUE
-  ) {
+) {
+
   # ----- Validate parameters --------------------------------------------------
-  # TODO: Write valid checks
+
+  MazamaCoreUtils::stopIfNull(model)
+  MazamaCoreUtils::stopIfNull(modelRun)
+  MazamaCoreUtils::stopIfNull(baseUrl)
+  MazamaCoreUtils::stopIfNull(modelType)
+
   # Just in case
-  if ( length(model) > 1 || length(run) > 1 ) {
+  if ( length(model) > 1 || length(modelRun) > 1 ) {
     warning(paste0(
-      "'model' or 'run' has multiple values -- ",
+      "'model' or 'modelRun' has multiple values -- ",
       "first value being used."
     ))
     model <- model[1]
-    run <- as.character(run[1])
+    modelRun <- as.character(modelRun[1])
   }
 
   # Verify YYYYmmddHH
-  if ( !stringr::str_detect(run, "[0-9]{10}") ) {
+  if ( !stringr::str_detect(modelRun, "[0-9]{10}") ) {
     stop("'modelRun' parameter must have 10 digits")
   }
 
-  # Default to verbose
-  if ( !is.logical(verbose) )
-    verbose <- TRUE
+  # Defaults
+  if ( !is.logical(verbose) ) verbose <- TRUE
 
-  # ----- Create URL -----------------------------------------------------------
+  # ----- Create URL, name and path---------------------------------------------
+
   # Create directory URL
-  dir_url <- paste0( dirURL, "/",
-                 model, "/",
-                 run, "/",
-                 ifelse(is.null(type), NULL, paste0(type, "/")) )
+  dataDirUrl <- paste0(
+    baseUrl, "/",
+    model, "/",
+    modelRun, "/",
+    ifelse(is.null(modelType), NULL, paste0(modelType, "/"))
+  )
 
-
-  # NOTE: Detect bluesky output version via summary.json
-  detect_version <- function(dir_url) {
-    content <- readLines(dir_url)
-    if ( any(stringr::str_detect(content, 'summary.json')) ) {
-      summary <- jsonlite::fromJSON(paste0(dir_url, 'summary.json'))
-      version <- summary$output_version
-    } else {
-      stop('Invalid Directory: Cannot parse BlueSky output version.')
-    }
-    if ( verbose ) {
-      message(paste0('Auto-detected ', model, ' BlueSky Output Version: ', version))
-    }
-    return(version)
-  }
-
-  fileName <- paste0(model, "_", run, ".nc")
+  fileName <- paste0(model, "_", modelRun, ".nc")
   filePath <- file.path(getModelDataDir(), fileName)
 
   # ----- Download data --------------------------------------------------------
-  if ( !file.exists(filePath) ) {
-    version <- detect_version(dir_url)
 
-    # Use detected bluesky output version to construct .nc file url
+  if ( file.exists(filePath) ) {
+
+    if ( verbose )
+      message(paste0('BlueSky Model Exists at: ', filePath))
+
+  } else {
+
+    # NOTE: Detect bluesky output version via summary.json
+
+    # * detect model version -----
+
+    content <- readLines(dataDirUrl)
+    if ( any(stringr::str_detect(content, 'summary.json')) ) {
+      summary <- jsonlite::fromJSON(paste0(dataDirUrl, 'summary.json'))
+      version <- summary$output_version
+    } else {
+      stop(sprintf(
+        "Cannot determine model version\nNo 'summary.json' file at %s",
+        dataDirUrl
+      ))
+    }
+
+    if ( verbose )
+      message(paste0('Auto-detected ', model, ' BlueSky Output Version: ', version))
+
+    # * downlaod .nc file -----
+
     if ( version == '1.0.0' ) {
-      fileUrl <- paste0(dir_url, 'data/smoke_dispersion.nc')
-      tryCatch(
-        expr = {
-          utils::download.file(url = fileUrl,  destfile = filePath, quiet = !verbose)
-        },
-        error = function(e) {
-          stop(paste0('Error downloading: ', model))
-        }
-      )
-    } else if ( version == '2.0.0' ) {
-      fileUrl <- paste0(dir_url, 'hysplit_conc.nc')
+
+      fileUrl <- paste0(dataDirUrl, 'data/smoke_dispersion.nc')
       tryCatch(
         expr = {
           utils::download.file(url = fileUrl, destfile = filePath, quiet = !verbose)
         },
         error = function(e) {
-          stop(paste0('Error downloading: ', model))
+          stop(paste0("Error downloading: ", model))
         }
       )
+
+    } else if ( version == '2.0.0' ) {
+
+      fileUrl <- paste0(dataDirUrl, 'hysplit_conc.nc')
+      tryCatch(
+        expr = {
+          utils::download.file(url = fileUrl, destfile = filePath, quiet = !verbose)
+        },
+        error = function(e) {
+          stop(paste0("Error downloading: ", model))
+        }
+      )
+
     } else {
-      stop('Error Downloadind: Invalid BlueSky output version')
+
+      stop(paste0("Error downloading: Invalid BlueSky output version: ", version))
+
     }
 
-  } else {
-    message(paste0('BlueSky Model Exists at: ', filePath))
-    message('Loading ...')
-  }
+  } # END of file doesn't exist
 
   # ----- Return ---------------------------------------------------------------
 

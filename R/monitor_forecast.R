@@ -42,7 +42,7 @@ monitor_forecast <- function(
   lat <- ws_monitor$meta$latitude
 
   # TODO: Auto gather avaliable bluesky models
-  in_model <- bluesky_whichModel(longitude = lon, latitude = lat)
+  ### TODO:  What was this for? # in_model <- bluesky_findModels(longitude = lon, latitude = lat)
 
   # Monitor enddate
   monitor_endtime <- utils::tail(ws_monitor$data$datetime, 1)
@@ -63,9 +63,9 @@ monitor_forecast <- function(
   for ( model in models ) {
     bs_monitorList[[model]] <- future::future({
       setModelDataDir(model_dir)
-      bs_raster <- raster_load( run = modelRun,
-                                type = subDir,
-                                 model = model )
+      bs_raster <- raster_load( model = model,
+                                modelRun = modelRun,
+                                modelType = subDir)
       raster_toMonitor( raster = bs_raster,
                         longitude = lon,
                         latitude = lat,
@@ -104,9 +104,9 @@ monitor_forecast <- function(
 # ===== DEBUGGING ==============================================================
 
 if ( FALSE ) {
-  
+
   library(PWFSLSmoke)
-  
+
   ws_monitor <- monitor_load(20191115, 20191118, monitorIDs = '060670010_01')
   starttime = NULL
   endtime = NULL
@@ -114,9 +114,9 @@ if ( FALSE ) {
   subDir = 'forecast'
   buffer = 2000
   version = "3.5"
-  
-  setModelDataDir('~/Data/Bluesky')
+
+  setModelDataDir('~/Data/BlueSky')
   monitor_forecast(ws_monitor)
-  
+
 }
 

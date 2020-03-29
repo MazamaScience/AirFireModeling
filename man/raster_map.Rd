@@ -77,7 +77,7 @@ e.g \code{index = 1} is the first hour of a model.
 
 \examples{
 \dontrun{
-setModelDataDir('~/Data/Bluesky/')
+setModelDataDir('~/Data/BlueSky/')
 bs <- raster_load()
 raster_map(bs)
 }

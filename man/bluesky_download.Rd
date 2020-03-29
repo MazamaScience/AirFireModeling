@@ -6,20 +6,20 @@
 \usage{
 bluesky_download(
   model = "PNW-4km",
-  run = NULL,
-  dirURL = "https://haze.airfire.org/bluesky-daily/output/standard",
-  type = "forecast",
+  modelRun = NULL,
+  baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
+  modelType = "forecast",
   verbose = TRUE
 )
 }
 \arguments{
 \item{model}{Model identifier.}
 
-\item{run}{Date code as "YYYYMMDDHH".}
+\item{modelRun}{Date code as "YYYYMMDDHH".}
 
-\item{dirURL}{Base URL for BlueSky output.}
+\item{baseUrl}{Base URL for BlueSky output.}
 
-\item{type}{Subdirectory path containing netcdf data, i.e. 'forcast'.}
+\item{modelType}{Subdirectory path containing netcdf data, i.e. 'forcast'.}
 
 \item{verbose}{If \code{FALSE}, suppress status messages (if any), and the
 progress bar.}
@@ -50,7 +50,6 @@ package data directory. This file can then be converted into a common format.
 
 Users will typically call bluesky_load() which in turn calls this function.
 
-
 BlueSky output files are found in directories with the following
 structure:
 
@@ -58,6 +57,16 @@ structure:
 .../standard/NAM84-0.08deg/2016050600/carryover/data/...
 .../standard/NAM84-0.08deg/2016050600/combined/data/...
 .../standard/NAM84-0.08deg/2016050600/forecast/data/...
+}
+}
+\examples{
+\dontrun{
+library(AirFireModeling)
+
+setModelDataDir('~/Data/BlueSky')
+filePath <- bluesky_download(model = "PNW-4km", modelRun = 2019100900)
+bluesky_toCommonFormat(filePath)
+bluesky_downloaded()
 }
 }
 \seealso{
