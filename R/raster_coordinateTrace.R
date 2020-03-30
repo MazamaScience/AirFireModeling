@@ -4,6 +4,7 @@
 #' @param longitude (Optional) Target longitude to obtain values.
 #' @param latitude (Optional) Target latitude to obtain values.
 #' @param monitorID (Optional) a monitor ID to load
+#' @param tlim (Optional) a time limit to restrict the plot axis.
 #' @param ... additional parameters. See details.
 #'
 #' @return A ggplot object
@@ -14,6 +15,7 @@ raster_coordinateTrace <- function( raster,
                                     longitude,
                                     latitude,
                                     monitorID = NULL,
+                                    tlim = 'default',
                                     ... ) {
   UseMethod('raster_coordinateTrace', raster)
 }
@@ -28,6 +30,7 @@ raster_coordinateTrace.list <- function( raster,
                                          longitude,
                                          latitude,
                                          monitorID = NULL,
+                                         tlim = 'default',
                                          ... ) {
 
   cl <- parallel::makeCluster(future::availableCores() - 1)
@@ -45,6 +48,9 @@ raster_coordinateTrace.list <- function( raster,
       )
     }
   )
+
+  parallel::stopCluster(cl)
+
   # NOTE: Hacky solution to split and recombine to avoid errors with combining multiple
   # identical target monitors.
   target_monitor <- PWFSLSmoke::monitor_subsetBy(
@@ -72,6 +78,25 @@ raster_coordinateTrace.list <- function( raster,
 
   # Re-combine the target monitor and model monitor
   ws_data <- PWFSLSmoke::monitor_combine(list(target_monitor, model_monitors))
+
+# Handle time axis cropping
+if ( !is.null(tlim) )
+  # The 'default" tlim is determined by the median nlayers of the rasters supplied
+  # NOTE: find an alternative
+  if ( tlim == 'default' ) {
+    nlayers <- median(unlist(lapply(
+      X = raster,
+      FUN = function(r) {
+        raster::nlayers(r)
+      } )))
+    startdate <- lubridate::ymd(strftime(ws_data$data$datetime[1], '%Y%m%d'))
+    enddate <- startdate + lubridate::hours(nlayers) + lubridate::days(1) # end on the end of the last day
+    ws_data <- PWFSLSmoke::monitor_subset( ws_data,
+                                           tlim = c(strftime(startdate, '%Y%m%d'),
+                                                    strftime(enddate, '%Y%m%d')) )
+  } else {
+    ws_data <- PWFSLSmoke::monitor_subset(ws_data, tlim = tlim)
+  }
 
   gg <- AirMonitorPlots::ggplot_pm25Timeseries(ws_data) +
     AirMonitorPlots::geom_pm25Points(ggplot2::aes(color = .data$monitorID)) +
