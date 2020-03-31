@@ -52,6 +52,8 @@ raster_map <- function(
   # ----- Validate parameters --------------------------------------------------
 
   MazamaCoreUtils::stopIfNull(raster)
+  if ( !grepl('[Rr]aster', class(raster)) )
+    stop("Parameter 'raster' is not a `Raster*` object")
 
   if ( !is.numeric(index) )
     stop("Parameter 'index' must be numeric.")
