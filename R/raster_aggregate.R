@@ -6,7 +6,6 @@
 #' @param by Numeric vector. Represents hours to truncate models at.
 #' @param xlim Optional longitude range.
 #' @param ylim Optional latitude range.
-#' @param localPath Absolute or relative paths of the local NetCDF (.nc) files.
 #' @param baseUrl Model output web directory. Default is BlueSky standard output.
 #' @param modelType Model type directory, i.e. 'forecast', 'combined', etc.
 #' @param clean Logical specifying whether to remove the non-common format NetCDF.
@@ -22,10 +21,9 @@ raster_aggregate <- function(
   by = c(1,12), # maybe try "12 hours"?
   xlim = NULL,
   ylim = NULL,
-  localPath = NULL,
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
   modelType = 'forecast',
-  clean = FALSE,
+  clean = TRUE,
   verbose = TRUE
 ) {
 
@@ -66,9 +64,9 @@ raster_aggregate <- function(
                          modelRun = run_dates,
                          xlim = xlim,
                          ylim = ylim,
-                         localPath = localPath,
                          baseUrl = baseUrl,
                          modelType = modelType,
+                         clean = clean,
                          verbose = verbose )
 
   # Convert raster stack list to brick

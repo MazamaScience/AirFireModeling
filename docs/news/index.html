@@ -67,7 +67,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -105,6 +105,15 @@
       
     </div>
 
+    <div id="airfiremodeling-0-2-7" class="section level1">
+<h1 class="page-header">
+<a href="#airfiremodeling-0-2-7" class="anchor"></a>AirFireModeling 0.2.7</h1>
+<ul>
+<li>Internal refactoring and cleanup.</li>
+<li>Removed <code>localPath</code> support from <code><a href="../reference/raster_load.html">raster_load()</a></code>. Local files not found in the <code>modelDataDir</code> should be loaded with <code><a href="../reference/bluesky_load.html">bluesky_load()</a></code>.</li>
+<li>Removed use of “promises” (<em>parallel</em> and <em>future</em> packages) in the <code><a href="../reference/raster_load.html">raster_load()</a></code> function because it interferes with <em>raster</em> package delayed evaluation.</li>
+</ul>
+</div>
     <div id="airfiremodeling-0-2-6" class="section level1">
 <h1 class="page-header">
 <a href="#airfiremodeling-0-2-6" class="anchor"></a>AirFireModeling 0.2.6</h1>
@@ -230,6 +239,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#airfiremodeling-0-2-7">0.2.7</a></li>
         <li><a href="#airfiremodeling-0-2-6">0.2.6</a></li>
         <li><a href="#airfiremodeling-0-2-5">0.2.5</a></li>
         <li><a href="#airfiremodeling-0-2-1">0.2.1</a></li>

@@ -1,42 +1,73 @@
 
-#' @title Single model load function
+#' @title Load data for a single BlueSky model
 #'
 #' @description This function encapsulates the process of downloading, and formatting
 #' necessary for BlueSky model outputs. Additionally, it checks already existing
 #' models and loads those if avaliable.
 #'
-#' @param model A model. i.e 'PNW-1.33km' or 'CANSAC-4km'.
-#' @param modelRun The model run date. YYYYmmddHH format required.
-#' @param baseUrl the database URL.
-#' @param modelType A type of model, formely subDir. i.e. 'forecast'
-#' @param localPath A path to a downloaded NetCDF model.
+#' @description Loads BlueSky model output as a raster brick. The directory
+#' previously set with \code{setModelDataDir()} is searched for "v2" formatted
+#' model output. If data are not found locally, data are downloaded from
+#' \code{baseUrl} and converted.
+#'
+#' The reurned \code{dataBrick} object is of class \code{raster::RasterBrick} and
+#' can be manipulated with appropriate functions from the \pkg{raster} package
+#' or any of the \code{raster_~()} functions provided by \pkg{AirFireModeling}.
+#'
+#' #' On 2019-10-11, available model identifiers include the following:
+#' \itemize{
+#'   \item{AK-12km}
+#'   \item{CANSAC-1.33km}
+#'   \item{CANSAC-4km}
+#'   \item{DRI1.33km-CMAQ}
+#'   \item{DRI4km-CMAQ}
+#'   \item{GFS-0.15deg-CanadaUSA-p25deg-68N}
+#'   \item{GFS-0.15deg}
+#'   \item{NAM-3km}
+#'   \item{NAM84-0.15deg}
+#'   \item{PNW-1.33km}
+#'   \item{PNW-4km}
+#'   \item{PNW1.33km-CMAQ}
+#'   \item{PNW4km-CMAQ}
+#' }
+#'
+#' @note The regurned \emph{RasterBrick} object will contain all grid cells
+#' within the area defined by \code{xlim} and \code{ylim}.
+#'
+#' @param model Model identifier.
+#' @param modelRun Model initialization datestamp as "YYYYMMDDHH".
+#' @param modelType Subdirectory path containing BlueSky output, i.e. 'forcast'.
+#' @param baseUrl Base URL for BlueSky output.
+#' @param localPath Absolute path to a downloaded NetCDF file that is not found
+#' in `modelDataDir`.
 #' @param xlim A vector of coordinate longitude bounds.
 #' @param ylim A vector of coordinate latitude bounds.
-#' @param clean Option to clean, or delete, the non-formatted model.
+#' @param clean Logical specifying removal of original model data after conversion
+#' to "v2" format.
 #' @param verbose Logical to display messages.
 #'
-#' @return A RasterBrick.
+#' @return A \pkg{raster} package \emph{RasterBrick} object.
 #' @export
 #' @examples
 #' \dontrun{
 #' library(AirFireModeling)
 #'
 #' setModelDataDir('~/Data/BlueSky')
-#' rasterBrick <- bluesky_load(
+#' raster <- bluesky_load(
 #'   model = "PNW-4km",
 #'   modelRun = 2019100900,
 #'   xlim = c(-125, -115),
 #'   ylim = c(42, 50)
 #' )
 #'
-#' raster_map(rasterBrick, index = 3)
+#' raster_map(raster, index = 3)
 #' }
 #'
 bluesky_load <- function(
   model = 'PNW-4km',
   modelRun = NULL,
-  baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
   modelType = 'forecast',
+  baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
   localPath = NULL,
   xlim = NULL,
   ylim = NULL,
@@ -48,8 +79,8 @@ bluesky_load <- function(
 
   MazamaCoreUtils::stopIfNull(model)
   MazamaCoreUtils::stopIfNull(modelRun)
-  MazamaCoreUtils::stopIfNull(baseUrl)
   MazamaCoreUtils::stopIfNull(modelType)
+  MazamaCoreUtils::stopIfNull(baseUrl)
 
   # Defaults
   if ( !is.logical(clean) ) clean <- TRUE
@@ -63,31 +94,32 @@ bluesky_load <- function(
   v2FileName <- paste0(model, "_", modelRun, "_v2.nc")
   v2FilePath <- file.path(getModelDataDir(), v2FileName)
 
-  if ( is.null(localPath) ) {
+  if ( is.null(localPath) ) { # No localPath
 
     if ( !file.exists(v2FilePath) ) {
       rawFilePath <- bluesky_download(
         model = model,
         modelRun = modelRun,
-        baseUrl = baseUrl,
         modelType = modelType,
+        baseUrl = baseUrl,
         verbose = verbose
       )
       v2FilePath <- bluesky_toCommonFormat(rawFilePath, clean = clean)
     }
 
-  } else {
+  } else { # User specified localPath
 
-    # Check for v2 filePath
+    # Does localPath represent a v2 path?
     if ( grepl(x = localPath, pattern = '.+_v2.nc$') ) {
 
       v2FilePath <- localPath
 
     } else {
 
+      # Assume localPath represents a raw path.
       v2FilePath <- stringr::str_replace(localPath, '.nc', '_v2.nc')
       if ( !file.exists(v2FilePath) ) {
-        v2FilePath <- bluesky_toCommonFormat(localPath, clean = FALSE)
+        v2FilePath <- bluesky_toCommonFormat(localPath, clean = clean)
       }
 
     }
@@ -107,17 +139,31 @@ bluesky_load <- function(
 
   } else {
 
-    if ( is.null(ylim) )
-      ylim <- c(raster::ymin(rasterBrick), raster::ymax(rasterBrick))
+    xDomain <- c(raster::xmin(rasterBrick), raster::xmax(rasterBrick))
+    yDomain <- c(raster::ymin(rasterBrick), raster::ymax(rasterBrick))
 
-    if ( is.null(xlim) )
-      xlim <- c(raster::xmin(rasterBrick), raster::xmax(rasterBrick))
+    # NOTE:  Don't complain if xlim, ylim are bigger than the model domain.
+    # NOTE:  Just use the intersection.
 
-    if ( !any(findInterval(xlim, c(raster::xmin(rasterBrick), raster::xmax(rasterBrick)))) )
-      stop('xlim out of model coordinate domain.')
+    # Calculate xlim
+    if ( is.null(xlim) ) {
+      xlim <- xDomain
+    } else {
+      xlim <- c(
+        max(xlim[1], xDomain[1]),
+        min(xlim[2], xDomain[2])
+      )
+    }
 
-    if ( !any(findInterval(ylim, c(raster::ymin(rasterBrick), raster::ymax(rasterBrick)))) )
-      stop('ylim out of model coordinate domain.')
+    # Calculate ylim
+    if ( is.null(ylim) ) {
+      ylim <- yDomain
+    } else {
+      ylim <- c(
+        max(ylim[1], yDomain[1]),
+        min(ylim[2], yDomain[2])
+      )
+    }
 
     cells <- raster::cellFromXY(rasterBrick, cbind(xlim, ylim))
     ext <- raster::extentFromCells(rasterBrick, cells)

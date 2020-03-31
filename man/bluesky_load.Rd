@@ -2,13 +2,13 @@
 % Please edit documentation in R/bluesky_load.R
 \name{bluesky_load}
 \alias{bluesky_load}
-\title{Single model load function}
+\title{Load data for a single BlueSky model}
 \usage{
 bluesky_load(
   model = "PNW-4km",
   modelRun = NULL,
-  baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
   modelType = "forecast",
+  baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
   localPath = NULL,
   xlim = NULL,
   ylim = NULL,
@@ -17,45 +17,77 @@ bluesky_load(
 )
 }
 \arguments{
-\item{model}{A model. i.e 'PNW-1.33km' or 'CANSAC-4km'.}
+\item{model}{Model identifier.}
 
-\item{modelRun}{The model run date. YYYYmmddHH format required.}
+\item{modelRun}{Model initialization datestamp as "YYYYMMDDHH".}
 
-\item{baseUrl}{the database URL.}
+\item{modelType}{Subdirectory path containing BlueSky output, i.e. 'forcast'.}
 
-\item{modelType}{A type of model, formely subDir. i.e. 'forecast'}
+\item{baseUrl}{Base URL for BlueSky output.}
 
-\item{localPath}{A path to a downloaded NetCDF model.}
+\item{localPath}{Absolute path to a downloaded NetCDF file that is not found
+in `modelDataDir`.}
 
 \item{xlim}{A vector of coordinate longitude bounds.}
 
 \item{ylim}{A vector of coordinate latitude bounds.}
 
-\item{clean}{Option to clean, or delete, the non-formatted model.}
+\item{clean}{Logical specifying removal of original model data after conversion
+to "v2" format.}
 
 \item{verbose}{Logical to display messages.}
 }
 \value{
-A RasterBrick.
+A \pkg{raster} package \emph{RasterBrick} object.
 }
 \description{
 This function encapsulates the process of downloading, and formatting
 necessary for BlueSky model outputs. Additionally, it checks already existing
 models and loads those if avaliable.
+
+Loads BlueSky model output as a raster brick. The directory
+previously set with \code{setModelDataDir()} is searched for "v2" formatted
+model output. If data are not found locally, data are downloaded from
+\code{baseUrl} and converted.
+
+The reurned \code{dataBrick} object is of class \code{raster::RasterBrick} and
+can be manipulated with appropriate functions from the \pkg{raster} package
+or any of the \code{raster_~()} functions provided by \pkg{AirFireModeling}.
+
+#' On 2019-10-11, available model identifiers include the following:
+\itemize{
+  \item{AK-12km}
+  \item{CANSAC-1.33km}
+  \item{CANSAC-4km}
+  \item{DRI1.33km-CMAQ}
+  \item{DRI4km-CMAQ}
+  \item{GFS-0.15deg-CanadaUSA-p25deg-68N}
+  \item{GFS-0.15deg}
+  \item{NAM-3km}
+  \item{NAM84-0.15deg}
+  \item{PNW-1.33km}
+  \item{PNW-4km}
+  \item{PNW1.33km-CMAQ}
+  \item{PNW4km-CMAQ}
+}
+}
+\note{
+The regurned \emph{RasterBrick} object will contain all grid cells
+within the area defined by \code{xlim} and \code{ylim}.
 }
 \examples{
 \dontrun{
 library(AirFireModeling)
 
 setModelDataDir('~/Data/BlueSky')
-rasterBrick <- bluesky_load(
+raster <- bluesky_load(
   model = "PNW-4km",
   modelRun = 2019100900,
   xlim = c(-125, -115),
   ylim = c(42, 50)
 )
 
-raster_map(rasterBrick, index = 3)
+raster_map(raster, index = 3)
 }
 
 }

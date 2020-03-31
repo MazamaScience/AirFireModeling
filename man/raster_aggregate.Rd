@@ -11,10 +11,9 @@ raster_aggregate(
   by = c(1, 12),
   xlim = NULL,
   ylim = NULL,
-  localPath = NULL,
   baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
   modelType = "forecast",
-  clean = FALSE,
+  clean = TRUE,
   verbose = TRUE
 )
 }
@@ -30,8 +29,6 @@ raster_aggregate(
 \item{xlim}{Optional longitude range.}
 
 \item{ylim}{Optional latitude range.}
-
-\item{localPath}{Absolute or relative paths of the local NetCDF (.nc) files.}
 
 \item{baseUrl}{Model output web directory. Default is BlueSky standard output.}
 

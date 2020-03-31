@@ -15,11 +15,11 @@ bluesky_download(
 \arguments{
 \item{model}{Model identifier.}
 
-\item{modelRun}{Date code as "YYYYMMDDHH".}
+\item{modelRun}{Model initialization datestamp as "YYYYMMDDHH".}
 
 \item{baseUrl}{Base URL for BlueSky output.}
 
-\item{modelType}{Subdirectory path containing netcdf data, i.e. 'forcast'.}
+\item{modelType}{Subdirectory path containing BlueSky output, i.e. 'forcast'.}
 
 \item{verbose}{If \code{FALSE}, suppress status messages (if any), and the
 progress bar.}
@@ -31,7 +31,7 @@ File path of downloaded data.
 Downloads a copy of the specified BlueSky model run to the
 package data directory. This file can then be converted into a common format.
 
-#' On 2019-10-11, vailable model identifiers include the following:
+#' On 2019-10-11, available model identifiers include the following:
 \itemize{
   \item{AK-12km}
   \item{CANSAC-1.33km}

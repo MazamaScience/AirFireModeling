@@ -2,8 +2,8 @@
 #' @title Download BlueSky model data from AirFire
 #'
 #' @param model Model identifier.
-#' @param modelRun Date code as "YYYYMMDDHH".
-#' @param modelType Subdirectory path containing netcdf data, i.e. 'forcast'.
+#' @param modelRun Model initialization datestamp as "YYYYMMDDHH".
+#' @param modelType Subdirectory path containing BlueSky output, i.e. 'forcast'.
 #' @param baseUrl Base URL for BlueSky output.
 #' @param verbose If \code{FALSE}, suppress status messages (if any), and the
 #' progress bar.
@@ -11,7 +11,7 @@
 #' @description Downloads a copy of the specified BlueSky model run to the
 #' package data directory. This file can then be converted into a common format.
 #'
-#' #' On 2019-10-11, vailable model identifiers include the following:
+#' #' On 2019-10-11, available model identifiers include the following:
 #' \itemize{
 #'   \item{AK-12km}
 #'   \item{CANSAC-1.33km}

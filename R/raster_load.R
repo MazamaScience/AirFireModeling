@@ -1,49 +1,58 @@
-#' @title Load/Download a Raster Model
+#' @title Load BlueSky model data
 #'
-#' @param model Model identifier(s).
-#' @param modelRun Date code as "YYYYMMDDHH" (integer or character).
-#' @param xlim Optional longitude range.
-#' @param ylim Optional latitude range.
-#' @param localPath Absolute path of the local NetCDF (.nc) file
-#' @param baseUrl Model output web directory. Default is BlueSky standard output.
-#' @param modelType Model type directory, i.e. 'forecast', 'combined', etc.
-#' @param clean Logical specifying whether to remove the non-common format NetCDF.
-#' @param verbose If \code{FALSE}, suppress status messages (if any).
+#' @param model Model identifier.
+#' @param modelRun Model initialization datestamp as "YYYYMMDDHH".
+#' @param modelType Subdirectory path containing BlueSky output, i.e. 'forcast'.
+#' @param baseUrl Base URL for BlueSky output.
+#' @param xlim A vector of coordinate longitude bounds.
+#' @param ylim A vector of coordinate latitude bounds.
+#' @param clean Logical specifying removal of original model data after conversion
+#' to "v2" format.
+#' @param verbose Logical to display messages.
 #'
-#' @description Load or download models and automatically convert NetCDF (.nc) format to
-#' a spatio-temporal \code{Raster*} object.
+#' @description Load or download models and automatically convert NetCDF (.nc)
+#' format to a spatio-temporal \code{Raster*} object.
 #'
-#' @details \code{model}, \code{modelRun}, and \code{localPath} are all vectorised
-#' parameters. As such, loading a model is executed using multiple CPU threads.
+#' @details \code{model} and \code{modelRun} are vectorised parameters. Multiple
+#' datasets can be loaded at once.
 #'
-#' @return A raster object, or a list of raster objects
+#' @return A list of one or more raster objects.
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' # Set Model download directory (Required)
+#' library(AirFireModeling)
+#'
 #' setModelDataDir('~/Data/BlueSky')
+#'
 #' # Load from server
-#' model <- raster_load('PNW-1.33km', modelRun = 20200303, xlim = c(-125, -115))
-#' # Load from local NetCDF
-#' model <- raster_load('~/Data/BlueSky/PNW-4km_2020030100.nc')
+#' rasterList <- raster_load(
+#'   model = "PNW-4km",
+#'   modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),
+#'   xlim = c(-125, -115),
+#'   ylim = c(42, 50)
+#' )
+#'
+#'
+#' raster_map(rasterList, index = 3)
 #' }
 raster_load <- function(
   model = 'PNW-4km',
   modelRun = NULL,
+  modelType = 'forecast',
+  baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
   xlim = NULL,
   ylim = NULL,
-  localPath = NULL,
-  baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
-  modelType = 'forecast',
-  clean = FALSE,
+  clean = TRUE,
   verbose = TRUE
 ) {
 
   # ----- Validate parameters --------------------------------------------------
+
   MazamaCoreUtils::stopIfNull(baseUrl)
 
-  if ( is.null(modelRun) ) { # Use todays date if modelRun is null
+  if ( is.null(modelRun) ) {
+    # Use todays date if modelRun is null
     now <- lubridate::now(tzone = 'UTC')
     modelRun <- paste0(strftime(now, '%Y%m%d', tz = 'UTC'), '00')
   } else {
@@ -54,96 +63,55 @@ raster_load <- function(
       modelRun <- paste0(modelRun, '00')
     }
   }
+
   # Verify YYYYmmddHH
   if ( !stringr::str_detect(modelRun, '[0-9]{10}') ) {
     stop("'modelRun' parameter must have 10 digits")
   }
-  # Default to cleanup
-  if ( !is.logical(clean) ) {
-    warning('"clean" parameter must be logical boolean. Defaulting to FALSE')
-    clean <- FALSE
-  }
-  # Default to verbose
-  if ( !is.logical(verbose) ) {
-    warning('"verbose" parameter must be logical boolean. Defaulting to TRUE')
-    verbose <- TRUE
-  }
 
-  # ----- Load -----
-  # Create a Parallel Socket Cluster
-  cl <- parallel::makeCluster(future::availableCores() - 1)
-  future::plan(strategy = future::cluster, workers = cl)
-  data_dir <- getModelDataDir()
+  if ( length(modelType) > 1 )
+    stop("Only a single 'modelType' can be used in each call to raster_load().")
 
-  model_list <- list()
+  # Defaults
+  if ( !is.logical(clean) ) clean <- FALSE
+  if ( !is.logical(verbose) ) verbose <- TRUE
 
-  # NOTE: CHECK LOGIC
-  # Create a list of models to load parallel
-  if ( (length(model) >= 1) && is.null(localPath) && (length(modelRun) <= 1) ) {
-    for ( i in model ) {
-      model_list[[i]] <- future::future({
-        setModelDataDir(data_dir)
-        ###bluesky_load(i, modelRun, xlim, ylim, localPath, baseUrl, modelType, clean, verbose)
-        bluesky_load(
-          model = i,
-          modelRun = modelRun,
-          baseUrl = baseUrl,
-          modelType = modelType,
-          localPath = localPath,
-          xlim = xlim,
-          ylim = ylim,
-          clean = clean,
-          verbose = verbose
-        )
-      })
-    }
-    .load_check(model_list[[1]], paste0('Loading Model: ', paste(model, collapse = ', ')), verbose)
-  } else if ( length(localPath) >= 1 ) { # Check if to load multiple local files
-    for ( i in localPath ) {
-      model_list[[i]] <- future::future({
-        setModelDataDir(data_dir)
-        ###bluesky_load(model, modelRun, xlim, ylim, i, baseUrl, modelType, clean, verbose)
-        bluesky_load(
-          model = model,
-          modelRun = modelRun,
-          baseUrl = baseUrl,
-          modelType = modelType,
-          localPath = i,
-          xlim = xlim,
-          ylim = ylim,
-          clean = clean,
-          verbose = verbose
-        )
-      })
-    }
-    .load_check(model_list[[1]], paste0('Loading Local Files: ', paste(localPath, collapse = ', ')), verbose)
-  } else if ( length(modelRun) >= 1 ) {
-    for ( i in modelRun ) {
-      model_list[[paste0(model,"_",i)]] <- future::future({
-        setModelDataDir(data_dir)
-        ###bluesky_load(model, i, xlim, ylim, localPath, baseUrl, modelType, clean, verbose)
-        bluesky_load(
-          model = model,
-          modelRun = i,
-          baseUrl = baseUrl,
-          modelType = modelType,
-          localPath = localPath,
-          xlim = xlim,
-          ylim = ylim,
-          clean = clean,
-          verbose = verbose
-        )
-      })
-    }
-    .load_check(model_list[[1]], paste0('Loading Model Runs: ', paste(modelRun, collapse = ', ')), verbose)
-  } else {
-    stop('Check parameters.')
+  # ----- Load data ------------------------------------------------------------
+
+  # Empty list of promises
+  dataList <- list()
+
+  # NOTE:  We need to create all combinations of model and modelRun for
+  # NOTE:  downloading. The expand.grid() function does just that.
+  # Create combinations
+  allModelsDF <- expand.grid(model = model, modelRun = modelRun)
+
+  for ( i in seq_len(nrow(allModelsDF)) ) {
+
+    model <- allModelsDF$model[i]
+    modelRun <- allModelsDF$modelRun[i]
+    name <- sprintf("%s_%s", model, modelRun)
+
+    # Create "promises" to load data
+    dataList[[name]] <- bluesky_load(
+      model = model,
+      modelRun = modelRun,
+      modelType = modelType,
+      baseUrl = baseUrl,
+      localPath = NULL,
+      xlim = xlim,
+      ylim = ylim,
+      clean = clean,
+      verbose = verbose
+    )
+
+    .load_check(dataList[[name]],
+                sprintf("Loading %s_%s", model, modelRun),
+                verbose)
+
   }
 
-  models <- future::values(model_list)
-  parallel::stopCluster(cl)
-
-  return(models)
+  return(dataList)
 
 }
 
