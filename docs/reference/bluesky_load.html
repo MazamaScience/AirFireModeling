@@ -46,7 +46,7 @@ baseUrl and converted.
 The reurned dataBrick object is of class raster::RasterBrick and
 can be manipulated with appropriate functions from the raster package
 or any of the raster_~() functions provided by AirFireModeling.
-#' On 2019-10-11, available model identifiers include the following:
+On 2019-10-11, available model identifiers include the following:
 AK-12km
 CANSAC-1.33km
 CANSAC-4km
@@ -94,7 +94,7 @@ PNW4km-CMAQ
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
       </span>
     </div>
 
@@ -144,7 +144,7 @@ model output. If data are not found locally, data are downloaded from
 <p>The reurned <code>dataBrick</code> object is of class <code>raster::RasterBrick</code> and
 can be manipulated with appropriate functions from the <span class="pkg">raster</span> package
 or any of the <code>raster_~()</code> functions provided by <span class="pkg">AirFireModeling</span>.</p>
-<p>#' On 2019-10-11, available model identifiers include the following:</p><ul>
+<p>On 2019-10-11, available model identifiers include the following:</p><ul>
 <li><p>AK-12km</p></li>
 <li><p>CANSAC-1.33km</p></li>
 <li><p>CANSAC-4km</p></li>
@@ -228,8 +228,8 @@ within the area defined by <code>xlim</code> and <code>ylim</code>.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
-
 <span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky'</span>)
+
 <span class='no'>raster</span> <span class='kw'>&lt;-</span> <span class='fu'>bluesky_load</span>(
   <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
   <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019100900</span>,

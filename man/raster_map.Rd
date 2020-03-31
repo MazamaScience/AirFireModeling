@@ -4,7 +4,7 @@
 \alias{raster_map}
 \alias{raster_map.Raster}
 \alias{raster_map.list}
-\title{Plot Model Maps}
+\title{Plot maps of BlueSky model output}
 \usage{
 raster_map(
   raster,
@@ -44,9 +44,10 @@ raster_map(
 
 \item{index}{The index of the Raster* object. See details.}
 
-\item{palette}{The color palette used to map cell values.}
+\item{palette}{The color palette used to map cell values. This must be one
+of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
 
-\item{breaks}{The breaks used to define the map cell color.}
+\item{breaks}{The breaks used to define the map cell color or \code{'default'}.}
 
 \item{title}{(Optional) A plot title.}
 
@@ -54,31 +55,43 @@ raster_map(
 
 \item{timezone}{The timezone to parse the dates. Default is UTC.}
 
-\item{verbose}{Show messages.}
+\item{verbose}{Logical to display messages.}
 }
 \value{
 a ggplot object
 }
 \description{
-Plot a mapped region of a Raster object. Automatically downloads
-region shape files.
+Creates a \pkg{ggplot2} plot object from a \code{Raster\*}
+object. The returned plot object can be plotted or can be enhanced with
+additional \pkg{ggplot2} intructions.
 }
 \details{
-If a list of Raster\* objects is provided, a small-multiples plot will be returned.
+If a list of Raster\* objects is provided, a small-multiples plot
+is created.
+
 The \code{index} is typically associated with a time-axis or RasterLayer,
 e.g \code{index = 1} is the first hour of a model.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{Raster}: A Raster object implementation.
+\item \code{Raster}: Method for Raster* objects.
 
-\item \code{list}: A multithreaded implementation for iterating over lists.
+\item \code{list}: Multi-threaded method for a list of Raster* objects.
 }}
 
 \examples{
 \dontrun{
-setModelDataDir('~/Data/BlueSky/')
-bs <- raster_load()
-raster_map(bs)
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
+
+# Load from server
+rasterList <- raster_load(
+  model = "PNW-4km",
+  modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),
+  xlim = c(-125, -115),
+  ylim = c(42, 50)
+)
+
+raster_map(rasterList, title="PNW-4km", index = 3)
 }
 }

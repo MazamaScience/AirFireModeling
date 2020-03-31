@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot Model Maps — raster_map • AirFireModeling</title>
+<title>Plot maps of BlueSky model output — raster_map • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,9 +35,10 @@
 
 
 
-<meta property="og:title" content="Plot Model Maps — raster_map" />
-<meta property="og:description" content="Plot a mapped region of a Raster object. Automatically downloads
-region shape files." />
+<meta property="og:title" content="Plot maps of BlueSky model output — raster_map" />
+<meta property="og:description" content="Creates a ggplot2 plot object from a Raster\*
+object. The returned plot object can be plotted or can be enhanced with
+additional ggplot2 intructions." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -70,7 +71,7 @@ region shape files." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
       </span>
     </div>
 
@@ -104,14 +105,15 @@ region shape files." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot Model Maps</h1>
+    <h1>Plot maps of BlueSky model output</h1>
     
     <div class="hidden name"><code>raster_map.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot a mapped region of a Raster object. Automatically downloads
-region shape files.</p>
+    <p>Creates a <span class="pkg">ggplot2</span> plot object from a <code>Raster\*</code>
+object. The returned plot object can be plotted or can be enhanced with
+additional <span class="pkg">ggplot2</span> intructions.</p>
     </div>
 
     <pre class="usage"><span class='fu'>raster_map</span>(
@@ -162,11 +164,12 @@ region shape files.</p>
     </tr>
     <tr>
       <th>palette</th>
-      <td><p>The color palette used to map cell values.</p></td>
+      <td><p>The color palette used to map cell values. This must be one
+of the palettes available through <code><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>ggplot2::scale_colour_brewer()</a></code>.</p></td>
     </tr>
     <tr>
       <th>breaks</th>
-      <td><p>The breaks used to define the map cell color.</p></td>
+      <td><p>The breaks used to define the map cell color or <code>'default'</code>.</p></td>
     </tr>
     <tr>
       <th>title</th>
@@ -182,7 +185,7 @@ region shape files.</p>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>Show messages.</p></td>
+      <td><p>Logical to display messages.</p></td>
     </tr>
     </table>
 
@@ -191,22 +194,32 @@ region shape files.</p>
     <p>a ggplot object</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>If a list of Raster\* objects is provided, a small-multiples plot will be returned.
-The <code>index</code> is typically associated with a time-axis or RasterLayer,
+    <p>If a list of Raster\* objects is provided, a small-multiples plot
+is created.</p>
+<p>The <code>index</code> is typically associated with a time-axis or RasterLayer,
 e.g <code>index = 1</code> is the first hour of a model.</p>
     <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
 
     
 <ul>
-<li><p><code>Raster</code>: A Raster object implementation.</p></li>
-<li><p><code>list</code>: A multithreaded implementation for iterating over lists.</p></li>
+<li><p><code>Raster</code>: Method for Raster* objects.</p></li>
+<li><p><code>list</code>: Multi-threaded method for a list of Raster* objects.</p></li>
 </ul>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky/'</span>)
-<span class='no'>bs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_load.html'>raster_load</a></span>()
-<span class='fu'>raster_map</span>(<span class='no'>bs</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
+<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky'</span>)
+
+<span class='co'># Load from server</span>
+<span class='no'>rasterList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_load.html'>raster_load</a></span>(
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
+  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2019100800</span>, <span class='fl'>2019100900</span>, <span class='fl'>2019101000</span>, <span class='fl'>2019101100</span>),
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>115</span>),
+  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>42</span>, <span class='fl'>50</span>)
+)
+
+<span class='fu'>raster_map</span>(<span class='no'>rasterList</span>, <span class='kw'>title</span><span class='kw'>=</span><span class='st'>"PNW-4km"</span>, <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>3</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
