@@ -10,7 +10,6 @@
 #' @return A ggplot object
 #' @export
 #'
-#' @examples
 raster_coordinateTrace <- function( raster,
                                     longitude,
                                     latitude,

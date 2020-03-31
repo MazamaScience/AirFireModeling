@@ -8,7 +8,7 @@
 #' @description Converts BlueSky model output from its original format to a more
 #' modernized NetCDF format with dimension axes for longitude, latitude,
 #' elevation and time. With default settings, output files renamed to
-#' ~base~_V2.nc.
+#' ~base~_v2.nc.
 #'
 #' @note Users will typically call \code{bluesky_load()} which in turn calls
 #' this function.
@@ -17,14 +17,17 @@
 #'
 #' @examples
 #' \dontrun{
-#' setModelDataDir('~/Data/Bluesky')
+#' library(AirFireModeling)
+#'
+#' setModelDataDir('~/Data/BlueSky')
 #' filePath <- bluesky_download(model = "PNW-4km", modelRun = 2019100900)
 #' bluesky_toCommonFormat(filePath)
+#' bluesky_downloaded()
 #' }
 
 bluesky_toCommonFormat <- function(
   filePath = NULL,
-  clean= TRUE
+  clean = TRUE
 ) {
 
   # ----- Validate parameters --------------------------------------------------
@@ -32,21 +35,20 @@ bluesky_toCommonFormat <- function(
   MazamaCoreUtils::stopIfNull(filePath)
 
   if ( !is.logical(clean) )
-    clean<- TRUE
+    clean <- TRUE
 
-  # Checks
-  if ( grepl(x = filePath, pattern = '.+_V2.nc$') ) {
-    warning('filePath: NetCDF has already been assimilated.')
+  # Check for v2 filePath
+  if ( grepl(x = filePath, pattern = '.+_v2.nc$') )
     return(filePath)
-  }
+
   # ----- Open NetCDF file -----------------------------------------------------
 
   # Create old and new file paths
-  raw_nc_path <- filePath
-  nc_path <- stringr::str_replace(raw_nc_path, "\\.nc$", "_V2.nc")
+  rawFilePath <- filePath
+  v2FilePath <- stringr::str_replace(rawFilePath, "\\.nc$", "_v2.nc")
 
-  # open nc file
-  raw_nc <- ncdf4::nc_open(raw_nc_path)
+  # Open nc file
+  raw_nc <- ncdf4::nc_open(rawFilePath)
 
   # ----- Create latitude and longitude axes -----------------------------------
 
@@ -136,7 +138,7 @@ bluesky_toCommonFormat <- function(
   )
 
   # Create a new netcdf file
-  nc <- ncdf4::nc_create(nc_path, pm25Var)
+  nc <- ncdf4::nc_create(v2FilePath, pm25Var)
 
   # Put data into the newly defined variable
   ncdf4::ncvar_put(nc, pm25Var, pm25)
@@ -145,11 +147,11 @@ bluesky_toCommonFormat <- function(
   ncdf4::nc_close(nc)
 
   if (clean) {
-    unlink(raw_nc_path)
+    unlink(rawFilePath)
   }
 
   # ----- Return ---------------------------------------------------------------
 
-  return(nc_path)
+  return(v2FilePath)
 
 }

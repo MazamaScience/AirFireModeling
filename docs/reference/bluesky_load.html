@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Load BlueSky NetCDF file and return contents as a bs_grid. — bluesky_load • AirFireModeling</title>
+<title>Load data for a single BlueSky model — bluesky_load • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,15 +35,33 @@
 
 
 
-<meta property="og:title" content="Load BlueSky NetCDF file and return contents as a bs_grid. — bluesky_load" />
-<meta property="og:description" content="Reads in a &quot;_V2&quot; BlueSky output NetCDF file and ingests the
-data, returning it in a list of class bs_grid.
-Data are searched for in the package internal dataDir which can be set
-with setModelDataDir(). If no data are found in the dataDir,
-and download = TRUE an attempt is made to download data.
-If timesteps are specified, the returned bs_grid object will
-contain data associated with those timesteps. Data missing in the original
-model run will be replaced with NA values." />
+<meta property="og:title" content="Load data for a single BlueSky model — bluesky_load" />
+<meta property="og:description" content="This function encapsulates the process of downloading, and formatting
+necessary for BlueSky model outputs. Additionally, it checks already existing
+models and loads those if avaliable.
+Loads BlueSky model output as a raster brick. The directory
+previously set with setModelDataDir() is searched for &quot;v2&quot; formatted
+model output. If data are not found locally, data are downloaded from
+baseUrl and converted.
+The reurned dataBrick object is of class raster::RasterBrick and
+can be manipulated with appropriate functions from the raster package
+or any of the raster_~() functions provided by AirFireModeling.
+#' On 2019-10-11, available model identifiers include the following:
+AK-12km
+CANSAC-1.33km
+CANSAC-4km
+DRI1.33km-CMAQ
+DRI4km-CMAQ
+GFS-0.15deg-CanadaUSA-p25deg-68N
+GFS-0.15deg
+NAM-3km
+NAM84-0.15deg
+PNW-1.33km
+PNW-4km
+PNW1.33km-CMAQ
+PNW4km-CMAQ
+
+" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -76,7 +94,7 @@ model run will be replaced with NA values." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -110,114 +128,23 @@ model run will be replaced with NA values." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Load BlueSky NetCDF file and return contents as a bs_grid.</h1>
+    <h1>Load data for a single BlueSky model</h1>
     
     <div class="hidden name"><code>bluesky_load.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Reads in a "_V2" BlueSky output NetCDF file and ingests the
-data, returning it in a list of class <code>bs_grid</code>.</p>
-<p>Data are searched for in the package internal <code>dataDir</code> which can be set
-with <code><a href='setModelDataDir.html'>setModelDataDir()</a></code>. If no data are found in the <code>dataDir</code>,
-and <code>download = TRUE</code> an attempt is made to download data.</p>
-<p>If <code>timesteps</code> are specified, the returned <em>bs_grid</em> object will
-contain data associated with those timesteps. Data missing in the original
-model run will be replaced with NA values.</p>
-    </div>
-
-    <pre class="usage"><span class='fu'>bluesky_load</span>(<span class='kw'>dailyOutputDir</span> <span class='kw'>=</span> <span class='st'>"standard"</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-1.33km"</span>,
-  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>subDir</span> <span class='kw'>=</span> <span class='st'>"combined"</span>, <span class='kw'>parameter</span> <span class='kw'>=</span> <span class='st'>"pm25"</span>,
-  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timesteps</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>download</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>cleanup</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>filePath</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://haze.airfire.org/bluesky-daily/output"</span>,
-  <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>dailyOutputDir</th>
-      <td><p>BlueSky web directory.</p></td>
-    </tr>
-    <tr>
-      <th>model</th>
-      <td><p>Model identifier.</p></td>
-    </tr>
-    <tr>
-      <th>modelRun</th>
-      <td><p>Date code as "YYYYMMDDHH" (integer or character).</p></td>
-    </tr>
-    <tr>
-      <th>subDir</th>
-      <td><p>Subdirectory path containing netcdf data.</p></td>
-    </tr>
-    <tr>
-      <th>parameter</th>
-      <td><p>Parameter name.</p></td>
-    </tr>
-    <tr>
-      <th>xlim</th>
-      <td><p>Optional longitude range.</p></td>
-    </tr>
-    <tr>
-      <th>ylim</th>
-      <td><p>Optional latitude range.</p></td>
-    </tr>
-    <tr>
-      <th>timesteps</th>
-      <td><p>Optional vector of timesteps to be loaded. Defaults to all
-available timesteps in the file.</p></td>
-    </tr>
-    <tr>
-      <th>download</th>
-      <td><p>Logical specifying whether to download and convert data if it
-is not found locally.</p></td>
-    </tr>
-    <tr>
-      <th>cleanup</th>
-      <td><p>Logical specifying whether to remove the original files.</p></td>
-    </tr>
-    <tr>
-      <th>filePath</th>
-      <td><p>Absolute path of the local bluesky .nc file
-<em>(not "_V2.nc")</em> for special occasions.</p></td>
-    </tr>
-    <tr>
-      <th>baseUrl</th>
-      <td><p>Base URL for BlueSky output.</p></td>
-    </tr>
-    <tr>
-      <th>quiet</th>
-      <td><p>If <code>TRUE</code>, suppress status messages (if any), and the
-progress bar.</p></td>
-    </tr>
-    </table>
-
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>List of class <code>bs_grid</code> with the following elements:</p><ul>
-<li><p>lon -- 1D vector of longitudes (X)</p></li>
-<li><p>lat -- 1D vector of latitudes (Y)</p></li>
-<li><p>time -- 1D vector of POSIXct times (T)</p></li>
-<li><p>data -- list of 3D arrays of data values (X-Y-T)</p></li>
-<li><p>model -- character name of model used to generate the data</p></li>
-<li><p>modelRun -- character date + hour when the model was run</p></li>
-<li><p>deltaLon -- longitude axis grid cell spacing</p></li>
-<li><p>deltaLat -- latitude axis grid cell spacing</p></li>
-</ul>
-
-<p>BlueSky output files are found in directories with the following
-structure:</p>
-<pre>
-.../standard/NAM84-0.08deg/2016050600/carryover/data/...
-.../standard/NAM84-0.08deg/2016050600/combined/data/...
-.../standard/NAM84-0.08deg/2016050600/forecast/data/...
-</pre>
-
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>#' On 2019-10-11, vailable model identifiers include the following:</p><ul>
+    <p>This function encapsulates the process of downloading, and formatting
+necessary for BlueSky model outputs. Additionally, it checks already existing
+models and loads those if avaliable.</p>
+<p>Loads BlueSky model output as a raster brick. The directory
+previously set with <code><a href='setModelDataDir.html'>setModelDataDir()</a></code> is searched for "v2" formatted
+model output. If data are not found locally, data are downloaded from
+<code>baseUrl</code> and converted.</p>
+<p>The reurned <code>dataBrick</code> object is of class <code>raster::RasterBrick</code> and
+can be manipulated with appropriate functions from the <span class="pkg">raster</span> package
+or any of the <code>raster_~()</code> functions provided by <span class="pkg">AirFireModeling</span>.</p>
+<p>#' On 2019-10-11, available model identifiers include the following:</p><ul>
 <li><p>AK-12km</p></li>
 <li><p>CANSAC-1.33km</p></li>
 <li><p>CANSAC-4km</p></li>
@@ -233,25 +160,84 @@ structure:</p>
 <li><p>PNW4km-CMAQ</p></li>
 </ul>
 
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+    </div>
 
-    <div class='dont-index'><p><a href='bluesky_download.html'>bluesky_download</a></p>
-<p><a href='bluesky_toV2.html'>bluesky_toV2</a></p>
-<p><a href='setModelDataDir.html'>setModelDataDir</a></p></div>
+    <pre class="usage"><span class='fu'>bluesky_load</span>(
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
+  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>modelType</span> <span class='kw'>=</span> <span class='st'>"forecast"</span>,
+  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://haze.airfire.org/bluesky-daily/output/standard"</span>,
+  <span class='kw'>localPath</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>clean</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)</pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>model</th>
+      <td><p>Model identifier.</p></td>
+    </tr>
+    <tr>
+      <th>modelRun</th>
+      <td><p>Model initialization datestamp as "YYYYMMDDHH".</p></td>
+    </tr>
+    <tr>
+      <th>modelType</th>
+      <td><p>Subdirectory path containing BlueSky output, i.e. 'forcast'.</p></td>
+    </tr>
+    <tr>
+      <th>baseUrl</th>
+      <td><p>Base URL for BlueSky output.</p></td>
+    </tr>
+    <tr>
+      <th>localPath</th>
+      <td><p>Absolute path to a downloaded NetCDF file that is not found
+in `modelDataDir`.</p></td>
+    </tr>
+    <tr>
+      <th>xlim</th>
+      <td><p>A vector of coordinate longitude bounds.</p></td>
+    </tr>
+    <tr>
+      <th>ylim</th>
+      <td><p>A vector of coordinate latitude bounds.</p></td>
+    </tr>
+    <tr>
+      <th>clean</th>
+      <td><p>Logical specifying removal of original model data after conversion
+to "v2" format.</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Logical to display messages.</p></td>
+    </tr>
+    </table>
+
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A <span class="pkg">raster</span> package <em>RasterBrick</em> object.</p>
+    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
+
+    <p>The regurned <em>RasterBrick</em> object will contain all grid cells
+within the area defined by <code>xlim</code> and <code>ylim</code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/Bluesky'</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
 
-<span class='no'>xlim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>118</span>, -<span class='fl'>114</span>)
-<span class='no'>ylim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>45</span>, <span class='fl'>48</span>)
-<span class='no'>bs_grid</span> <span class='kw'>&lt;-</span> <span class='fu'>bluesky_load</span>(
-  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-1.33km"</span>,
+<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky'</span>)
+<span class='no'>raster</span> <span class='kw'>&lt;-</span> <span class='fu'>bluesky_load</span>(
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
   <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019100900</span>,
-  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='no'>xlim</span>,
-  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='no'>ylim</span>
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>115</span>),
+  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>42</span>, <span class='fl'>50</span>)
 )
-<span class='fu'><a href='grid_map.html'>grid_map</a></span>(<span class='no'>bs_grid</span>, <span class='kw'>tMask</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>24</span>)
+
+<span class='fu'><a href='raster_map.html'>raster_map</a></span>(<span class='no'>raster</span>, <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>3</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -259,8 +245,7 @@ structure:</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#see-also">See also</a></li>
+      <li><a href="#note">Note</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 
@@ -270,7 +255,7 @@ structure:</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Jonathan Callahan, Rohan Aras, Zach Dingels, Jimin Kim, Jon Hagg, Rex Thompson.</p>
+  <p>Developed by Jonathan Callahan, Hans Martin, Rohan Aras, Zach Dingels, Jimin Kim, Jon Hagg, Rex Thompson.</p>
 </div>
 
 <div class="pkgdown">

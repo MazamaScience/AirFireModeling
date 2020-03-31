@@ -21,7 +21,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' setModelDataDir('~/Data/Bluesky/')
+#' setModelDataDir('~/Data/BlueSky/')
 #' bs <- raster_load()
 #' raster_map(bs)
 #' }

@@ -18,7 +18,7 @@ Absolute path of the converted NetCDF file.
 Converts BlueSky model output from its original format to a more
 modernized NetCDF format with dimension axes for longitude, latitude,
 elevation and time. With default settings, output files renamed to
-~base~_V2.nc.
+~base~_v2.nc.
 }
 \note{
 Users will typically call \code{bluesky_load()} which in turn calls
@@ -26,8 +26,11 @@ this function.
 }
 \examples{
 \dontrun{
-setModelDataDir('~/Data/Bluesky')
+library(AirFireModeling)
+
+setModelDataDir('~/Data/BlueSky')
 filePath <- bluesky_download(model = "PNW-4km", modelRun = 2019100900)
 bluesky_toCommonFormat(filePath)
+bluesky_downloaded()
 }
 }

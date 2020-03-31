@@ -1,3 +1,20 @@
+# AirFireModeling 0.2.7
+
+* Internal refactoring and cleanup.
+* Removed `localPath` support from `raster_load()`. Local files not found in the
+`modelDataDir` should be loaded with `bluesky_load()`.
+* Removed use of "promises" (*parallel* and *future* packages) in the 
+`raster_load()` function because it interferes with *raster* package delayed
+evaluation.
+
+# AirFireModeling 0.2.6
+
+* Internal documentation cleanup.
+* Using consistent capitalization whenever "BlueSky" or "v2" is used.
+* Renamed various variables to use "well described nouns".
+* Renamed various `bluesky_` functions to use "well described verbs".
+* Using a more pedantic coding style in some functions.
+
 # AirFireModeling 0.2.5
 
 * Updated to multithreaded capability 

@@ -167,8 +167,8 @@ getModelDataDir <- function() {
   if ( is.null(AirFireModelingEnv$dataDir) ) {
     stop(paste0(
       "No data directory found. ",
-      "Please set a data directory with setModelDataDir('~/Data/Bluesky')"
-    ), call.=FALSE)
+      "Please set a data directory with setModelDataDir('~/Data/BlueSky')"
+    ), call. = FALSE)
   } else {
     return(AirFireModelingEnv$dataDir)
   }
@@ -192,12 +192,12 @@ setModelDataDir <- function(dataDir) {
   }, warning = function(warn) {
     warning("Invalid path name.")
   }, error   = function(err) {
-    stop(paste0("Error in setModelDataDir(",dataDir,")."))
+    stop(paste0("Error in setModelDataDir(", dataDir, ")."))
   })
   return(invisible(old))
 }
 
-#' @keywords Internal
+#' @keywords internal
 #' @title Remove package data directory
 #' @description Resets the package data directory to NULL. Used for internal
 #' testing.
@@ -210,62 +210,3 @@ removeModelDataDir <- function() {
   AirFireModelingEnv$dataDir <- NULL
 }
 
-#' @keywords Internal
-#'
-#' @title Show loading for futures
-#' @param f a future
-#' @param msg a message to display
-#' @param verbose logical. to display
-#'
-#' @return NULL
-load_check <- function(f, msg, verbose) {
-  if ( verbose ) {
-  message(msg)
-  while(!future::resolved(f)) {
-    message(".",appendLF = F)
-    Sys.sleep(1.5)
-  }
-  message('')
-  }
-  NULL
-}
-
-#' @export
-#' @importFrom dplyr filter
-#' @importFrom rlang .data
-#' @title Find coordinates appropriate model
-#' @description Determine what model to use based on the target coordinates
-#' provided.
-#'
-#' @param longitude the target longitude
-#' @param latitude the target latitude
-#'
-#' @return vectors of model(s)
-bluesky_whichModel <- function(longitude, latitude) {
-
-  # Use the information found in bluesky_modelInfo
-  models <- dplyr::filter(
-      bluesky_modelInfo,
-      longitude >= .data$MIN_LONGITUDE &
-        longitude <= .data$MAX_LONGITUDE &
-        latitude >= .data$MIN_LATITUDE &
-        latitude <= .data$MAX_LATITUDE
-    ) %>%
-    dplyr::pull(.data$model)
-
-  return(models)
-
-}
-
-#' @title List Downloaded Models
-#'
-#' @param path The path in which models are located.
-#' @param pattern A regex pattern to use for filtering model files
-#' @param full Logical. Show the full path of the model (used for local loading).
-#' @param ... Additional arguments to be passed to \code{list.files()}.
-#'
-#' @return A list of downloaded models
-#' @export
-bluesky_downloaded <- function(path = getModelDataDir(), pattern = '.nc', full = FALSE, ...) {
-  list.files(path = path, full.names = full, no.. = TRUE, pattern = pattern)
-}

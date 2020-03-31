@@ -11,10 +11,9 @@ raster_aggregate(
   by = c(1, 12),
   xlim = NULL,
   ylim = NULL,
-  local = NULL,
-  dirURL = "https://haze.airfire.org/bluesky-daily/output/standard",
-  type = "forecast",
-  clean = FALSE,
+  baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
+  modelType = "forecast",
+  clean = TRUE,
   verbose = TRUE
 )
 }
@@ -31,11 +30,9 @@ raster_aggregate(
 
 \item{ylim}{Optional latitude range.}
 
-\item{local}{Absolute or relative paths of the local NetCDF (.nc) files.}
+\item{baseUrl}{Model output web directory. Default is BlueSky standard output.}
 
-\item{dirURL}{Model output web directory. Default is BlueSky standard output.}
-
-\item{type}{Model type directory, i.e. 'forecast', 'combined', etc.}
+\item{modelType}{Model type directory, i.e. 'forecast', 'combined', etc.}
 
 \item{clean}{Logical specifying whether to remove the non-common format NetCDF.}
 
@@ -46,9 +43,4 @@ A raster object.
 }
 \description{
 Aggregate Raster Models
-}
-\examples{
-\dontrun{
-
-}
 }

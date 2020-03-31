@@ -2,57 +2,63 @@
 % Please edit documentation in R/raster_load.R
 \name{raster_load}
 \alias{raster_load}
-\title{Load/Download a Raster Model}
+\title{Load BlueSky model data}
 \usage{
 raster_load(
   model = "PNW-4km",
-  run = NULL,
+  modelRun = NULL,
+  modelType = "forecast",
+  baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
   xlim = NULL,
   ylim = NULL,
-  local = NULL,
-  dirURL = "https://haze.airfire.org/bluesky-daily/output/standard",
-  type = "forecast",
-  clean = FALSE,
+  clean = TRUE,
   verbose = TRUE
 )
 }
 \arguments{
-\item{model}{Model identifier(s).}
+\item{model}{Model identifier.}
 
-\item{run}{Date code as "YYYYMMDDHH" (integer or character).}
+\item{modelRun}{Model initialization datestamp as "YYYYMMDDHH".}
 
-\item{xlim}{Optional longitude range.}
+\item{modelType}{Subdirectory path containing BlueSky output, i.e. 'forcast'.}
 
-\item{ylim}{Optional latitude range.}
+\item{baseUrl}{Base URL for BlueSky output.}
 
-\item{local}{Absolute path of the local NetCDF (.nc) file}
+\item{xlim}{A vector of coordinate longitude bounds.}
 
-\item{dirURL}{Model output web directory. Default is BlueSky standard output.}
+\item{ylim}{A vector of coordinate latitude bounds.}
 
-\item{type}{Model type directory, i.e. 'forecast', 'combined', etc.}
+\item{clean}{Logical specifying removal of original model data after conversion
+to "v2" format.}
 
-\item{clean}{Logical specifying whether to remove the non-common format NetCDF.}
-
-\item{verbose}{If \code{FALSE}, suppress status messages (if any).}
+\item{verbose}{Logical to display messages.}
 }
 \value{
-A raster object, or a list of raster objects
+A list of one or more raster objects.
 }
 \description{
-Load or download models and automatically convert NetCDF (.nc) format to
-a spatio-temporal \code{Raster*} object.
+Load or download models and automatically convert NetCDF (.nc)
+format to a spatio-temporal \code{Raster*} object.
 }
 \details{
-\code{model}, \code{run}, and \code{local} are all vectorised
-parameters. As such, loading a model is executed using multiple CPU threads.
+\code{model} and \code{modelRun} are vectorised parameters. Multiple
+datasets can be loaded at once.
 }
 \examples{
 \dontrun{
-# Set Model download directory (Required)
-setModelDataDir('~/Data/Bluesky')
+library(AirFireModeling)
+
+setModelDataDir('~/Data/BlueSky')
+
 # Load from server
-model <- raster_load('PNW-1.33km', run = 20200303, xlim = c(-125, -115))
-# Load from local NetCDF
-model <- raster_load('~/Data/Bluesky/PNW-4km_2020030100.nc')
+rasterList <- raster_load(
+  model = "PNW-4km",
+  modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),
+  xlim = c(-125, -115),
+  ylim = c(42, 50)
+)
+
+
+raster_map(rasterList, index = 3)
 }
 }

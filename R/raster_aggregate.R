@@ -6,19 +6,14 @@
 #' @param by Numeric vector. Represents hours to truncate models at.
 #' @param xlim Optional longitude range.
 #' @param ylim Optional latitude range.
-#' @param local Absolute or relative paths of the local NetCDF (.nc) files.
-#' @param dirURL Model output web directory. Default is BlueSky standard output.
-#' @param type Model type directory, i.e. 'forecast', 'combined', etc.
+#' @param baseUrl Model output web directory. Default is BlueSky standard output.
+#' @param modelType Model type directory, i.e. 'forecast', 'combined', etc.
 #' @param clean Logical specifying whether to remove the non-common format NetCDF.
 #' @param verbose If \code{FALSE}, suppress status messages (if any).
 #'
 #' @return A raster object.
 #' @export
 #'
-#' @examples
-#' \dontrun{
-#'
-#' }
 raster_aggregate <- function(
   model = 'PNW-4km',
   startdate,
@@ -26,14 +21,13 @@ raster_aggregate <- function(
   by = c(1,12), # maybe try "12 hours"?
   xlim = NULL,
   ylim = NULL,
-  local = NULL,
-  dirURL = 'https://haze.airfire.org/bluesky-daily/output/standard',
-  type = 'forecast',
-  clean = FALSE,
+  baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
+  modelType = 'forecast',
+  clean = TRUE,
   verbose = TRUE
 ) {
 
-  url <- paste(dirURL, model, collapse = '/', sep = '/')
+  url <- paste(baseUrl, model, collapse = '/', sep = '/')
   aval_dates <- unique(unlist(stringr::str_extract_all(readLines(url), '[0-9]{10}(?=/)')))
   parsed_dates <- lubridate::ymd_h(aval_dates)
   # Check if dates are valid
@@ -67,12 +61,12 @@ raster_aggregate <- function(
   model_dir <- getModelDataDir()
   setModelDataDir(model_dir)
   models <- raster_load( model = model,
-                         run = run_dates,
+                         modelRun = run_dates,
                          xlim = xlim,
                          ylim = ylim,
-                         local = local,
-                         dirURL = dirURL,
-                         type = type,
+                         baseUrl = baseUrl,
+                         modelType = modelType,
+                         clean = clean,
                          verbose = verbose )
 
   # Convert raster stack list to brick
