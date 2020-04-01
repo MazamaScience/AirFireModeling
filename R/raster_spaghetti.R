@@ -75,6 +75,14 @@ raster_spaghetti <- function( raster,
     alpha <- ~-target_dist
   }
 
+  if ( 'title' %in% names(args) ) {
+    title <- args[['title']]
+  } else {
+    title <- expression('PM'[2.5])
+  }
+
+
+
   # If monitor ID is provided, load it and plot it
   if ( 'monitorID' %in% names(args) & !is.null(args[['monitorID']]) ) {
     # Assume names of raster layers are POSIX dates
@@ -140,7 +148,7 @@ raster_spaghetti <- function( raster,
                         color = color ) +
     ggplot2::labs( x = 'Datetime',
                    y = '\u03bcg / m\u00b3',
-                   title = expression('PM'[2.5]) ) +
+                   title = title ) +
     ggplot2::guides(alpha = FALSE)
 
   if ( exists('gg_monitor') ) {

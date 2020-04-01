@@ -112,10 +112,24 @@
     <p>Plot a raster coordinate-temporal values</p>
     </div>
 
-    <pre class="usage"><span class='fu'>raster_coordinateTrace</span>(<span class='no'>raster</span>, <span class='no'>longitude</span>, <span class='no'>latitude</span>, <span class='kw'>monitorID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>raster_coordinateTrace</span>(
+  <span class='no'>raster</span>,
+  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>monitorID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>tlim</span> <span class='kw'>=</span> <span class='st'>"default"</span>,
+  <span class='no'>...</span>
+)
 
 <span class='co'># S3 method for list</span>
-<span class='fu'>raster_coordinateTrace</span>(<span class='no'>raster</span>, <span class='no'>longitude</span>, <span class='no'>latitude</span>, <span class='kw'>monitorID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
+<span class='fu'>raster_coordinateTrace</span>(
+  <span class='no'>raster</span>,
+  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>monitorID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>tlim</span> <span class='kw'>=</span> <span class='st'>"default"</span>,
+  <span class='no'>...</span>
+)
 
 <span class='co'># S3 method for Raster</span>
 <span class='fu'>raster_coordinateTrace</span>(<span class='no'>raster</span>, <span class='no'>longitude</span>, <span class='no'>latitude</span>, <span class='kw'>monitorID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
@@ -138,6 +152,10 @@
     <tr>
       <th>monitorID</th>
       <td><p>(Optional) a monitor ID to load</p></td>
+    </tr>
+    <tr>
+      <th>tlim</th>
+      <td><p>(Optional) a time limit to restrict the plot axis.</p></td>
     </tr>
     <tr>
       <th>...</th>

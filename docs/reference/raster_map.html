@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot maps of BlueSky model output — raster_map • AirFireModeling</title>
+<title>Geographic map of BlueSky model output — raster_map • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,7 +35,7 @@
 
 
 
-<meta property="og:title" content="Plot maps of BlueSky model output — raster_map" />
+<meta property="og:title" content="Geographic map of BlueSky model output — raster_map" />
 <meta property="og:description" content="Creates a ggplot2 plot object from a Raster\*
 object. The returned plot object can be plotted or can be enhanced with
 additional ggplot2 intructions." />
@@ -105,7 +105,7 @@ additional ggplot2 intructions." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot maps of BlueSky model output</h1>
+    <h1>Geographic map of BlueSky model output</h1>
     
     <div class="hidden name"><code>raster_map.Rd</code></div>
     </div>
@@ -120,10 +120,12 @@ additional <span class="pkg">ggplot2</span> intructions.</p>
   <span class='no'>raster</span>,
   <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>palette</span> <span class='kw'>=</span> <span class='st'>"Greys"</span>,
-  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='st'>"default"</span>,
-  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"PM2.5"</span>,
+  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>12</span>, <span class='fl'>35</span>, <span class='fl'>55</span>, <span class='fl'>150</span>, <span class='fl'>250</span>, <span class='fl'>350</span>, <span class='fl'>500</span>),
   <span class='kw'>direction</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"PM2.5"</span>,
   <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
+  <span class='kw'>col_state</span> <span class='kw'>=</span> <span class='st'>"black"</span>,
+  <span class='kw'>col_county</span> <span class='kw'>=</span> <span class='st'>"gray80"</span>,
   <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )
 
@@ -132,10 +134,12 @@ additional <span class="pkg">ggplot2</span> intructions.</p>
   <span class='no'>raster</span>,
   <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>palette</span> <span class='kw'>=</span> <span class='st'>"Greys"</span>,
-  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='st'>"default"</span>,
-  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"PM2.5"</span>,
+  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>12</span>, <span class='fl'>35</span>, <span class='fl'>55</span>, <span class='fl'>150</span>, <span class='fl'>250</span>, <span class='fl'>350</span>, <span class='fl'>500</span>),
   <span class='kw'>direction</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"PM2.5"</span>,
   <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
+  <span class='kw'>col_state</span> <span class='kw'>=</span> <span class='st'>"black"</span>,
+  <span class='kw'>col_county</span> <span class='kw'>=</span> <span class='st'>"gray80"</span>,
   <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )
 
@@ -144,10 +148,12 @@ additional <span class="pkg">ggplot2</span> intructions.</p>
   <span class='no'>raster</span>,
   <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>palette</span> <span class='kw'>=</span> <span class='st'>"Greys"</span>,
-  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='st'>"default"</span>,
-  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"PM2.5"</span>,
+  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>12</span>, <span class='fl'>35</span>, <span class='fl'>55</span>, <span class='fl'>150</span>, <span class='fl'>250</span>, <span class='fl'>350</span>, <span class='fl'>500</span>),
   <span class='kw'>direction</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"PM2.5"</span>,
   <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
+  <span class='kw'>col_state</span> <span class='kw'>=</span> <span class='st'>"black"</span>,
+  <span class='kw'>col_county</span> <span class='kw'>=</span> <span class='st'>"gray80"</span>,
   <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )</pre>
 
@@ -156,11 +162,11 @@ additional <span class="pkg">ggplot2</span> intructions.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>raster</th>
-      <td><p>A Raster\* object or a list of Raster\* objects.</p></td>
+      <td><p>A <code>Raster\*</code> object or a list of <code>Raster\*</code> objects.</p></td>
     </tr>
     <tr>
       <th>index</th>
-      <td><p>The index of the Raster* object. See details.</p></td>
+      <td><p>And index into the <code>Raster*</code> object. See details.</p></td>
     </tr>
     <tr>
       <th>palette</th>
@@ -169,19 +175,27 @@ of the palettes available through <code><a href='https://ggplot2.tidyverse.org/r
     </tr>
     <tr>
       <th>breaks</th>
-      <td><p>The breaks used to define the map cell color or <code>'default'</code>.</p></td>
-    </tr>
-    <tr>
-      <th>title</th>
-      <td><p>(Optional) A plot title.</p></td>
+      <td><p>The breaks used to map cell values to colors.</p></td>
     </tr>
     <tr>
       <th>direction</th>
       <td><p>Numeric. <code>direction = -1</code> reverses color palette.</p></td>
     </tr>
     <tr>
+      <th>title</th>
+      <td><p>(Optional) A plot title.</p></td>
+    </tr>
+    <tr>
       <th>timezone</th>
-      <td><p>The timezone to parse the dates. Default is UTC.</p></td>
+      <td><p>Olson timezone in which times will be displayed.</p></td>
+    </tr>
+    <tr>
+      <th>col_state</th>
+      <td><p>Color of state lines. (use <code>'transparent'</code> to hide them.)</p></td>
+    </tr>
+    <tr>
+      <th>col_county</th>
+      <td><p>Color of county lines. (use <code>'transparent'</code> to hide them.)</p></td>
     </tr>
     <tr>
       <th>verbose</th>
@@ -191,12 +205,12 @@ of the palettes available through <code><a href='https://ggplot2.tidyverse.org/r
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a ggplot object</p>
+    <p>A ggplot object.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>If a list of Raster\* objects is provided, a small-multiples plot
-is created.</p>
-<p>The <code>index</code> is typically associated with a time-axis or RasterLayer,
+    <p>If a list of <code>Raster\*</code> objects is provided, a small-multiples
+plot is created.</p>
+<p>The <code>index</code> is typically associated with a time-axis or <code>RasterLayer</code>,
 e.g <code>index = 1</code> is the first hour of a model.</p>
     <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
 

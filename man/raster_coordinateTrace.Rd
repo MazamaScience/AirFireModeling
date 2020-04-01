@@ -6,9 +6,23 @@
 \alias{raster_coordinateTrace.Raster}
 \title{Plot a raster coordinate-temporal values}
 \usage{
-raster_coordinateTrace(raster, longitude, latitude, monitorID = NULL, ...)
+raster_coordinateTrace(
+  raster,
+  longitude = NULL,
+  latitude = NULL,
+  monitorID = NULL,
+  tlim = "default",
+  ...
+)
 
-\method{raster_coordinateTrace}{list}(raster, longitude, latitude, monitorID = NULL, ...)
+\method{raster_coordinateTrace}{list}(
+  raster,
+  longitude = NULL,
+  latitude = NULL,
+  monitorID = NULL,
+  tlim = "default",
+  ...
+)
 
 \method{raster_coordinateTrace}{Raster}(raster, longitude, latitude, monitorID = NULL, ...)
 }
@@ -20,6 +34,8 @@ raster_coordinateTrace(raster, longitude, latitude, monitorID = NULL, ...)
 \item{latitude}{(Optional) Target latitude to obtain values.}
 
 \item{monitorID}{(Optional) a monitor ID to load}
+
+\item{tlim}{(Optional) a time limit to restrict the plot axis.}
 
 \item{...}{additional parameters. See details.}
 }

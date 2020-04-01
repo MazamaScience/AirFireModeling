@@ -4,15 +4,17 @@
 #' @param longitude (Optional) Target longitude to obtain values.
 #' @param latitude (Optional) Target latitude to obtain values.
 #' @param monitorID (Optional) a monitor ID to load
+#' @param tlim (Optional) a time limit to restrict the plot axis.
 #' @param ... additional parameters. See details.
 #'
 #' @return A ggplot object
 #' @export
 #'
 raster_coordinateTrace <- function( raster,
-                                    longitude,
-                                    latitude,
+                                    longitude = NULL,
+                                    latitude = NULL,
                                     monitorID = NULL,
+                                    tlim = 'default',
                                     ... ) {
   UseMethod('raster_coordinateTrace', raster)
 }
@@ -21,12 +23,14 @@ raster_coordinateTrace <- function( raster,
 ## If the monitor id is nearest, download the nearest model and combine
 ## else if monitor id is defined and valid, download model and combine
 
+#' @importFrom stats  median
 #' @describeIn raster_coordinateTrace A multithreaded implementation for lists of Raster* objects.
 #' @export
 raster_coordinateTrace.list <- function( raster,
-                                         longitude,
-                                         latitude,
+                                         longitude = NULL,
+                                         latitude = NULL,
                                          monitorID = NULL,
+                                         tlim = 'default',
                                          ... ) {
 
   cl <- parallel::makeCluster(future::availableCores() - 1)
@@ -44,6 +48,9 @@ raster_coordinateTrace.list <- function( raster,
       )
     }
   )
+
+  parallel::stopCluster(cl)
+
   # NOTE: Hacky solution to split and recombine to avoid errors with combining multiple
   # identical target monitors.
   target_monitor <- PWFSLSmoke::monitor_subsetBy(
@@ -71,6 +78,25 @@ raster_coordinateTrace.list <- function( raster,
 
   # Re-combine the target monitor and model monitor
   ws_data <- PWFSLSmoke::monitor_combine(list(target_monitor, model_monitors))
+
+# Handle time axis cropping
+if ( !is.null(tlim) )
+  # The 'default" tlim is determined by the median nlayers of the rasters supplied
+  # NOTE: find an alternative
+  if ( tlim == 'default' ) {
+    nlayers <- median(unlist(lapply(
+      X = raster,
+      FUN = function(r) {
+        raster::nlayers(r)
+      } )))
+    startdate <- lubridate::ymd(strftime(ws_data$data$datetime[1], '%Y%m%d'))
+    enddate <- startdate + lubridate::hours(nlayers) + lubridate::days(1) # end on the end of the last day
+    ws_data <- PWFSLSmoke::monitor_subset( ws_data,
+                                           tlim = c(strftime(startdate, '%Y%m%d'),
+                                                    strftime(enddate, '%Y%m%d')) )
+  } else {
+    ws_data <- PWFSLSmoke::monitor_subset(ws_data, tlim = tlim)
+  }
 
   gg <- AirMonitorPlots::ggplot_pm25Timeseries(ws_data) +
     AirMonitorPlots::geom_pm25Points(ggplot2::aes(color = .data$monitorID)) +
@@ -114,19 +140,18 @@ raster_coordinateTrace.Raster <- function( raster,
 
 # NOTE: Look into a solution to avoid having to reload the monitor_load on execution
 # Sub-internal function to load a monitor using the model.
-.load_target_monitor <- function(r, lon, lat, monitorID = NULL, ws_monitor = NULL,  ...) {
+.load_target_monitor <- function(r, lon = NULL, lat = NULL, monitorID = NULL, ws_monitor = NULL,  ...) {
   # Check if lon lat is in coordinate domain
-  # TODO: Fix BUG Coordinates must be supplied. Fix to use monitorID location is
-  # coordinates are NULL
-  if ( abs(lon) < abs(r@extent@xmax) ||
-       abs(lon) > abs(r@extent@xmin) ) {
-    stop('Longitude not within domain.')
+  if ( !is.null(lat) && !is.null(lon) ) {
+    if ( abs(lon) < abs(r@extent@xmax) ||
+         abs(lon) > abs(r@extent@xmin) ) {
+      stop('Longitude not within domain.')
+    }
+    if ( abs(lat) > abs(r@extent@ymax) ||
+         abs(lat) < abs(r@extent@ymin) ) {
+      stop('Latitude not within domain.')
+    }
   }
-  if ( abs(lat) > abs(r@extent@ymax) ||
-       abs(lat) < abs(r@extent@ymin) ) {
-    stop('Latitude not within domain.')
-  }
-
   # Parse dates stored in model
   # NOTE: model dates stored in layer name
   model_dates <- as.numeric(stringr::str_remove(r@data@names, pattern = 'X'))
@@ -148,6 +173,7 @@ raster_coordinateTrace.Raster <- function( raster,
                                                cbind(lon, lat) )
     nearest_monitorID <- ws_monitor$meta$monitorID[which.min(monitors_dist)]
     target_dist <- monitors_dist[which.min(monitors_dist)]
+    # TODO: Incorperate the target distance to show on plots
     target_monitor <- PWFSLSmoke::monitor_subset(ws_monitor,
                                                  monitorIDs = nearest_monitorID)
 

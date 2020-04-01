@@ -9,6 +9,7 @@ explicit arguments rather than `...`.
 * Added `col_state` and `col_county` arguments to all mapping functions to allow
 user specification of state and county border colors.
 * Using model names as titles in `raster_map()`.
+* New `raster_loadNearestMonitor()` function.
 
 # AirFireModeling 0.2.7
 

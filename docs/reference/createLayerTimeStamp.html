@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Local correlation coefficient — raster_correlation • AirFireModeling</title>
+<title>Create raster layer timestamp — createLayerTimeStamp • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Local correlation coefficient — raster_correlation" />
-<meta property="og:description" content="Local correlation coefficient" />
+<meta property="og:title" content="Create raster layer timestamp — createLayerTimeStamp" />
+<meta property="og:description" content="Create raster layer timestamp" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -103,66 +103,37 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Local correlation coefficient</h1>
+    <h1>Create raster layer timestamp</h1>
     
-    <div class="hidden name"><code>raster_correlation.Rd</code></div>
+    <div class="hidden name"><code>createLayerTimeStamp.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Local correlation coefficient</p>
+    <p>Create raster layer timestamp</p>
     </div>
 
-    <pre class="usage"><span class='fu'>raster_correlation</span>(
-  <span class='no'>x</span>,
-  <span class='no'>y</span>,
-  <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>res</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"kendall"</span>,
-  <span class='kw'>p_value</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>crs</span> <span class='kw'>=</span> <span class='st'>"+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"</span>
-)</pre>
+    <pre class="usage"><span class='fu'>createLayerTimeStamp</span>(<span class='kw'>layerName</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>A Raster* object</p></td>
+      <th>layerName</th>
+      <td><p>Name of the <code>rasterLayer</code> object</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>A Raster* object</p></td>
+      <th>timezone</th>
+      <td><p>Olson timezone in which times will be displayed.</p></td>
     </tr>
     <tr>
-      <th>index</th>
-      <td><p>A ratser index to access different layers</p></td>
-    </tr>
-    <tr>
-      <th>plot</th>
-      <td><p>Logical. To plot or not.</p></td>
-    </tr>
-    <tr>
-      <th>res</th>
-      <td><p>An optional resolution to project both x, y to.</p></td>
-    </tr>
-    <tr>
-      <th>method</th>
-      <td><p>Correlation method. Default: 'kendall'.</p></td>
-    </tr>
-    <tr>
-      <th>p_value</th>
-      <td><p>Logical. If TRUE, return a p-value</p></td>
-    </tr>
-    <tr>
-      <th>crs</th>
-      <td><p>Set the coordinate reference system.</p></td>
+      <th>prefix</th>
+      <td><p>String prepended to the time</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a Raster* object</p>
+    <p>UTC timestamp as YYYYmmddHH.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

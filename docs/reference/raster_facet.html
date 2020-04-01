@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Small Multiples of Raster — raster_facet • AirFireModeling</title>
+<title>Small multiples map of BlueSky model output — raster_facet • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,11 @@
 
 
 
-<meta property="og:title" content="Small Multiples of Raster — raster_facet" />
-<meta property="og:description" content="Small Multiples of Raster" />
+<meta property="og:title" content="Small multiples map of BlueSky model output — raster_facet" />
+<meta property="og:description" content="This function creates a grid of plots, each displaying a small
+map of a single hour from the model output passed in as raster. By
+default, all hours are plotted. The index parameter can be used to
+subset the hours." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -103,21 +106,29 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Small Multiples of Raster</h1>
+    <h1>Small multiples map of BlueSky model output</h1>
     
     <div class="hidden name"><code>raster_facet.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Small Multiples of Raster</p>
+    <p>This function creates a grid of plots, each displaying a small
+map of a single hour from the model output passed in as <code>raster</code>. By
+default, all hours are plotted. The <code>index</code> parameter can be used to
+subset the hours.</p>
     </div>
 
     <pre class="usage"><span class='fu'>raster_facet</span>(
   <span class='no'>raster</span>,
-  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='st'>"default"</span>,
-  <span class='kw'>palette</span> <span class='kw'>=</span> <span class='st'>"default"</span>,
+  <span class='kw'>index</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>palette</span> <span class='kw'>=</span> <span class='st'>"Greys"</span>,
+  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>12</span>, <span class='fl'>35</span>, <span class='fl'>55</span>, <span class='fl'>150</span>, <span class='fl'>250</span>, <span class='fl'>350</span>, <span class='fl'>500</span>),
   <span class='kw'>direction</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>""</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
+  <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>col_state</span> <span class='kw'>=</span> <span class='st'>"black"</span>,
+  <span class='kw'>col_county</span> <span class='kw'>=</span> <span class='st'>"gray80"</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -125,36 +136,101 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>raster</th>
-      <td><p>a Raster* object</p></td>
+      <td><p>A <code>Raster\*</code> object.</p></td>
     </tr>
     <tr>
-      <th>breaks</th>
-      <td><p>Color break locations.</p></td>
+      <th>index</th>
+      <td><p>Vector of indices used to subset <code>raster</code></p></td>
     </tr>
     <tr>
       <th>palette</th>
-      <td><p>A color brewer palette (i.e. 'Greys', 'Blues', 'BuGn', 'YlOrRd', ...).</p></td>
+      <td><p>Color palette used to map cell values. This must be one
+of the palettes available through <code><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>ggplot2::scale_colour_brewer()</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>breaks</th>
+      <td><p>The breaks used to map cell values to colors.</p></td>
     </tr>
     <tr>
       <th>direction</th>
-      <td><p>Color palette direction. Set -1 to reverse direction.</p></td>
+      <td><p>Numeric. <code>direction = -1</code> reverses color palette.</p></td>
+    </tr>
+    <tr>
+      <th>title</th>
+      <td><p>(Optional) A plot title.</p></td>
     </tr>
     <tr>
       <th>timezone</th>
-      <td><p>Timezone.</p></td>
+      <td><p>Olson timezone in which times will be displayed.</p></td>
+    </tr>
+    <tr>
+      <th>ncol</th>
+      <td><p>Number of columns in the output plot.</p></td>
+    </tr>
+    <tr>
+      <th>col_state</th>
+      <td><p>Color of state lines. (use <code>'transparent'</code> to hide them.)</p></td>
+    </tr>
+    <tr>
+      <th>col_county</th>
+      <td><p>Color of county lines. (use <code>'transparent'</code> to hide them.)</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a gg object</p>
+    <p>A gg object.</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
+<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky'</span>)
+
+<span class='co'># Load from server</span>
+<span class='no'>rasterList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_load.html'>raster_load</a></span>(
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
+  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2019100900</span>),
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>117</span>),
+  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>42</span>, <span class='fl'>47</span>)
+)
+
+<span class='co'># First 24 hours</span>
+<span class='fu'>raster_facet</span>(
+  <span class='no'>rasterList</span><span class='kw'>[[</span><span class='fl'>1</span>]],
+  <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>24</span>,
+  <span class='kw'>col_county</span> <span class='kw'>=</span> <span class='st'>'transparent'</span>
+)
+
+<span class='co'># Fancy!!</span>
+<span class='fu'>raster_facet</span>(
+  <span class='no'>rasterList</span><span class='kw'>[[</span><span class='fl'>1</span>]],
+  <span class='kw'>index</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>3</span>,<span class='fl'>72</span>,<span class='fl'>12</span>),
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"PNW-4km -- run 2019100900"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>
+)
+
+<span class='co'># Kincade fire</span>
+<span class='no'>rasterList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_load.html'>raster_load</a></span>(
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"CANSAC-4km"</span>,
+  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2019102700</span>),
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124</span>, -<span class='fl'>121.5</span>),
+  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>37.5</span>, <span class='fl'>39</span>)
+)
+
+<span class='fu'>raster_facet</span>(
+  <span class='no'>rasterList</span><span class='kw'>[[</span><span class='fl'>1</span>]],
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"Kincade Fire"</span>,
+  <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>12</span>
+)
+
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>

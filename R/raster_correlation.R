@@ -3,6 +3,7 @@
 #'
 #' @param x A Raster* object
 #' @param y A Raster* object
+#' @param index A ratser index to access different layers
 #' @param plot Logical. To plot or not.
 #' @param res An optional resolution to project both x, y to.
 #' @param method Correlation method. Default: 'kendall'.
@@ -10,10 +11,25 @@
 #' @param crs Set the coordinate reference system.
 #'
 #' @return a Raster* object
-raster_correlation <-
+raster_correlation <- function(x,
+                               y,
+                               index = 1,
+                               plot = TRUE,
+                               res = NULL,
+                               method = 'kendall',
+                               p_value = FALSE,
+                               crs = '+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0') {
+  UseMethod('raster_correlation', x)
+
+}
+
+#' @describeIn raster_correlation
+#' @export
+raster_correlation.Raster <-
   function(
     x,
     y,
+    index = 1,
     plot = TRUE,
     res = NULL,
     method = 'kendall',
@@ -117,4 +133,33 @@ raster_correlation <-
       crs <- '+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0'
     }
 
+  }
+
+
+#' @describeIn raster_correlation
+#' @export
+raster_correlation.list <-
+  function(
+    x,
+    y,
+    index = 1,
+    plot = TRUE,
+    res = NULL,
+    method = 'kendall',
+    p_value = FALSE,
+    crs = '+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0'
+  ) {
+
+    cl <- parallel::makeCluster(future::availableCores() - 1)
+    future::plan('cluster', workers = cl)
+
+    corr <- future.apply::future_lapply(
+      X = x,
+      FUN = function(r) {
+        raster_correlation.Raster(r, y, index, plot, res, method, p_value, crs)
+      }
+    )
+    parallel::stopCluster(cl)
+
+    return(corr)
   }

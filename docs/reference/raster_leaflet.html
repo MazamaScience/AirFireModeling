@@ -36,7 +36,8 @@
 
 
 <meta property="og:title" content="Raster Leaflet Map — raster_leaflet" />
-<meta property="og:description" content="Create a leaflet interactive map using a model Raster Image." />
+<meta property="og:description" content="Create a leaflet interactive map using a model output
+Raster\* object." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -109,15 +110,22 @@
     </div>
 
     <div class="ref-description">
-    <p>Create a leaflet interactive map using a model Raster Image.</p>
+    <p>Create a leaflet interactive map using a model output
+<code>Raster\*</code> object.</p>
     </div>
 
     <pre class="usage"><span class='fu'>raster_leaflet</span>(
   <span class='no'>raster</span>,
   <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>compare</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>palette</span> <span class='kw'>=</span> <span class='st'>"Spectral"</span>,
-  <span class='kw'>direction</span> <span class='kw'>=</span> -<span class='fl'>1</span>
+  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>12</span>, <span class='fl'>35</span>, <span class='fl'>55</span>, <span class='fl'>150</span>, <span class='fl'>250</span>, <span class='fl'>350</span>, <span class='fl'>500</span>),
+  <span class='kw'>direction</span> <span class='kw'>=</span> -<span class='fl'>1</span>,
+  <span class='kw'>opacity</span> <span class='kw'>=</span> <span class='fl'>0.6</span>,
+  <span class='kw'>maptype</span> <span class='kw'>=</span> <span class='st'>"terrain"</span>,
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"PM2.5"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
+  <span class='kw'>compare</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>index2</span> <span class='kw'>=</span> <span class='fl'>1</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -125,39 +133,117 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>raster</th>
-      <td><p>A Raster* object</p></td>
+      <td><p>A <code>Raster\*</code> object.</p></td>
     </tr>
     <tr>
       <th>index</th>
-      <td><p>The index of the Raster* object. See details.</p></td>
-    </tr>
-    <tr>
-      <th>compare</th>
-      <td><p>An optional comparison Raster</p></td>
+      <td><p>And index into the <code>Raster*</code> object. See details.</p></td>
     </tr>
     <tr>
       <th>palette</th>
-      <td><p>A color palette, default is Spectral</p></td>
+      <td><p>Color palette used to map cell values. This must be one
+of the palettes available through <code><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>ggplot2::scale_colour_brewer()</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>breaks</th>
+      <td><p>The breaks used to map cell values to colors. CURRENTLY UNUSED</p></td>
     </tr>
     <tr>
       <th>direction</th>
-      <td><p>Color palette direction. -1 is reverse.</p></td>
+      <td><p>Numeric. <code>direction = -1</code> reverses color palette.</p></td>
+    </tr>
+    <tr>
+      <th>opacity</th>
+      <td><p>Opacity of raster layer.</p></td>
+    </tr>
+    <tr>
+      <th>maptype</th>
+      <td><p>Name of leaflet ProviderTiles to use.</p></td>
+    </tr>
+    <tr>
+      <th>title</th>
+      <td><p>(Optional) A plot title. CURRENTLY UNUSED</p></td>
+    </tr>
+    <tr>
+      <th>timezone</th>
+      <td><p>Olson timezone in which times will be displayed.</p></td>
+    </tr>
+    <tr>
+      <th>compare</th>
+      <td><p>Optional comparison <code>Raster*</code> object.</p></td>
+    </tr>
+    <tr>
+      <th>index2</th>
+      <td><p>Index of the comparison <code>Raster*</code> object.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a leaflet map</p>
+    <p>A leaflet map.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The <code>index</code> is typically associated with a time-axis or RasterLayer,
-e.g <code>index = 1</code> is the first hour of a model.</p>
+    <p>The <code>index</code> is associated with the z axis or time-axis of
+<code>RasterBrick</code> object, e.g <code>index = 1</code> is the first hour of a model.</p>
+<p>The <code>maptype</code> argument is mapped onto leaflet "ProviderTile" names.
+Current mappings include:</p><ol>
+<li><p>"roadmap" -- "OpenStreetMap"</p></li>
+<li><p>"satellite" -- "Esri.WorldImagery"</p></li>
+<li><p>"terrain" -- "Esri.WorldTopoMap"</p></li>
+<li><p>"toner" -- "Stamen.Toner"</p></li>
+</ol>
+
+<p>If a character string not listed above is provided, it will be used as the
+underlying map tile if available. See
+<a href='https://leaflet-extras.github.io/leaflet-providers/'>https://leaflet-extras.github.io/leaflet-providers/</a> for a list of
+"provider tiles" to use as the background map.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>bs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_load.html'>raster_load</a></span>()
-<span class='co'># Show 6th hour</span>
-<span class='fu'>raster_leaflet</span>(<span class='no'>bs</span>, <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>6</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
+<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky'</span>)
+
+<span class='co'># Load consecutive model runs</span>
+<span class='no'>rasterList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_load.html'>raster_load</a></span>(
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
+  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2019100900</span>, <span class='fl'>2019101000</span>),
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>117</span>),
+  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>42</span>, <span class='fl'>47</span>)
+)
+
+<span class='co'># Create a leaflet map</span>
+<span class='fu'>raster_leaflet</span>(
+  <span class='kw'>raster</span> <span class='kw'>=</span> <span class='no'>rasterList</span><span class='kw'>[[</span><span class='fl'>1</span>]],
+  <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>3</span>
+)
+
+<span class='co'># Create a leaflet map comparing two times from the same run</span>
+<span class='fu'>raster_leaflet</span>(
+  <span class='kw'>raster</span> <span class='kw'>=</span> <span class='no'>rasterList</span><span class='kw'>[[</span><span class='fl'>1</span>]],
+  <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>15</span>,
+  <span class='kw'>compare</span> <span class='kw'>=</span> <span class='no'>rasterList</span><span class='kw'>[[</span><span class='fl'>1</span>]],
+  <span class='kw'>index2</span> <span class='kw'>=</span> <span class='fl'>18</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>
+)
+
+<span class='co'># Create a leaflet map comparing the same time from two different runs</span>
+
+<span class='co'># Load consecutive model runs</span>
+<span class='no'>rasterList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_load.html'>raster_load</a></span>(
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"PNW-4km"</span>, <span class='st'>"PNW-1.33km"</span>),
+  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019100900</span>,
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>117</span>),
+  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>42</span>, <span class='fl'>47</span>)
+)
+
+<span class='fu'>raster_leaflet</span>(
+  <span class='kw'>raster</span> <span class='kw'>=</span> <span class='no'>rasterList</span><span class='kw'>[[</span><span class='fl'>1</span>]],
+  <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>15</span>,
+  <span class='kw'>compare</span> <span class='kw'>=</span> <span class='no'>rasterList</span><span class='kw'>[[</span><span class='fl'>2</span>]],
+  <span class='kw'>index2</span> <span class='kw'>=</span> <span class='fl'>15</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>,
+  <span class='kw'>opacity</span> <span class='kw'>=</span> <span class='fl'>0.3</span>
+  )
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

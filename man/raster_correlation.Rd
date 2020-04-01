@@ -7,6 +7,7 @@
 raster_correlation(
   x,
   y,
+  index = 1,
   plot = TRUE,
   res = NULL,
   method = "kendall",
@@ -18,6 +19,8 @@ raster_correlation(
 \item{x}{A Raster* object}
 
 \item{y}{A Raster* object}
+
+\item{index}{A ratser index to access different layers}
 
 \item{plot}{Logical. To plot or not.}
 
