@@ -2,16 +2,20 @@
 % Please edit documentation in R/raster_loadNearestMonitor.R
 \name{raster_loadNearestMonitor}
 \alias{raster_loadNearestMonitor}
-\title{Title}
+\title{Load nearest monitor to coordinate location}
 \usage{
 raster_loadNearestMonitor(raster, longitude, latitude)
 }
 \arguments{
-\item{latitude}{}
+\item{raster}{A raster* object}
+
+\item{longitude}{A latitude}
+
+\item{latitude}{A longitude}
 }
 \value{
-
+a ws_onitor
 }
 \description{
-Title
+Load nearest monitor to coordinate location
 }

@@ -8,8 +8,8 @@
 \usage{
 raster_coordinateTrace(
   raster,
-  longitude,
-  latitude,
+  longitude = NULL,
+  latitude = NULL,
   monitorID = NULL,
   tlim = "default",
   ...
@@ -17,8 +17,8 @@ raster_coordinateTrace(
 
 \method{raster_coordinateTrace}{list}(
   raster,
-  longitude,
-  latitude,
+  longitude = NULL,
+  latitude = NULL,
   monitorID = NULL,
   tlim = "default",
   ...

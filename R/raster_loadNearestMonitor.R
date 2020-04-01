@@ -1,13 +1,11 @@
-#' Title
+#' Load nearest monitor to coordinate location
 #'
-#' @param raster
-#' @param longitude
-#' @param latitude
+#' @param raster A raster* object
+#' @param longitude A latitude
+#' @param latitude A longitude
 #'
-#' @return
+#' @return a ws_onitor
 #' @export
-#'
-#' @examples
 raster_loadNearestMonitor <- function(raster, longitude, latitude) {
   UseMethod('raster_loadNearestMonitor', raster)
 }

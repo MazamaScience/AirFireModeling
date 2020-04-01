@@ -23,6 +23,7 @@ raster_coordinateTrace <- function( raster,
 ## If the monitor id is nearest, download the nearest model and combine
 ## else if monitor id is defined and valid, download model and combine
 
+#' @importFrom stats  median
 #' @describeIn raster_coordinateTrace A multithreaded implementation for lists of Raster* objects.
 #' @export
 raster_coordinateTrace.list <- function( raster,

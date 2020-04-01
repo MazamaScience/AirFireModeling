@@ -3,6 +3,7 @@
 #'
 #' @param x A Raster* object
 #' @param y A Raster* object
+#' @param index A ratser index to access different layers
 #' @param plot Logical. To plot or not.
 #' @param res An optional resolution to project both x, y to.
 #' @param method Correlation method. Default: 'kendall'.
