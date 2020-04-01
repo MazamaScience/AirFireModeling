@@ -14,6 +14,8 @@ raster_map(
   direction = 1,
   title = "PM2.5",
   timezone = "UTC",
+  col_state = "black",
+  col_county = "gray80",
   verbose = TRUE
 )
 
@@ -25,6 +27,8 @@ raster_map(
   direction = 1,
   title = "PM2.5",
   timezone = "UTC",
+  col_state = "black",
+  col_county = "gray80",
   verbose = TRUE
 )
 
@@ -36,13 +40,15 @@ raster_map(
   direction = 1,
   title = "PM2.5",
   timezone = "UTC",
+  col_state = "black",
+  col_county = "gray80",
   verbose = TRUE
 )
 }
 \arguments{
-\item{raster}{A Raster\* object or a list of Raster\* objects.}
+\item{raster}{A \code{Raster\*} object or a list of \code{Raster\*} objects.}
 
-\item{index}{The index of the Raster* object. See details.}
+\item{index}{And index into the \code{Raster*} object. See details.}
 
 \item{palette}{The color palette used to map cell values. This must be one
 of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
@@ -55,6 +61,10 @@ of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
 
 \item{timezone}{Olson timezone in which times will be displayed.}
 
+\item{col_state}{Color of state lines. (use \code{'transparent'} to hide them.)}
+
+\item{col_county}{Color of county lines. (use \code{'transparent'} to hide them.)}
+
 \item{verbose}{Logical to display messages.}
 }
 \value{
@@ -66,10 +76,10 @@ object. The returned plot object can be plotted or can be enhanced with
 additional \pkg{ggplot2} intructions.
 }
 \details{
-If a list of Raster\* objects is provided, a small-multiples plot
-is created.
+If a list of \code{Raster\*} objects is provided, a small-multiples
+plot is created.
 
-The \code{index} is typically associated with a time-axis or RasterLayer,
+The \code{index} is typically associated with a time-axis or \code{RasterLayer},
 e.g \code{index = 1} is the first hour of a model.
 }
 \section{Methods (by class)}{

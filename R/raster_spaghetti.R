@@ -27,19 +27,36 @@ raster_spaghetti <- function( raster,
     stop('Check Coordinates: Out of range.')
   }
 
+  # # NOTE: Look into including cell counts as well as radius in the future.
+  # args <- list(...)
+  # if ( 'radius' %in% names(args) ) {
+  #   subbed <- raster_subsetByDistance( raster,
+  #                                      longitude = longitude,
+  #                                      latitude = latitude,
+  #                                      radius = args[['radius']] )
+  # } else if ('n' %in% names(args) ) {
+  #   subbed <- raster_subsetByDistance( raster,
+  #                                      longitude = longitude,
+  #                                      latitude = latitude,
+  #                                      n = args[['n']],
+  #                                      snapToGrid = args[['snapToGrid']] )
+  # } else {
+  #   stop('Must provide subset parameter')
+  # }
+
   # NOTE: Look into including cell counts as well as radius in the future.
   args <- list(...)
   if ( 'radius' %in% names(args) ) {
-    subbed <- raster_subset( raster,
-                             longitude = longitude,
-                             latitude = latitude,
-                             radius = args[['radius']] )
+    subbed <- raster_subsetByDistance( raster,
+                                       longitude = longitude,
+                                       latitude = latitude,
+                                       radius = args[['radius']] )
   } else if ('n' %in% names(args) ) {
-    subbed <- raster_subset( raster,
-                             longitude = longitude,
-                             latitude = latitude,
-                             n = args[['n']],
-                             snapToGrid = args[['snapToGrid']] )
+    subbed <- raster_subsetByDistance( raster,
+                                       longitude = longitude,
+                                       latitude = latitude,
+                                       radius = args[['radius']],
+                                       count = args[['n']] )
   } else {
     stop('Must provide subset parameter')
   }

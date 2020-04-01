@@ -27,7 +27,7 @@ ca_raster <- monitor_toRaster(ca_monitors, res = 0.2)
 
 # Load bluesky rasters
 setModelDataDir('~/Data/Bluesky')
-bs_raster <- bluesky_load(modelRun = 20191115)
+bs_raster <- bluesky_load(modelRun = 2019111500)
 ```
 
 ```{r}

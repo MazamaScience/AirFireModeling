@@ -2,7 +2,7 @@
 #' @title Raster Leaflet Map
 #'
 #' @param raster A \code{Raster\*} object.
-#' @param index Index of the \code{Raster*} object. See details.
+#' @param index And index into the \code{Raster*} object. See details.
 #' @param palette Color palette used to map cell values. This must be one
 #' of the palettes available through \code{ggplot2::scale_colour_brewer()}.
 #' @param breaks The breaks used to map cell values to colors. CURRENTLY UNUSED

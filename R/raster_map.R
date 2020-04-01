@@ -5,20 +5,22 @@
 #' object. The returned plot object can be plotted or can be enhanced with
 #' additional \pkg{ggplot2} intructions.
 #'
-#' @details If a list of Raster\* objects is provided, a small-multiples plot
-#' is created.
+#' @details If a list of \code{Raster\*} objects is provided, a small-multiples
+#' plot is created.
 #'
-#' The \code{index} is typically associated with a time-axis or RasterLayer,
+#' The \code{index} is typically associated with a time-axis or \code{RasterLayer},
 #' e.g \code{index = 1} is the first hour of a model.
 #'
-#' @param raster A Raster\* object or a list of Raster\* objects.
-#' @param index The index of the Raster* object. See details.
+#' @param raster A \code{Raster\*} object or a list of \code{Raster\*} objects.
+#' @param index And index into the \code{Raster*} object. See details.
 #' @param palette The color palette used to map cell values. This must be one
 #' of the palettes available through \code{ggplot2::scale_colour_brewer()}.
 #' @param breaks The breaks used to map cell values to colors.
 #' @param direction Numeric. \code{direction = -1} reverses color palette.
 #' @param title (Optional) A plot title.
 #' @param timezone Olson timezone in which times will be displayed.
+#' @param col_state Color of state lines. (use \code{'transparent'} to hide them.)
+#' @param col_county Color of county lines. (use \code{'transparent'} to hide them.)
 #' @param verbose Logical to display messages.
 #'
 #' @return A ggplot object.
@@ -46,6 +48,8 @@ raster_map <- function(
   direction = 1,
   title = 'PM2.5',
   timezone = 'UTC',
+  col_state = 'black',
+  col_county = 'gray80',
   verbose = TRUE
 ) {
 
@@ -94,6 +98,8 @@ raster_map.Raster <- function(
   direction = 1,
   title = 'PM2.5',
   timezone = 'UTC',
+  col_state = 'black',
+  col_county = 'gray80',
   verbose = TRUE
 ) {
 
@@ -103,7 +109,7 @@ raster_map.Raster <- function(
   # NOTE:  Use list syntax to pull a RasterLayer out of a RasterBrick
 
   layer <- raster[[index]]
-  .plot_map(layer, palette, breaks, direction, title, timezone)
+  .plot_map(layer, palette, breaks, direction, title, timezone, col_state, col_county)
 
 }
 
@@ -117,6 +123,8 @@ raster_map.list <- function(
   direction = 1,
   title = 'PM2.5',
   timezone = 'UTC',
+  col_state = 'black',
+  col_county = 'gray80',
   verbose = TRUE
 ) {
 
@@ -135,19 +143,31 @@ raster_map.list <- function(
     }
   )
 
-  # Set up parallelization
-  cl <- parallel::makeCluster(future::availableCores() - 1)
-  future::plan(strategy = future::cluster, workers = cl)
+  # TODO:  How can we get names from layerList and use them in the parallelized plots?
+  #
+  # # Set up parallelization
+  # cl <- parallel::makeCluster(future::availableCores() - 1)
+  # future::plan(strategy = future::cluster, workers = cl)
+  #
+  # # Parallel plotting
+  # gg_list <- future.apply::future_lapply(
+  #   X = layerList,
+  #   FUN = function(layer) {
+  #     .plot_map(layer, palette, breaks, direction, title, timezone, col_state, col_county)
+  #   }
+  # )
+  #
+  # parallel::stopCluster(cl)
 
-  # Parallel plotting
-  gg_list <- future.apply::future_lapply(
-    X = layerList,
-    FUN = function(layer) {
-      .plot_map(layer, palette, breaks, direction, title, timezone)
-    }
-  )
+  # NOTE:  Non-parallelized version
 
-  parallel::stopCluster(cl)
+  layerNames <- names(layerList)
+  gg_list <- list()
+  for ( i in seq_along(layerList) ) {
+    title <- layerNames[i]
+    layer <- layerList[[i]]
+    gg_list[[title]] <- .plot_map(layer, palette, breaks, direction, title, timezone, col_state, col_county)
+  }
 
   # Assemble individual plots into a grid
   return(cowplot::plot_grid(plotlist = gg_list))
@@ -163,7 +183,9 @@ raster_map.list <- function(
   breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
   direction = 1,
   title = 'PM2.5',
-  timezone = 'UTC'
+  timezone = 'UTC',
+  col_state = 'black',
+  col_county = 'gray80'
 ) {
 
   # ----- Prepare data ---------------------------------------------------------
@@ -189,14 +211,15 @@ raster_map.list <- function(
     ggplot2::geom_path(
       data = counties,
       ggplot2::aes(x = .data$long, y = .data$lat, group = .data$group),
-      alpha = 0.2,
-      color = 'grey12'
+      fill = 'NA',
+      ###alpha = 0.2,
+      color = col_county
     ) +
     ggplot2::geom_polygon(
       data = states,
+      ggplot2::aes(y = .data$lat, x = .data$long, group = .data$group),
       fill = 'NA',
-      color = 'black',
-      ggplot2::aes(y = .data$lat, x = .data$long, group = .data$group)
+      color = col_state
     ) +
     ggplot2::scale_fill_brewer(
       na.value = NA,

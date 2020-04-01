@@ -21,7 +21,7 @@ raster_leaflet(
 \arguments{
 \item{raster}{A \code{Raster\*} object.}
 
-\item{index}{Index of the \code{Raster*} object. See details.}
+\item{index}{And index into the \code{Raster*} object. See details.}
 
 \item{palette}{Color palette used to map cell values. This must be one
 of the palettes available through \code{ggplot2::scale_colour_brewer()}.}

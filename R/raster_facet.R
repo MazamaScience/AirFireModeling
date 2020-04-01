@@ -9,9 +9,9 @@
 #' @param direction Numeric. \code{direction = -1} reverses color palette.
 #' @param title (Optional) A plot title.
 #' @param timezone Olson timezone in which times will be displayed.
-#' @param showState Logical specifying whether to show state boundaries.
-#' @param showCounty Logical specifying whether to show county boundaries.
 #' @param ncol Number of columns in the output plot.
+#' @param col_state Color of state lines. (use \code{'transparent'} to hide them.)
+#' @param col_county Color of county lines. (use \code{'transparent'} to hide them.)
 #'
 #' @description This function creates a grid of plots, each displaying a small
 #' map of a single hour from the model output passed in as \code{raster}. By
@@ -36,14 +36,14 @@
 #' # First 24 hours
 #' raster_facet(
 #'   rasterList[[1]],
-#'   index = 1:24
+#'   index = 1:24,
+#'   col_county = 'transparent'
 #' )
 #'
 #' # Fancy!!
 #' raster_facet(
 #'   rasterList[[1]],
 #'   index = seq(3,72,12),
-#'   showCounty = TRUE,
 #'   title = "PNW-4km -- run 2019100900",
 #'   timezone = "America/Los_Angeles"
 #' )
@@ -72,9 +72,9 @@ raster_facet <- function(
   direction = 1,
   title = "",
   timezone = 'UTC',
-  showState = TRUE,
-  showCounty = FALSE,
-  ncol = NULL
+  ncol = NULL,
+  col_state = 'black',
+  col_county = 'gray80'
 ) {
 
   # ----- Validate parameters --------------------------------------------------
@@ -108,10 +108,6 @@ raster_facet <- function(
 
   if ( !is.null(ncol) && !is.numeric(ncol) )
     stop("Parameter 'ncol' must be numeric.")
-
-  # Defaults
-  if ( !is.logical(showState) ) showState <- TRUE
-  if ( !is.logical(showCounty) ) showCounty <- TRUE
 
   # ----- Prepare data ---------------------------------------------------------
 
@@ -166,23 +162,23 @@ raster_facet <- function(
     rasterVis::gplot(raster) +
     ggplot2::geom_raster(ggplot2::aes(fill = cut(.data$value, breaks = breaks)))
 
-  if ( showCounty ) {
+  if ( col_county != 'transparent' ) {
     gg <- gg +
       ggplot2::geom_polygon(
         data = counties,
         ggplot2::aes(x = .data$long, y = .data$lat, group = .data$group),
         fill = 'NA',
-        alpha = 0.2,
-        color = 'grey80'
+        ###alpha = 0.2,
+        color = col_county
       )
   }
 
-  if ( showState ) {
+  if ( col_state != 'transparent' ) {
     gg <- gg +
       ggplot2::geom_polygon(
         data = states,
         fill = 'NA',
-        color = 'black',
+        color = col_state,
         ggplot2::aes(y = .data$lat, x = .data$long, group = .data$group)
       )
   }

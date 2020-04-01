@@ -12,9 +12,9 @@ raster_facet(
   direction = 1,
   title = "",
   timezone = "UTC",
-  showState = TRUE,
-  showCounty = FALSE,
-  ncol = NULL
+  ncol = NULL,
+  col_state = "black",
+  col_county = "gray80"
 )
 }
 \arguments{
@@ -33,11 +33,11 @@ of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
 
 \item{timezone}{Olson timezone in which times will be displayed.}
 
-\item{showState}{Logical specifying whether to show state boundaries.}
-
-\item{showCounty}{Logical specifying whether to show county boundaries.}
-
 \item{ncol}{Number of columns in the output plot.}
+
+\item{col_state}{Color of state lines. (use \code{'transparent'} to hide them.)}
+
+\item{col_county}{Color of county lines. (use \code{'transparent'} to hide them.)}
 }
 \value{
 A gg object.
@@ -64,14 +64,14 @@ rasterList <- raster_load(
 # First 24 hours
 raster_facet(
   rasterList[[1]],
-  index = 1:24
+  index = 1:24,
+  col_county = 'transparent'
 )
 
 # Fancy!!
 raster_facet(
   rasterList[[1]],
   index = seq(3,72,12),
-  showCounty = TRUE,
   title = "PNW-4km -- run 2019100900",
   timezone = "America/Los_Angeles"
 )

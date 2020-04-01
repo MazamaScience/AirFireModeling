@@ -3,6 +3,12 @@
 * Improvements to `raster_map()`.
 * Improvements to `raster_leaflet()`.
 * Improvements to `raster_facet()`.
+* Removed `raster_calculate()`.
+* Renamed `raster_subset()` to `raster_subsetByDistance()`. It now uses
+explicit arguments rather than `...`.
+* Added `col_state` and `col_county` arguments to all mapping functions to allow
+user specification of state and county border colors.
+* Using model names as titles in `raster_map()`.
 
 # AirFireModeling 0.2.7
 
