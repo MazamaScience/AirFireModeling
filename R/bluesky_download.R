@@ -31,12 +31,12 @@
 #' Users will typically call bluesky_load() which in turn calls this function.
 #'
 #' BlueSky output files are found in directories with the following
-#' structure:
+#' structure: \code{<baseUrl>/<model>/<modelRun>/<modelType>/data/...}
 #'
 #' \preformatted{
-#' .../standard/NAM84-0.08deg/2016050600/carryover/data/...
-#' .../standard/NAM84-0.08deg/2016050600/combined/data/...
-#' .../standard/NAM84-0.08deg/2016050600/forecast/data/...
+#' <baseUrl>/NAM84-0.08deg/2016050600/carryover/data/...
+#' <baseUrl>/NAM84-0.08deg/2016050600/combined/data/...
+#' <baseUrl>/NAM84-0.08deg/2016050600/forecast/data/...
 #' }
 #'
 #' @return File path of downloaded data.
@@ -45,8 +45,8 @@
 #' @examples
 #' \dontrun{
 #' library(AirFireModeling)
-#'
 #' setModelDataDir('~/Data/BlueSky')
+#'
 #' filePath <- bluesky_download(model = "PNW-4km", modelRun = 2019100900)
 #' bluesky_toCommonFormat(filePath)
 #' bluesky_downloaded()

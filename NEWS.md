@@ -1,3 +1,8 @@
+# AirFireModeling 0.2.8
+
+* Improvements to `raster_map()`.
+* Improvements to `raster_leaflet()`.
+
 # AirFireModeling 0.2.7
 
 * Internal refactoring and cleanup.

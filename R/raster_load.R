@@ -33,7 +33,6 @@
 #'   ylim = c(42, 50)
 #' )
 #'
-#'
 #' raster_map(rasterList, index = 3)
 #' }
 raster_load <- function(
@@ -65,8 +64,9 @@ raster_load <- function(
   }
 
   # Verify YYYYmmddHH
-  if ( !stringr::str_detect(modelRun, '[0-9]{10}') ) {
-    stop("'modelRun' parameter must have 10 digits")
+  for ( singleModelRun in modelRun ) {
+    if ( !stringr::str_detect(singleModelRun, '[0-9]{10}') )
+      stop(sprintf("'modelRun' parameter '%s' must have 10 digits"))
   }
 
   if ( length(modelType) > 1 )
@@ -78,24 +78,28 @@ raster_load <- function(
 
   # ----- Load data ------------------------------------------------------------
 
-  # Empty list of promises
+  # Empty list
   dataList <- list()
 
   # NOTE:  We need to create all combinations of model and modelRun for
   # NOTE:  downloading. The expand.grid() function does just that.
+
   # Create combinations
   allModelsDF <- expand.grid(model = model, modelRun = modelRun)
 
   for ( i in seq_len(nrow(allModelsDF)) ) {
 
-    model <- allModelsDF$model[i]
-    modelRun <- allModelsDF$modelRun[i]
-    name <- sprintf("%s_%s", model, modelRun)
+    singleModel <- allModelsDF$model[i]
+    singleModelRun <- allModelsDF$modelRun[i]
+    name <- sprintf("%s_%s", singleModel, singleModelRun)
 
-    # Create "promises" to load data
+    if ( verbose )
+      message(sprintf("Loading %s ...", name))
+
+    # Load model output
     dataList[[name]] <- bluesky_load(
-      model = model,
-      modelRun = modelRun,
+      model = singleModel,
+      modelRun = singleModelRun,
       modelType = modelType,
       baseUrl = baseUrl,
       localPath = NULL,
@@ -105,36 +109,8 @@ raster_load <- function(
       verbose = verbose
     )
 
-    .load_check(dataList[[name]],
-                sprintf("Loading %s_%s", model, modelRun),
-                verbose)
-
   }
 
   return(dataList)
 
 }
-
-# ===== Internal Functions =====================================================
-
-#' @keywords internal
-#'
-#' @title Show loading for futures
-#' @param f a future
-#' @param msg a message to display
-#' @param verbose logical. to display
-#'
-#' @return NULL
-.load_check <- function(f, msg, verbose) {
-  if ( verbose ) {
-    message(msg)
-    while( !future::resolved(f) ) {
-      message(".", appendLF = FALSE)
-      Sys.sleep(1.5)
-    }
-    message('')
-  }
-  NULL
-}
-
-

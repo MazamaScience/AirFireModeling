@@ -7,21 +7,34 @@
 raster_leaflet(
   raster,
   index = 1,
-  compare = NULL,
   palette = "Spectral",
-  direction = -1
+  breaks = "default",
+  title = "PM2.5",
+  direction = -1,
+  timezone = "UTC",
+  compare = NULL,
+  index2 = 1
 )
 }
 \arguments{
-\item{raster}{A Raster* object}
+\item{raster}{A \code{Raster\*} object.}
 
-\item{index}{The index of the Raster* object. See details.}
+\item{index}{The index of the \code{Raster*} object. See details.}
 
-\item{compare}{An optional comparison Raster}
+\item{palette}{The color palette used to map cell values. This must be one
+of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
 
-\item{palette}{A color palette, default is Spectral}
+\item{breaks}{The breaks used to define the map cell color or \code{'default'}. CURRENTLY UNUSED}
 
-\item{direction}{Color palette direction. -1 is reverse.}
+\item{title}{(Optional) A plot title. CURRENTLY UNUSED}
+
+\item{direction}{Numeric. \code{direction = -1} reverses color palette.}
+
+\item{timezone}{The timezone to parse the dates. Default is UTC.}
+
+\item{compare}{An optional comparison \code{Raster*} object}
+
+\item{index2}{The index of the comparison \code{Raster*} object.}
 }
 \value{
 a leaflet map
@@ -35,8 +48,42 @@ e.g \code{index = 1} is the first hour of a model.
 }
 \examples{
 \dontrun{
-bs <- raster_load()
-# Show 6th hour
-raster_leaflet(bs, index = 6)
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
+
+# Load consecutive model runs
+rasterList <- raster_load(
+  model = "PNW-4km",
+  modelRun = c(2019100900, 2019101000),
+  xlim = c(-125, -117),
+  ylim = c(42, 47)
+)
+
+# Create a leaflet map
+raster_leaflet(
+  raster = rasterList[[1]],
+  index = 3,
+  title = "PNW-4km"
+)
+
+# Create a leaflet map comparing two times from the same run
+raster_leaflet(
+  raster = rasterList[[1]],
+  index = 15,
+  compare = rasterList[[1]],
+  index2 = 18,
+  title = "PNW-4km",
+  timezone = "America/Los_Angeles"
+)
+
+# Create a leaflet map comparing the same time from two different runs
+raster_leaflet(
+  raster = rasterList[[1]],
+  index = 27,
+  compare = rasterList[[2]],
+  index2 = 3,
+  title = "PNW-4km",
+  timezone = "America/Los_Angeles"
+  )
 }
 }

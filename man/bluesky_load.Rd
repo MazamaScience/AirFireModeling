@@ -54,7 +54,7 @@ The reurned \code{dataBrick} object is of class \code{raster::RasterBrick} and
 can be manipulated with appropriate functions from the \pkg{raster} package
 or any of the \code{raster_~()} functions provided by \pkg{AirFireModeling}.
 
-#' On 2019-10-11, available model identifiers include the following:
+On 2019-10-11, available model identifiers include the following:
 \itemize{
   \item{AK-12km}
   \item{CANSAC-1.33km}
@@ -78,8 +78,8 @@ within the area defined by \code{xlim} and \code{ylim}.
 \examples{
 \dontrun{
 library(AirFireModeling)
-
 setModelDataDir('~/Data/BlueSky')
+
 raster <- bluesky_load(
   model = "PNW-4km",
   modelRun = 2019100900,
