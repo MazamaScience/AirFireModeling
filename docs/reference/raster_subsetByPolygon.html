@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ROC and AUC — skill_roc • AirFireModeling</title>
+<title>Subset a Raster* by polygon — raster_subsetByPolygon • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,9 @@
 
 
 
-<meta property="og:title" content="ROC and AUC — skill_roc" />
-<meta property="og:description" content="ROC and AUC" />
+<meta property="og:title" content="Subset a Raster* by polygon — raster_subsetByPolygon" />
+<meta property="og:description" content="This function subsets a raster object using cookie cutter
+defined by polygon. All cells within the polygon are returned." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -103,54 +104,63 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>ROC and AUC</h1>
+    <h1>Subset a Raster* by polygon</h1>
     
-    <div class="hidden name"><code>skill_roc.Rd</code></div>
+    <div class="hidden name"><code>raster_subsetByPolygon.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>ROC and AUC</p>
+    <p>This function subsets a raster object using cookie cutter
+defined by <code>polygon</code>. All cells within the polygon are returned.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>skill_roc</span>(<span class='no'>predicted</span>, <span class='no'>observed</span>, <span class='kw'>p_thresh</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>100</span>), <span class='kw'>o_thresh</span> <span class='kw'>=</span> <span class='fl'>55.5</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>100</span>)</pre>
+    <pre class="usage"><span class='fu'>raster_subsetByPolygon</span>(<span class='kw'>raster</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>polygon</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>predicted</th>
-      <td><p>Predicted logical.</p></td>
+      <th>raster</th>
+      <td><p><code>Raster*</code> object.</p></td>
     </tr>
     <tr>
-      <th>observed</th>
-      <td><p>Observed logical.</p></td>
-    </tr>
-    <tr>
-      <th>p_thresh</th>
-      <td><p>low and high values used to generate test thresholds for
-classifying <code>predicted</code> data.</p></td>
-    </tr>
-    <tr>
-      <th>o_thresh</th>
-      <td><p>value used to classify <code>observed</code> data.</p></td>
-    </tr>
-    <tr>
-      <th>n</th>
-      <td><p>number of test thresholds in ROC curve.</p></td>
+      <th>polygon</th>
+      <td><p><code>Spatial*</code> object.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a AUROC list</p>
+    <p>A Raster* object.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>ca</span> <span class='kw'>&lt;-</span> <span class='fu'>airnow_loadAnnual</span>(<span class='fl'>2017</span>) <span class='kw'>%&gt;%</span>
-  <span class='fu'>monitor_subset</span>(<span class='kw'>tlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>20171001</span>,<span class='fl'>20171101</span>), <span class='kw'>stateCodes</span> <span class='kw'>=</span> <span class='st'>'CA'</span>)
-<span class='no'>Vallejo</span> <span class='kw'>&lt;-</span> <span class='fu'>monitor_subset</span>(<span class='no'>ca</span>, <span class='kw'>monitorIDs</span> <span class='kw'>=</span> <span class='st'>'060950004_01'</span>)
-<span class='no'>Napa</span> <span class='kw'>&lt;-</span> <span class='fu'>monitor_subset</span>(<span class='no'>ca</span>, <span class='kw'>monitorIDs</span> <span class='kw'>=</span> <span class='st'>'060550003_01'</span>)
-<span class='fu'>skill_roc</span>(<span class='kw'>predicted</span> <span class='kw'>=</span> <span class='no'>Vallejo</span>, <span class='kw'>observed</span> <span class='kw'>=</span> <span class='no'>Napa</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>o_thresh</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>p_thresh</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>100</span>))
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
+<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky'</span>)
+
+<span class='co'># Load data</span>
+<span class='no'>rasterList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_load.html'>raster_load</a></span>(
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
+  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2019100800</span>, <span class='fl'>2019100900</span>, <span class='fl'>2019101000</span>, <span class='fl'>2019101100</span>),
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>116.5</span>),
+  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>42</span>, <span class='fl'>46.2</span>)
+)
+
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSpatialUtils</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/setSpatialDataDir.html'>setSpatialDataDir</a></span>(<span class='st'>"~/Data/Spatial"</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/loadSpatialData.html'>loadSpatialData</a></span>(<span class='st'>"USCensusStates"</span>)
+
+<span class='no'>OregonList</span> <span class='kw'>&lt;-</span> <span class='fu'>raster_subsetByPolygon</span>(
+  <span class='no'>rasterList</span>,
+  <span class='kw'>polygon</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>USCensusStates</span>, <span class='no'>stateCode</span> <span class='kw'>==</span> <span class='st'>"OR"</span>)
+)
+
+<span class='fu'><a href='raster_map.html'>raster_map</a></span>(
+  <span class='no'>OregonList</span>,
+  <span class='kw'>palette</span> <span class='kw'>=</span> <span class='st'>"Spectral"</span>,
+  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>4</span>, <span class='fl'>8</span>, <span class='fl'>16</span>, <span class='fl'>32</span>, <span class='fl'>500</span>),
+  <span class='kw'>direction</span> <span class='kw'>=</span> -<span class='fl'>1</span>
+)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

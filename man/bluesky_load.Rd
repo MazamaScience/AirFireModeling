@@ -5,7 +5,7 @@
 \title{Load data for a single BlueSky model}
 \usage{
 bluesky_load(
-  model = "PNW-4km",
+  model = NULL,
   modelRun = NULL,
   modelType = "forecast",
   baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",

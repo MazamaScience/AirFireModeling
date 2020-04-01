@@ -10,7 +10,7 @@ raster_map(
   raster,
   index = 1,
   palette = "Greys",
-  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
+  breaks = c(0, 12, 35, 55, 150, 250, 350, Inf),
   direction = 1,
   title = "PM2.5",
   timezone = "UTC",

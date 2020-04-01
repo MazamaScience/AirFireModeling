@@ -44,7 +44,7 @@ raster_map <- function(
   raster,
   index = 1,
   palette = 'Greys',
-  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
+  breaks = c(0, 12, 35, 55, 150, 250, 350, Inf),
   direction = 1,
   title = 'PM2.5',
   timezone = 'UTC',
@@ -143,24 +143,6 @@ raster_map.list <- function(
     }
   )
 
-  # TODO:  How can we get names from layerList and use them in the parallelized plots?
-  #
-  # # Set up parallelization
-  # cl <- parallel::makeCluster(future::availableCores() - 1)
-  # future::plan(strategy = future::cluster, workers = cl)
-  #
-  # # Parallel plotting
-  # gg_list <- future.apply::future_lapply(
-  #   X = layerList,
-  #   FUN = function(layer) {
-  #     .plot_map(layer, palette, breaks, direction, title, timezone, col_state, col_county)
-  #   }
-  # )
-  #
-  # parallel::stopCluster(cl)
-
-  # NOTE:  Non-parallelized version
-
   layerNames <- names(layerList)
   gg_list <- list()
   for ( i in seq_along(layerList) ) {
@@ -212,7 +194,6 @@ raster_map.list <- function(
       data = counties,
       ggplot2::aes(x = .data$long, y = .data$lat, group = .data$group),
       fill = 'NA',
-      ###alpha = 0.2,
       color = col_county
     ) +
     ggplot2::geom_polygon(

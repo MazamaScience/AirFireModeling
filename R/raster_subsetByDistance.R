@@ -52,7 +52,7 @@ raster_subsetByDistance <- function(
 
   if ( class(raster) != "list" &&
        !stringr::str_detect(class(raster), 'Raster*') )
-    stop("Parameter 'raster' is should be a single or a list of Raster* objects")
+    stop("Parameter 'raster' must be a single or a list of Raster* objects.")
 
   if ( !is.numeric(longitude) )
     stop("Parameter 'longitude' must be numeric.")
@@ -84,11 +84,7 @@ raster_subsetByDistance <- function(
 
   } else if ( class(raster) == 'list' ) {
 
-    # Setup up parallel processing
-    cl <- parallel::makeCluster(future::availableCores() - 1)
-    future::plan(strategy = future::cluster, workers = cl)
-
-    rasterList <- future.apply::future_lapply(
+    rasterList <- lapply(
       X = raster,
       FUN = function(r) {
         .subsetByDistance(
@@ -100,8 +96,6 @@ raster_subsetByDistance <- function(
         )
       }
     )
-
-    parallel::stopCluster(cl)
 
     return(rasterList)
 

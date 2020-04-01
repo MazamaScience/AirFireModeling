@@ -36,7 +36,7 @@
 #' raster_map(rasterList, index = 3)
 #' }
 raster_load <- function(
-  model = 'PNW-4km',
+  model = NULL,
   modelRun = NULL,
   modelType = 'forecast',
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
@@ -48,6 +48,8 @@ raster_load <- function(
 
   # ----- Validate parameters --------------------------------------------------
 
+  MazamaCoreUtils::stopIfNull(model)
+  MazamaCoreUtils::stopIfNull(modelType)
   MazamaCoreUtils::stopIfNull(baseUrl)
 
   if ( is.null(modelRun) ) {
@@ -96,18 +98,20 @@ raster_load <- function(
     if ( verbose )
       message(sprintf("Loading %s ...", name))
 
-    # Load model output
-    dataList[[name]] <- bluesky_load(
-      model = singleModel,
-      modelRun = singleModelRun,
-      modelType = modelType,
-      baseUrl = baseUrl,
-      localPath = NULL,
-      xlim = xlim,
-      ylim = ylim,
-      clean = clean,
-      verbose = verbose
-    )
+    # Try to load model data
+    result <- try({
+      dataList[[name]] <- bluesky_load(
+        model = singleModel,
+        modelRun = singleModelRun,
+        modelType = modelType,
+        baseUrl = baseUrl,
+        localPath = NULL,
+        xlim = xlim,
+        ylim = ylim,
+        clean = clean,
+        verbose = verbose
+      )
+    }, silent = !verbose)
 
   }
 

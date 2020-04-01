@@ -2,45 +2,104 @@
 % Please edit documentation in R/raster_aggregate.R
 \name{raster_aggregate}
 \alias{raster_aggregate}
-\title{Aggregate Raster Models}
+\title{Aggregate multiple BlueSky model runs into a single RasterBrick object}
 \usage{
 raster_aggregate(
-  model = "PNW-4km",
-  startdate,
-  enddate,
-  by = c(1, 12),
+  model = NULL,
+  firstModelRun = NULL,
+  lastModelRun = NULL,
+  modelType = "forecast",
+  baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
   xlim = NULL,
   ylim = NULL,
-  baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
-  modelType = "forecast",
   clean = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  spacing = NULL,
+  chunk = 1
 )
 }
 \arguments{
 \item{model}{Model identifier(s).}
 
-\item{startdate}{Desired start date (integer or character in ymd[hms] format or POSIXct).}
+\item{firstModelRun}{Initialization datestamp of first model run as "YYYYmmddHH".}
 
-\item{enddate}{Desired end date (integer or character in ymd[hms] format or POSIXct).}
+\item{lastModelRun}{Initialization datestamp of last model run as "YYYYmmddHH".}
 
-\item{by}{Numeric vector. Represents hours to truncate models at.}
+\item{modelType}{Subdirectory path containing BlueSky output, i.e. 'forcast'.}
 
-\item{xlim}{Optional longitude range.}
+\item{baseUrl}{Base URL for BlueSky output.}
 
-\item{ylim}{Optional latitude range.}
+\item{xlim}{A vector of coordinate longitude bounds.}
 
-\item{baseUrl}{Model output web directory. Default is BlueSky standard output.}
+\item{ylim}{A vector of coordinate latitude bounds.}
 
-\item{modelType}{Model type directory, i.e. 'forecast', 'combined', etc.}
+\item{clean}{Logical specifying removal of original model data after conversion
+to "v2" format.}
 
-\item{clean}{Logical specifying whether to remove the non-common format NetCDF.}
+\item{verbose}{Logical to display messages.}
 
-\item{verbose}{If \code{FALSE}, suppress status messages (if any).}
+\item{spacing}{Time difference (hrs) between each model run -- overrides
+default values.}
+
+\item{chunk}{The portion of the time (of width = 'spacing') to be chosen from
+each model run. If \code{spacing = 12}, then \code{chunk = 1} corresponds to
+the first 12 hours of the each model run, \code{chunk = 2} corresponds to the
+next 12 hours of each model run, and so on. See the note below for further
+explanation.}
 }
 \value{
-A raster object.
+A RasterBrick object.
 }
 \description{
-Aggregate Raster Models
+Combines multiple Bluesky model runs to produce a single
+RasterBrick object. Users can set the first run, the last run, the hourly
+spacing between model runs, and the chunk index for the section of each
+model's time axis to be used.
+}
+\details{
+Setting \code{chunk = 1} results in grabbing the initial portion of each model
+run. Setting chunk to higher numbers utilizes times further out in the the
+forecast of each model run implying more uncertainty.
+}
+\section{Chunks}{
+
+Suppose a model is run every 12 hours. For this model \code{spacing = 12}.
+In this case, \code{chunk = 1} means we select the first 12 hours from each
+model run -- i.e. we work with the model data from as close to initialization
+as possible. Setting \code{chunk = 2} means we select the next 12 hours
+(i.e. hours 13-24) from each model run. Setting \code{chunk = 3} means we
+select hours 25-48 from each model run and so on.
+
+Chunking can be used to account for any inaccuracies in the data that may
+be due to poor initial conditions. For example, older models only predicted
+impacts from existing sources, and did not take into account any smoke that
+may have already been present at the time of initialization. In this case,
+setting \code{chunk = 2} may produce better results.
+}
+
+\examples{
+\dontrun{
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
+
+# Kincade fire
+rasterBrick <- raster_aggregate(
+  model = "CANSAC-4km",
+  firstModelRun = 2019102700,
+  lastModelRun = 2019103100,
+  xlim = c(-124, -121.5),
+  ylim = c(37.5, 39)
+)
+
+raster_facet(
+  rasterBrick,
+  title = "Kincade Fire -- 2019102700 through 2019103100",
+  ncol = 12,
+  palette = 'Spectral',
+  col_county = 'gray95',
+  direction = -1,
+  breaks = c(-Inf, 0, 12, 35, 55, 150, 250, 350, Inf)
+)
+}
+
 }

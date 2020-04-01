@@ -1,3 +1,10 @@
+# AirFireModeling 0.2.9
+
+* New `raster_subsetByPolygon()` function.
+* Removed use of "promises" (*parallel* and *future* packages) everywhere 
+because it interferes with *raster* package delayed evaluation.
+* Improvements to `raster_aggregate()`.
+
 # AirFireModeling 0.2.8
 
 * Improvements to `raster_map()`.

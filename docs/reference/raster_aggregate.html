@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Aggregate Raster Models — raster_aggregate • AirFireModeling</title>
+<title>Aggregate multiple BlueSky model runs into a single RasterBrick object — raster_aggregate • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,11 @@
 
 
 
-<meta property="og:title" content="Aggregate Raster Models — raster_aggregate" />
-<meta property="og:description" content="Aggregate Raster Models" />
+<meta property="og:title" content="Aggregate multiple BlueSky model runs into a single RasterBrick object — raster_aggregate" />
+<meta property="og:description" content="Combines multiple Bluesky model runs to produce a single
+RasterBrick object. Users can set the first run, the last run, the hourly
+spacing between model runs, and the chunk index for the section of each
+model's time axis to be used." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -69,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
       </span>
     </div>
 
@@ -103,26 +106,30 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Aggregate Raster Models</h1>
+    <h1>Aggregate multiple BlueSky model runs into a single RasterBrick object</h1>
     
     <div class="hidden name"><code>raster_aggregate.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Aggregate Raster Models</p>
+    <p>Combines multiple Bluesky model runs to produce a single
+RasterBrick object. Users can set the first run, the last run, the hourly
+spacing between model runs, and the chunk index for the section of each
+model's time axis to be used.</p>
     </div>
 
     <pre class="usage"><span class='fu'>raster_aggregate</span>(
-  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
-  <span class='no'>startdate</span>,
-  <span class='no'>enddate</span>,
-  <span class='kw'>by</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>12</span>),
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>firstModelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>lastModelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>modelType</span> <span class='kw'>=</span> <span class='st'>"forecast"</span>,
+  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://haze.airfire.org/bluesky-daily/output/standard"</span>,
   <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://haze.airfire.org/bluesky-daily/output/standard"</span>,
-  <span class='kw'>modelType</span> <span class='kw'>=</span> <span class='st'>"forecast"</span>,
   <span class='kw'>clean</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>spacing</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>chunk</span> <span class='kw'>=</span> <span class='fl'>1</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -133,53 +140,110 @@
       <td><p>Model identifier(s).</p></td>
     </tr>
     <tr>
-      <th>startdate</th>
-      <td><p>Desired start date (integer or character in ymd[hms] format or POSIXct).</p></td>
+      <th>firstModelRun</th>
+      <td><p>Initialization datestamp of first model run as "YYYYmmddHH".</p></td>
     </tr>
     <tr>
-      <th>enddate</th>
-      <td><p>Desired end date (integer or character in ymd[hms] format or POSIXct).</p></td>
-    </tr>
-    <tr>
-      <th>by</th>
-      <td><p>Numeric vector. Represents hours to truncate models at.</p></td>
-    </tr>
-    <tr>
-      <th>xlim</th>
-      <td><p>Optional longitude range.</p></td>
-    </tr>
-    <tr>
-      <th>ylim</th>
-      <td><p>Optional latitude range.</p></td>
-    </tr>
-    <tr>
-      <th>baseUrl</th>
-      <td><p>Model output web directory. Default is BlueSky standard output.</p></td>
+      <th>lastModelRun</th>
+      <td><p>Initialization datestamp of last model run as "YYYYmmddHH".</p></td>
     </tr>
     <tr>
       <th>modelType</th>
-      <td><p>Model type directory, i.e. 'forecast', 'combined', etc.</p></td>
+      <td><p>Subdirectory path containing BlueSky output, i.e. 'forcast'.</p></td>
+    </tr>
+    <tr>
+      <th>baseUrl</th>
+      <td><p>Base URL for BlueSky output.</p></td>
+    </tr>
+    <tr>
+      <th>xlim</th>
+      <td><p>A vector of coordinate longitude bounds.</p></td>
+    </tr>
+    <tr>
+      <th>ylim</th>
+      <td><p>A vector of coordinate latitude bounds.</p></td>
     </tr>
     <tr>
       <th>clean</th>
-      <td><p>Logical specifying whether to remove the non-common format NetCDF.</p></td>
+      <td><p>Logical specifying removal of original model data after conversion
+to "v2" format.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>If <code>FALSE</code>, suppress status messages (if any).</p></td>
+      <td><p>Logical to display messages.</p></td>
+    </tr>
+    <tr>
+      <th>spacing</th>
+      <td><p>Time difference (hrs) between each model run -- overrides
+default values.</p></td>
+    </tr>
+    <tr>
+      <th>chunk</th>
+      <td><p>The portion of the time (of width = 'spacing') to be chosen from
+each model run. If <code>spacing = 12</code>, then <code>chunk = 1</code> corresponds to
+the first 12 hours of the each model run, <code>chunk = 2</code> corresponds to the
+next 12 hours of each model run, and so on. See the note below for further
+explanation.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A raster object.</p>
+    <p>A RasterBrick object.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
+    <p>Setting <code>chunk = 1</code> results in grabbing the initial portion of each model
+run. Setting chunk to higher numbers utilizes times further out in the the
+forecast of each model run implying more uncertainty.</p>
+    <h2 class="hasAnchor" id="chunks"><a class="anchor" href="#chunks"></a>Chunks</h2>
+
+    
+
+<p>Suppose a model is run every 12 hours. For this model <code>spacing = 12</code>.
+In this case, <code>chunk = 1</code> means we select the first 12 hours from each
+model run -- i.e. we work with the model data from as close to initialization
+as possible. Setting <code>chunk = 2</code> means we select the next 12 hours
+(i.e. hours 13-24) from each model run. Setting <code>chunk = 3</code> means we
+select hours 25-48 from each model run and so on.</p>
+<p>Chunking can be used to account for any inaccuracies in the data that may
+be due to poor initial conditions. For example, older models only predicted
+impacts from existing sources, and did not take into account any smoke that
+may have already been present at the time of initialization. In this case,
+setting <code>chunk = 2</code> may produce better results.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
+<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky'</span>)
+
+<span class='co'># Kincade fire</span>
+<span class='no'>rasterBrick</span> <span class='kw'>&lt;-</span> <span class='fu'>raster_aggregate</span>(
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"CANSAC-4km"</span>,
+  <span class='kw'>firstModelRun</span> <span class='kw'>=</span> <span class='fl'>2019102700</span>,
+  <span class='kw'>lastModelRun</span> <span class='kw'>=</span> <span class='fl'>2019103100</span>,
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124</span>, -<span class='fl'>121.5</span>),
+  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>37.5</span>, <span class='fl'>39</span>)
+)
+
+<span class='fu'><a href='raster_facet.html'>raster_facet</a></span>(
+  <span class='no'>rasterBrick</span>,
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"Kincade Fire -- 2019102700 through 2019103100"</span>,
+  <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>12</span>,
+  <span class='kw'>palette</span> <span class='kw'>=</span> <span class='st'>'Spectral'</span>,
+  <span class='kw'>col_county</span> <span class='kw'>=</span> <span class='st'>'gray95'</span>,
+  <span class='kw'>direction</span> <span class='kw'>=</span> -<span class='fl'>1</span>,
+  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>Inf</span>, <span class='fl'>0</span>, <span class='fl'>12</span>, <span class='fl'>35</span>, <span class='fl'>55</span>, <span class='fl'>150</span>, <span class='fl'>250</span>, <span class='fl'>350</span>, <span class='fl'>Inf</span>)
+)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#details">Details</a></li>
+      <li><a href="#chunks">Chunks</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>

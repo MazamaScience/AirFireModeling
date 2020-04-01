@@ -64,7 +64,7 @@
 #' }
 #'
 bluesky_load <- function(
-  model = 'PNW-4km',
+  model = NULL,
   modelRun = NULL,
   modelType = 'forecast',
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',

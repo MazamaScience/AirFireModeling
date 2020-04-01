@@ -8,7 +8,7 @@ raster_facet(
   raster,
   index = NULL,
   palette = "Greys",
-  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
+  breaks = c(0, 12, 35, 55, 150, 250, 350, Inf),
   direction = 1,
   title = "",
   timezone = "UTC",
