@@ -8,9 +8,11 @@ raster_leaflet(
   raster,
   index = 1,
   palette = "Spectral",
-  breaks = "default",
-  title = "PM2.5",
+  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
   direction = -1,
+  opacity = 0.6,
+  maptype = "terrain",
+  title = "PM2.5",
   timezone = "UTC",
   compare = NULL,
   index2 = 1
@@ -19,32 +21,51 @@ raster_leaflet(
 \arguments{
 \item{raster}{A \code{Raster\*} object.}
 
-\item{index}{The index of the \code{Raster*} object. See details.}
+\item{index}{Index of the \code{Raster*} object. See details.}
 
-\item{palette}{The color palette used to map cell values. This must be one
+\item{palette}{Color palette used to map cell values. This must be one
 of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
 
-\item{breaks}{The breaks used to define the map cell color or \code{'default'}. CURRENTLY UNUSED}
-
-\item{title}{(Optional) A plot title. CURRENTLY UNUSED}
+\item{breaks}{The breaks used to map cell values to colors. CURRENTLY UNUSED}
 
 \item{direction}{Numeric. \code{direction = -1} reverses color palette.}
 
-\item{timezone}{The timezone to parse the dates. Default is UTC.}
+\item{opacity}{Opacity of raster layer.}
 
-\item{compare}{An optional comparison \code{Raster*} object}
+\item{maptype}{Name of leaflet ProviderTiles to use.}
 
-\item{index2}{The index of the comparison \code{Raster*} object.}
+\item{title}{(Optional) A plot title. CURRENTLY UNUSED}
+
+\item{timezone}{Olson timezone in which times will be displayed.}
+
+\item{compare}{Optional comparison \code{Raster*} object.}
+
+\item{index2}{Index of the comparison \code{Raster*} object.}
 }
 \value{
-a leaflet map
+A leaflet map.
 }
 \description{
-Create a leaflet interactive map using a model Raster Image.
+Create a leaflet interactive map using a model output
+\code{Raster\*} object.
 }
 \details{
-The \code{index} is typically associated with a time-axis or RasterLayer,
-e.g \code{index = 1} is the first hour of a model.
+The \code{index} is associated with the z axis or time-axis of
+\code{RasterBrick} object, e.g \code{index = 1} is the first hour of a model.
+
+The \code{maptype} argument is mapped onto leaflet "ProviderTile" names.
+Current mappings include:
+\enumerate{
+\item{"roadmap"}{ -- "OpenStreetMap"}
+\item{"satellite"}{ -- "Esri.WorldImagery"}
+\item{"terrain"}{ -- "Esri.WorldTopoMap"}
+\item{"toner"}{ -- "Stamen.Toner"}
+}
+
+If a character string not listed above is provided, it will be used as the
+underlying map tile if available. See
+\url{https://leaflet-extras.github.io/leaflet-providers/} for a list of
+"provider tiles" to use as the background map.
 }
 \examples{
 \dontrun{
@@ -62,8 +83,7 @@ rasterList <- raster_load(
 # Create a leaflet map
 raster_leaflet(
   raster = rasterList[[1]],
-  index = 3,
-  title = "PNW-4km"
+  index = 3
 )
 
 # Create a leaflet map comparing two times from the same run
@@ -72,18 +92,26 @@ raster_leaflet(
   index = 15,
   compare = rasterList[[1]],
   index2 = 18,
-  title = "PNW-4km",
   timezone = "America/Los_Angeles"
 )
 
 # Create a leaflet map comparing the same time from two different runs
+
+# Load consecutive model runs
+rasterList <- raster_load(
+  model = c("PNW-4km", "PNW-1.33km"),
+  modelRun = 2019100900,
+  xlim = c(-125, -117),
+  ylim = c(42, 47)
+)
+
 raster_leaflet(
   raster = rasterList[[1]],
-  index = 27,
+  index = 15,
   compare = rasterList[[2]],
-  index2 = 3,
-  title = "PNW-4km",
-  timezone = "America/Los_Angeles"
+  index2 = 15,
+  timezone = "America/Los_Angeles",
+  opacity = 0.3
   )
 }
 }

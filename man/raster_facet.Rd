@@ -2,30 +2,94 @@
 % Please edit documentation in R/raster_facet.R
 \name{raster_facet}
 \alias{raster_facet}
-\title{Small Multiples of Raster}
+\title{Small multiples map of BlueSky model output}
 \usage{
 raster_facet(
   raster,
-  breaks = "default",
-  palette = "default",
+  index = NULL,
+  palette = "Greys",
+  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
   direction = 1,
-  timezone = "UTC"
+  title = "",
+  timezone = "UTC",
+  showState = TRUE,
+  showCounty = FALSE,
+  ncol = NULL
 )
 }
 \arguments{
-\item{raster}{a Raster* object}
+\item{raster}{A \code{Raster\*} object.}
 
-\item{breaks}{Color break locations.}
+\item{index}{Vector of indices used to subset \code{raster}}
 
-\item{palette}{A color brewer palette (i.e. 'Greys', 'Blues', 'BuGn', 'YlOrRd', ...).}
+\item{palette}{Color palette used to map cell values. This must be one
+of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
 
-\item{direction}{Color palette direction. Set -1 to reverse direction.}
+\item{breaks}{The breaks used to map cell values to colors.}
 
-\item{timezone}{Timezone.}
+\item{direction}{Numeric. \code{direction = -1} reverses color palette.}
+
+\item{title}{(Optional) A plot title.}
+
+\item{timezone}{Olson timezone in which times will be displayed.}
+
+\item{showState}{Logical specifying whether to show state boundaries.}
+
+\item{showCounty}{Logical specifying whether to show county boundaries.}
+
+\item{ncol}{Number of columns in the output plot.}
 }
 \value{
-a gg object
+A gg object.
 }
 \description{
-Small Multiples of Raster
+This function creates a grid of plots, each displaying a small
+map of a single hour from the model output passed in as \code{raster}. By
+default, all hours are plotted. The \code{index} parameter can be used to
+subset the hours.
+}
+\examples{
+\dontrun{
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
+
+# Load from server
+rasterList <- raster_load(
+  model = "PNW-4km",
+  modelRun = c(2019100900),
+  xlim = c(-125, -117),
+  ylim = c(42, 47)
+)
+
+# First 24 hours
+raster_facet(
+  rasterList[[1]],
+  index = 1:24
+)
+
+# Fancy!!
+raster_facet(
+  rasterList[[1]],
+  index = seq(3,72,12),
+  showCounty = TRUE,
+  title = "PNW-4km -- run 2019100900",
+  timezone = "America/Los_Angeles"
+)
+
+# Kincade fire
+rasterList <- raster_load(
+  model = "CANSAC-4km",
+  modelRun = c(2019102700),
+  xlim = c(-124, -121.5),
+  ylim = c(37.5, 39)
+)
+
+raster_facet(
+  rasterList[[1]],
+  title = "Kincade Fire",
+  ncol = 12
+)
+
+}
+
 }

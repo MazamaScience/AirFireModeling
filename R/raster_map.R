@@ -1,4 +1,5 @@
-#' @title Plot maps of BlueSky model output
+#' @export
+#' @title Geographic map of BlueSky model output
 #'
 #' @description Creates a \pkg{ggplot2} plot object from a \code{Raster\*}
 #' object. The returned plot object can be plotted or can be enhanced with
@@ -14,14 +15,13 @@
 #' @param index The index of the Raster* object. See details.
 #' @param palette The color palette used to map cell values. This must be one
 #' of the palettes available through \code{ggplot2::scale_colour_brewer()}.
-#' @param breaks The breaks used to define the map cell color or \code{'default'}.
-#' @param title (Optional) A plot title.
+#' @param breaks The breaks used to map cell values to colors.
 #' @param direction Numeric. \code{direction = -1} reverses color palette.
-#' @param timezone The timezone to parse the dates. Default is UTC.
+#' @param title (Optional) A plot title.
+#' @param timezone Olson timezone in which times will be displayed.
 #' @param verbose Logical to display messages.
 #'
-#' @return a ggplot object
-#' @export
+#' @return A ggplot object.
 #'
 #' @examples
 #' \dontrun{
@@ -42,9 +42,9 @@ raster_map <- function(
   raster,
   index = 1,
   palette = 'Greys',
-  breaks = 'default',
-  title = 'PM2.5',
+  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
   direction = 1,
+  title = 'PM2.5',
   timezone = 'UTC',
   verbose = TRUE
 ) {
@@ -52,8 +52,7 @@ raster_map <- function(
   # ----- Validate parameters --------------------------------------------------
 
   MazamaCoreUtils::stopIfNull(raster)
-  if ( !grepl('[Rr]aster', class(raster)) )
-    stop("Parameter 'raster' is not a `Raster*` object")
+  # NOTE:  raster can be a Raster* object or a list of such objects
 
   if ( !is.numeric(index) )
     stop("Parameter 'index' must be numeric.")
@@ -62,13 +61,14 @@ raster_map <- function(
   if ( !palette %in% availablePalettes )
     stop(sprintf("'%s' is not a recognized palette. Please see ?ggplot2::scale_colour_brewer."))
 
-  # breaks
-
-  if ( !is.character(title) )
-    stop("Parameter 'title' must be character.")
+  if ( !is.numeric(breaks) )
+    stop("Parameter 'breaks' must be a numeric vector.")
 
   if ( !direction %in% c(-1,1) )
     stop("Parameter 'direction' must be either 1 or -1.")
+
+  if ( !is.character(title) )
+    stop("Parameter 'title' must be character.")
 
   if ( !timezone %in% OlsonNames())
     stop("Parameter 'timezone' is not recognized. Please see ?OlsonNames/.")
@@ -90,9 +90,9 @@ raster_map.Raster <- function(
   raster, # a single RasterBrick
   index = 1,
   palette = 'Greys',
-  breaks = 'default',
-  title = 'PM2.5',
+  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
   direction = 1,
+  title = 'PM2.5',
   timezone = 'UTC',
   verbose = TRUE
 ) {
@@ -103,7 +103,7 @@ raster_map.Raster <- function(
   # NOTE:  Use list syntax to pull a RasterLayer out of a RasterBrick
 
   layer <- raster[[index]]
-  .plot_map(layer, palette, breaks, title, direction, timezone)
+  .plot_map(layer, palette, breaks, direction, title, timezone)
 
 }
 
@@ -113,9 +113,9 @@ raster_map.list <- function(
   raster, # a list of RasterBricks
   index = 1,
   palette = 'Greys',
-  breaks = 'default',
-  title = 'PM2.5',
+  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
   direction = 1,
+  title = 'PM2.5',
   timezone = 'UTC',
   verbose = TRUE
 ) {
@@ -143,7 +143,7 @@ raster_map.list <- function(
   gg_list <- future.apply::future_lapply(
     X = layerList,
     FUN = function(layer) {
-      .plot_map(layer, palette, breaks, title, direction, timezone)
+      .plot_map(layer, palette, breaks, direction, title, timezone)
     }
   )
 
@@ -159,11 +159,11 @@ raster_map.list <- function(
 # NOTE: Internal function for plotting an individual ggplot2 raster layer
 .plot_map <- function(
   layer,
-  palette,
-  breaks,
-  title,
-  direction,
-  timezone
+  palette = 'Greys',
+  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
+  direction = 1,
+  title = 'PM2.5',
+  timezone = 'UTC'
 ) {
 
   # ----- Prepare data ---------------------------------------------------------
@@ -173,20 +173,15 @@ raster_map.list <- function(
   xlim <- c(limits@xmin, limits@xmax)
   ylim <- c(limits@ymin, limits@ymax)
 
-  epochSecs <- as.numeric(stringr::str_remove(names(layer), 'X'))
-  layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
-  timeString <- strftime(layerTime, format = "%Y-%m-%d %H:00 %Z", tz = timezone)
-
-  # Define color breaks to match those used by AirFire
-  if ( breaks == 'default' ) {
-    breaks <- c(0, 12, 35, 55, 150, 250, 350, 500)
-  }
+  timeString <- createLayerTimeString(names(layer))
 
   # Get state and counties data for plotting
   states <- ggplot2::map_data('state', xlim = xlim, ylim = ylim)
   counties <- ggplot2::map_data('county', xlim = xlim, ylim = ylim)
 
   # ----- Create plot ----------------------------------------------------------
+
+  # See: http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html
 
   gg <-
     rasterVis::gplot(layer) +
@@ -211,9 +206,11 @@ raster_map.list <- function(
     ggplot2::labs(
       title = title,
       subtitle = timeString,
-      x = 'Longitude', y = 'Latitude', fill = 'PM2.5'
+      x = 'Longitude',
+      y = 'Latitude',
+      fill = 'PM2.5'
     ) +
-    ggplot2::coord_fixed(xlim = xlim, ylim = ylim, ratio = 4/3) +
+    ggplot2::coord_fixed(ratio = 1.3, xlim = xlim, ylim = ylim) +
     ggplot2::theme_classic() +
     # Customizations to the classic theme
     ggplot2::theme(

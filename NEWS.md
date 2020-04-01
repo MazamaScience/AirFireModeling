@@ -2,6 +2,7 @@
 
 * Improvements to `raster_map()`.
 * Improvements to `raster_leaflet()`.
+* Improvements to `raster_facet()`.
 
 # AirFireModeling 0.2.7
 

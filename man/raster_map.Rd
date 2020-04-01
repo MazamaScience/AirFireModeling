@@ -4,15 +4,15 @@
 \alias{raster_map}
 \alias{raster_map.Raster}
 \alias{raster_map.list}
-\title{Plot maps of BlueSky model output}
+\title{Geographic map of BlueSky model output}
 \usage{
 raster_map(
   raster,
   index = 1,
   palette = "Greys",
-  breaks = "default",
-  title = "PM2.5",
+  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
   direction = 1,
+  title = "PM2.5",
   timezone = "UTC",
   verbose = TRUE
 )
@@ -21,9 +21,9 @@ raster_map(
   raster,
   index = 1,
   palette = "Greys",
-  breaks = "default",
-  title = "PM2.5",
+  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
   direction = 1,
+  title = "PM2.5",
   timezone = "UTC",
   verbose = TRUE
 )
@@ -32,9 +32,9 @@ raster_map(
   raster,
   index = 1,
   palette = "Greys",
-  breaks = "default",
-  title = "PM2.5",
+  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
   direction = 1,
+  title = "PM2.5",
   timezone = "UTC",
   verbose = TRUE
 )
@@ -47,18 +47,18 @@ raster_map(
 \item{palette}{The color palette used to map cell values. This must be one
 of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
 
-\item{breaks}{The breaks used to define the map cell color or \code{'default'}.}
-
-\item{title}{(Optional) A plot title.}
+\item{breaks}{The breaks used to map cell values to colors.}
 
 \item{direction}{Numeric. \code{direction = -1} reverses color palette.}
 
-\item{timezone}{The timezone to parse the dates. Default is UTC.}
+\item{title}{(Optional) A plot title.}
+
+\item{timezone}{Olson timezone in which times will be displayed.}
 
 \item{verbose}{Logical to display messages.}
 }
 \value{
-a ggplot object
+A ggplot object.
 }
 \description{
 Creates a \pkg{ggplot2} plot object from a \code{Raster\*}

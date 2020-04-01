@@ -1,57 +1,208 @@
 #' @export
-#' @title Small Multiples of Raster
+#' @title Small multiples map of BlueSky model output
 #'
-#' @param raster a Raster* object
-#' @param breaks Color break locations.
-#' @param palette A color brewer palette (i.e. 'Greys', 'Blues', 'BuGn', 'YlOrRd', ...).
-#' @param direction Color palette direction. Set -1 to reverse direction.
-#' @param timezone Timezone.
+#' @param raster A \code{Raster\*} object.
+#' @param index Vector of indices used to subset \code{raster}
+#' @param palette Color palette used to map cell values. This must be one
+#' of the palettes available through \code{ggplot2::scale_colour_brewer()}.
+#' @param breaks The breaks used to map cell values to colors.
+#' @param direction Numeric. \code{direction = -1} reverses color palette.
+#' @param title (Optional) A plot title.
+#' @param timezone Olson timezone in which times will be displayed.
+#' @param showState Logical specifying whether to show state boundaries.
+#' @param showCounty Logical specifying whether to show county boundaries.
+#' @param ncol Number of columns in the output plot.
 #'
-#' @return a gg object
+#' @description This function creates a grid of plots, each displaying a small
+#' map of a single hour from the model output passed in as \code{raster}. By
+#' default, all hours are plotted. The \code{index} parameter can be used to
+#' subset the hours.
+#'
+#' @return A gg object.
+#'
+#' @examples
+#' \dontrun{
+#' library(AirFireModeling)
+#' setModelDataDir('~/Data/BlueSky')
+#'
+#' # Load from server
+#' rasterList <- raster_load(
+#'   model = "PNW-4km",
+#'   modelRun = c(2019100900),
+#'   xlim = c(-125, -117),
+#'   ylim = c(42, 47)
+#' )
+#'
+#' # First 24 hours
+#' raster_facet(
+#'   rasterList[[1]],
+#'   index = 1:24
+#' )
+#'
+#' # Fancy!!
+#' raster_facet(
+#'   rasterList[[1]],
+#'   index = seq(3,72,12),
+#'   showCounty = TRUE,
+#'   title = "PNW-4km -- run 2019100900",
+#'   timezone = "America/Los_Angeles"
+#' )
+#'
+#' # Kincade fire
+#' rasterList <- raster_load(
+#'   model = "CANSAC-4km",
+#'   modelRun = c(2019102700),
+#'   xlim = c(-124, -121.5),
+#'   ylim = c(37.5, 39)
+#' )
+#'
+#' raster_facet(
+#'   rasterList[[1]],
+#'   title = "Kincade Fire",
+#'   ncol = 12
+#' )
+#'
+#' }
+#'
 raster_facet <- function(
   raster,
-  breaks = 'default',
-  palette = 'default',
+  index = NULL,
+  palette = 'Greys',
+  breaks = c(0,12, 35, 55, 150, 250, 350, 500),
   direction = 1,
-  timezone = 'UTC'
+  title = "",
+  timezone = 'UTC',
+  showState = TRUE,
+  showCounty = FALSE,
+  ncol = NULL
 ) {
 
-  # Checks
-  if ( !grepl('[rR]aster.+', class(raster)) ) {
+  # ----- Validate parameters --------------------------------------------------
+
+  MazamaCoreUtils::stopIfNull(raster)
+  if ( !grepl('[rR]aster.+', class(raster)) )
     stop(print('A valid Raster object is required.'))
+
+  if ( !is.null(index) ) {
+    if ( !is.numeric(index) )
+      stop("Parameter 'index' must be numeric.")
   }
 
-  # Function to turn numeric POSIX time to character string
-  t2str <- function(s) {
-    x <- as.numeric(stringr::str_remove(s, 'X'))
-    class(x) <- c('POSIX', 'POSIXct')
-    attr(x, 'tzone') <- timezone
-    return(as.character.Date(x))
-  }
+  brewerPalettes <- rownames(RColorBrewer::brewer.pal.info)
+  viridisPalettes <- c("viridis_A")
+  availablePalettes <- union(brewerPalettes, viridisPalettes)
+  if ( !palette %in% availablePalettes )
+    stop(sprintf("'%s' is not a recognized palette. Please see ?ggplot2::scale_colour_brewer."))
 
-  # Define color breaks
-  if ( breaks == 'default' ) {
-    breaks <- c(0,12, 35, 55, 150, 250, 350, 500)
+  if ( !is.numeric(breaks) )
+    stop("Parameter 'breaks' must be a numeric vector.")
+
+  if ( !direction %in% c(-1,1) )
+    stop("Parameter 'direction' must be either 1 or -1.")
+
+  if ( !is.character(title) )
+    stop("Parameter 'title' must be character.")
+
+  if ( !timezone %in% OlsonNames())
+    stop("Parameter 'timezone' is not recognized. Please see ?OlsonNames.")
+
+  if ( !is.null(ncol) && !is.numeric(ncol) )
+    stop("Parameter 'ncol' must be numeric.")
+
+  # Defaults
+  if ( !is.logical(showState) ) showState <- TRUE
+  if ( !is.logical(showCounty) ) showCounty <- TRUE
+
+  # ----- Prepare data ---------------------------------------------------------
+
+  # Get layer coordinate limits
+  limits <- raster::extent(raster)
+  xlim <- c(limits@xmin, limits@xmax)
+  ylim <- c(limits@ymin, limits@ymax)
+
+  # Get state and counties data for plotting
+  states <- ggplot2::map_data('state', xlim = xlim, ylim = ylim)
+  counties <- ggplot2::map_data('county', xlim = xlim, ylim = ylim)
+
+  # Subset rasterBrick if requested
+  if ( !is.null(index) ) {
+    if ( raster::nlayers(raster) > 1 )
+      raster <- raster::subset(raster, subset = index, drop = FALSE)
   }
 
   # Determine color scaler
-  if (palette == 'default' ) {
-    scale_colors <-  ggplot2::scale_fill_viridis_d( option = 'A',
-                                                    direction = direction )
+  if ( palette == 'viridis_A' ) {
+    scale_colors <-  ggplot2::scale_fill_viridis_d(
+      option = 'A',
+      direction = direction
+    )
   } else {
-      scale_colors <- ggplot2::scale_fill_brewer( na.value = 'white',
-                                                  palette = palette,
-                                                  direction = direction )
+    scale_colors <- ggplot2::scale_fill_brewer(
+      na.value = 'transparent',
+      palette = palette,
+      direction = direction
+    )
   }
 
-  # Facet Plot
-  gg <- rasterVis::gplot(raster) +
-    ggplot2::geom_raster(ggplot2::aes(fill = cut(.data$value, breaks = breaks))) +
-    ggplot2::facet_wrap( ~.data$variable,
-                         labeller = ggplot2::labeller(.default=t2str) ) +
+  # TODO:  Calcualte appropriate aspect ratio
+  # Common for a ful US map
+  aspectRatio <- 1.3
+
+  if ( timezone %in% c("UTC", "GMT") ) {
+    # Shorthand timestamp when there are lots of plots
+    labellerFUN <- createLayerTimeStamp
+  } else {
+    # Human friendly when they ask for it (though it may not always fit)
+    labellerFUN <- createLayerTimeString
+    # NOTE:  Fancy R monkey-patch to modify the default behavior of a function
+    formals(labellerFUN) <- list(layerName = "", timezone = timezone, prefix = "")
+  }
+
+  # ----- Create plot ----------------------------------------------------------
+
+  # See: http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html
+
+  gg <-
+    rasterVis::gplot(raster) +
+    ggplot2::geom_raster(ggplot2::aes(fill = cut(.data$value, breaks = breaks)))
+
+  if ( showCounty ) {
+    gg <- gg +
+      ggplot2::geom_polygon(
+        data = counties,
+        ggplot2::aes(x = .data$long, y = .data$lat, group = .data$group),
+        fill = 'NA',
+        alpha = 0.2,
+        color = 'grey80'
+      )
+  }
+
+  if ( showState ) {
+    gg <- gg +
+      ggplot2::geom_polygon(
+        data = states,
+        fill = 'NA',
+        color = 'black',
+        ggplot2::aes(y = .data$lat, x = .data$long, group = .data$group)
+      )
+  }
+
+  gg <- gg +
+    ggplot2::facet_wrap(
+      ~.data$variable,
+      ncol = ncol,
+      labeller = ggplot2::labeller(.default = labellerFUN)
+    ) +
     scale_colors +
-    ggplot2::labs(x = 'Longitude', y = 'Latitude', fill = 'PM2.5') +
+    ggplot2::labs(
+      title = title,
+      x = 'Longitude',
+      y = 'Latitude',
+      fill = 'PM2.5'
+    ) +
+    ggplot2::coord_fixed(ratio = aspectRatio, xlim = xlim, ylim = ylim) +
     ggplot2::theme_classic()
 
   return(gg)
+
 }
