@@ -1,0 +1,81 @@
+---
+title: "AirFireModeling Introduction"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+The USFS Pacific Wildland Fire Sciences Lab AirFire team works to model wildland fire emissions and has created the BlueSky Modeling Framework. This system integrates a wide collection of models along the smoke modeling chain (fire information, fuel loadings, consumption modeling, emissions modeling, time rate of emissions modeling, plume height estimations, and smoke trajectory and dispersion modeling).The `AirFireModeling` package was created to ingest and analyze BlueSky models in R. 
+
+## Overview
+
+* Loading the models
+
+* 
+
+```{r}
+library(AirFireModeling)
+library(PWFSLSmoke)
+
+# Set the directory to download to and load models from
+setModelDataDir('~/Data/Bluesky/')
+```
+
+## Loading BlueSky models
+
+The `AirFireModeling` packagae offers consistent and flexible model loading functions. We can load multiple models or run dates all at once, or singularly using with the `raster_load()` function. `raster_load()` loads references to a common-format NetCDF model file, which all functionality of `AirFireModeling` stems from. If the model file already exists in the user's set directory (see `?setModelDataDir`), the model will load that data instead of re-downloading and processing. 
+
+Below is an example of loading a model using two techniques, singluar mode and batch mode, respectively. 
+
+```{r}
+# Singular model load
+singular_bs <- raster_load(model = 'PNW-1.33km', modelRun = 20200325)
+
+# Batch model load
+batch_bs <- raster_load(model = c('PNW-1.33km', 'PNW-4km'), modelRun = 20200325)
+# Additionally, we could instead load multiple dates of a model with modelRun = c(20200325, 2020032, ...)
+```
+
+#### Raster details
+When a model is loaded into R, it takes the object type `Raster*`. Because most Bluesky models are temporal in nature, each model has multiple spatial slice-of-time, or a layers of gridded values, along a time axis. In `AirFireModeling` terminology, each slice is called a `RasterLayer` object, or layer for short, and when together, such as when model runs are loaded, are called `RasterBrick` objects, or (a) brick. Accessing a layer in a brick is effectively accessing a model-slice at a certain time. For example, to access the eleventh hour in an hourly updated model may look something like this: `model[[11]]`. 
+
+
+## Working with Models
+
+Depending on the choice of model loading type (batch or singular), data within each model is accessed differently. Singluar mode `raster_load()` loads a model of `Raster*` type objects, whereas batch mode of `raster_load()` loads a `list` of `Raster*` models. As such, it is important to take note when working directly with model data loaded via `raster_load()`. For the most part, the user shouldn't have to consider the object type when working with the data within the `AirFireModeling` context. 
+
+### Maps
+
+Mapping is easy with `AirFireModeling`'s `raster_map()` function. Below is an example of singular and batch mode model map plotting. Specifically, we are accessing the seventh hour in the model.
+
+#### Singular Maps
+
+A single map will be plotted for a single model. 
+
+```{r}
+singular_map <- raster_map(singular_bs, index = 7, palette = 'Spectral')
+print(singular_map)
+```
+
+#### Batch Maps
+
+A batch map will be plotted for a batch model. 
+
+```{r}
+batch_map <- raster_map(batch_bs, index = 7, palette = 'Spectral')
+print(batch_map)
+```
+
+#### Interactive Maps
+
+```{r}
+raster_leaflet(singular_bs[[1]], index = 7)
+# TODO: Fix the leaflet to accept lists - look at other functions, too
+```
+
+
+### Models and Monitors
+
+Models are inherintly spatial (and temporal) whereas regulatory monitors loaded via the `PWFSLSmoke` R package are only temporal. Therefore in order to compare a BlueSky model with a regulatory monitor we introduce `raster_toMonitor()` and `monitor_toRaster()` functions. 

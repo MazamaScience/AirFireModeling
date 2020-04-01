@@ -1,0 +1,85 @@
+---
+title: "Model Location Analysis"
+output: html_document
+params: 
+  model: 'all' 
+  modelRun: 20200320
+  longitudegitude: -120
+  latitudeitude: 45
+  monitorID: '410310007_01'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(AirFireModeling)
+setModelDataDir('~/Data/Bluesky')
+# set params 
+model <- params$model
+modelRun <- params$modelRun
+longitude <- params$longitudegitude 
+latitude <- params$latitudeitude
+monitorID <- params$monitorID
+```
+
+
+
+```{r}
+avaliable_models <- bluesky_findModels(longitude, latitude)
+bs <- raster_load(avaliable_models, modelRun)
+```
+
+
+
+```{r}
+raster_coordinateTrace(bs, longitude, latitude)
+```
+
+```{r}
+x1 <- raster_loadNearestMonitor(bs, -120, 45)
+```
+
+
+```{r}
+raster <- bs[[1]]
+raster_monitorPearson <- function(raster, monitorID = NULL, longitude = NULL, latitude= NULL, plot = TRUE) {
+  
+  if ( is.null(monitorID) ) {
+    
+    ws_data <- raster_loadNearestMonitor(raster, longitude, latitude)
+    
+  } else {
+    
+    model_dates <- as.numeric(stringr::str_remove(raster@data@names, pattern = 'X'))
+    class(model_dates) <- c('POSIXct', 'POSIXt')
+    attr(model_dates, 'tzone') <- 'UTC'
+    # Load All monitors for model dates
+    startdate <- range(model_dates)[1]
+    enddate <- range(model_dates)[2]
+    ws_monitor <- PWFSLSmoke::monitor_load(monitorIDs = monitorID, startdate = startdate, enddate = enddate)
+    
+    ws_model <- raster_toMonitor(raster, ws_monitor$meta$longitude, ws_monitor$meta$latitude)
+    
+    ws_data <- PWFSLSmoke::monitor_combine(list(ws_model, ws_monitor))
+    
+  }
+  
+  
+  df <- ws_data$data[,-1]
+  labs <- ws_data$meta$monitorID
+  
+  corr <- cor(df, use = 'complete.obs', method = 'pearson')[2][1]
+  
+  
+  gg <- ggplot2::ggplot(df, ggplot2::aes(x = df[,2] , y = df[,1])) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(method = 'lm') + 
+    ggplot2::xlab(labs[2]) + 
+    ggplot2::ylab(labs[1]) +
+    ggplot2::annotate("text", x = label= "boat")
+  if (plot ) print(gg)
+  
+}
+
+raster_monitorPearson(bs[[6]], longitude = -120, latitude = 45)
+```
+
