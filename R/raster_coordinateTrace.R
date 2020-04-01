@@ -11,8 +11,8 @@
 #' @export
 #'
 raster_coordinateTrace <- function( raster,
-                                    longitude,
-                                    latitude,
+                                    longitude = NULL,
+                                    latitude = NULL,
                                     monitorID = NULL,
                                     tlim = 'default',
                                     ... ) {
@@ -26,8 +26,8 @@ raster_coordinateTrace <- function( raster,
 #' @describeIn raster_coordinateTrace A multithreaded implementation for lists of Raster* objects.
 #' @export
 raster_coordinateTrace.list <- function( raster,
-                                         longitude,
-                                         latitude,
+                                         longitude = NULL,
+                                         latitude = NULL,
                                          monitorID = NULL,
                                          tlim = 'default',
                                          ... ) {
@@ -139,19 +139,18 @@ raster_coordinateTrace.Raster <- function( raster,
 
 # NOTE: Look into a solution to avoid having to reload the monitor_load on execution
 # Sub-internal function to load a monitor using the model.
-.load_target_monitor <- function(r, lon, lat, monitorID = NULL, ws_monitor = NULL,  ...) {
+.load_target_monitor <- function(r, lon = NULL, lat = NULL, monitorID = NULL, ws_monitor = NULL,  ...) {
   # Check if lon lat is in coordinate domain
-  # TODO: Fix BUG Coordinates must be supplied. Fix to use monitorID location is
-  # coordinates are NULL
-  if ( abs(lon) < abs(r@extent@xmax) ||
-       abs(lon) > abs(r@extent@xmin) ) {
-    stop('Longitude not within domain.')
+  if ( !is.null(lat) && !is.null(lon) ) {
+    if ( abs(lon) < abs(r@extent@xmax) ||
+         abs(lon) > abs(r@extent@xmin) ) {
+      stop('Longitude not within domain.')
+    }
+    if ( abs(lat) > abs(r@extent@ymax) ||
+         abs(lat) < abs(r@extent@ymin) ) {
+      stop('Latitude not within domain.')
+    }
   }
-  if ( abs(lat) > abs(r@extent@ymax) ||
-       abs(lat) < abs(r@extent@ymin) ) {
-    stop('Latitude not within domain.')
-  }
-
   # Parse dates stored in model
   # NOTE: model dates stored in layer name
   model_dates <- as.numeric(stringr::str_remove(r@data@names, pattern = 'X'))
@@ -173,6 +172,7 @@ raster_coordinateTrace.Raster <- function( raster,
                                                cbind(lon, lat) )
     nearest_monitorID <- ws_monitor$meta$monitorID[which.min(monitors_dist)]
     target_dist <- monitors_dist[which.min(monitors_dist)]
+    # TODO: Incorperate the target distance to show on plots
     target_monitor <- PWFSLSmoke::monitor_subset(ws_monitor,
                                                  monitorIDs = nearest_monitorID)
 
