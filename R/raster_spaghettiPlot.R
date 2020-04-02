@@ -1,32 +1,98 @@
+#' @export
 #' @title Spaghetti Plot
 #'
-#' @param raster A Raster* object
-#' @param longitude A target latitude
-#' @param latitude A target longitude
-#' @param ... See details.
+#' @param raster A Raster\* object or a list of Raster\* objects.
+#' @param longitude Target longitude from which the radius will be calculated.
+#' @param latitude Target latitude from which the radius will be calculated.
+#' @param radius Distance (km) of radius from target location.
+#' @param count Number of grid cells within radius to return.
+#' @param monitorID PWFSLSmoke monitorID used to retrieve and plot monitor data.
 #'
 #' @description Plot a spaghetti plot of all model adjacent cells to a target
 #' location
 #'
-#' @details \code{radius}: radial (meters) subset by distance from target location.
-#' \code{n}: integer subset by the targets adjacent cell count.
+#' @seealso \code{\link{raster_subsetByDistance}}
 #'
-#' @return a gg object
-#' @export
-raster_spaghetti <- function( raster,
-                              longitude = NULL,
-                              latitude = NULL,
-                              ... ) {
+#' @return A ggplot object.
+#'
+#' @examples
+#'
+raster_spaghettiPlot <- function(
+  raster = NULL,
+  longitude = NULL,
+  latitude = NULL,
+  radius = 50,
+  count = NULL,
+  monitorID = NULL
+) {
 
-  # Checks
-  if ( !grepl('[rR]aster.+', class(raster)) ) {
-    stop(print('A valid Raster object is required.'))
-  }
-  if ( longitude < raster::xmin(raster) | longitude > raster::xmax(raster) |
-       latitude < raster::ymin(raster)  |  latitude > raster::ymax(raster) ) {
-    stop('Check Coordinates: Out of range.')
+  # ----- Validate parameters --------------------------------------------------
+
+  MazamaCoreUtils::stopIfNull(raster)
+  MazamaCoreUtils::stopIfNull(longitude)
+  MazamaCoreUtils::stopIfNull(latitude)
+  MazamaCoreUtils::stopIfNull(radius)
+
+  if ( class(raster) != "list" &&
+       !stringr::str_detect(class(raster), 'Raster*') )
+    stop("Parameter 'raster' must be a single or a list of Raster* objects.")
+
+  if ( !is.numeric(longitude) )
+    stop("Parameter 'longitude' must be numeric.")
+
+  if ( !is.numeric(latitude) )
+    stop("Parameter 'latitude' must be numeric.")
+
+  if ( !is.numeric(radius) )
+    stop("Parameter 'radius' must be numeric.")
+
+  if ( !is.null(count) ) {
+    if ( !is.numeric(count) )
+      stop("Parameter 'count' must be numeric.")
   }
 
+  # Check domain
+  if ( class(raster) == 'list' ) {
+    r <- raster[[1]]
+  } else {
+    r <- raster
+  }
+
+  if ( longitude < raster::xmin(r) | longitude > raster::xmax(r) |
+       latitude < raster::ymin(r)  |  latitude > raster::ymax(r) ) {
+    stop('Check Coordinates: Target location is outside the raster domain.')
+  }
+
+  # ----- Prepare data ---------------------------------------------------------
+
+  localRaster <- raster_subsetByDistance(
+    raster,
+    longitude = longitude,
+    latitude = latitude,
+    radius = radius,
+    count = count
+  )
+
+
+
+
+  # # # NOTE: Look into including cell counts as well as radius in the future.
+  # # args <- list(...)
+  # # if ( 'radius' %in% names(args) ) {
+  # #   subbed <- raster_subsetByDistance( raster,
+  # #                                      longitude = longitude,
+  # #                                      latitude = latitude,
+  # #                                      radius = args[['radius']] )
+  # # } else if ('n' %in% names(args) ) {
+  # #   subbed <- raster_subsetByDistance( raster,
+  # #                                      longitude = longitude,
+  # #                                      latitude = latitude,
+  # #                                      n = args[['n']],
+  # #                                      snapToGrid = args[['snapToGrid']] )
+  # # } else {
+  # #   stop('Must provide subset parameter')
+  # # }
+  #
   # # NOTE: Look into including cell counts as well as radius in the future.
   # args <- list(...)
   # if ( 'radius' %in% names(args) ) {
@@ -38,28 +104,11 @@ raster_spaghetti <- function( raster,
   #   subbed <- raster_subsetByDistance( raster,
   #                                      longitude = longitude,
   #                                      latitude = latitude,
-  #                                      n = args[['n']],
-  #                                      snapToGrid = args[['snapToGrid']] )
+  #                                      radius = args[['radius']],
+  #                                      count = args[['n']] )
   # } else {
   #   stop('Must provide subset parameter')
   # }
-
-  # NOTE: Look into including cell counts as well as radius in the future.
-  args <- list(...)
-  if ( 'radius' %in% names(args) ) {
-    subbed <- raster_subsetByDistance( raster,
-                                       longitude = longitude,
-                                       latitude = latitude,
-                                       radius = args[['radius']] )
-  } else if ('n' %in% names(args) ) {
-    subbed <- raster_subsetByDistance( raster,
-                                       longitude = longitude,
-                                       latitude = latitude,
-                                       radius = args[['radius']],
-                                       count = args[['n']] )
-  } else {
-    stop('Must provide subset parameter')
-  }
 
   # color param
   if ( 'color' %in% names(args) ) {
@@ -156,5 +205,6 @@ raster_spaghetti <- function( raster,
   } else {
     return(gg)
   }
+
 }
 

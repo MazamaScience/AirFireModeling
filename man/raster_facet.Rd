@@ -18,7 +18,7 @@ raster_facet(
 )
 }
 \arguments{
-\item{raster}{A \code{Raster\*} object.}
+\item{raster}{A Raster\* object.}
 
 \item{index}{Vector of indices used to subset \code{raster}}
 

@@ -46,9 +46,9 @@ raster_map(
 )
 }
 \arguments{
-\item{raster}{A \code{Raster\*} object or a list of \code{Raster\*} objects.}
+\item{raster}{A Raster\* object or a list of Raster\* objects.}
 
-\item{index}{And index into the \code{Raster*} object. See details.}
+\item{index}{And index into the Raster\* object. See details.}
 
 \item{palette}{The color palette used to map cell values. This must be one
 of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
@@ -71,12 +71,12 @@ of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
 A ggplot object.
 }
 \description{
-Creates a \pkg{ggplot2} plot object from a \code{Raster\*}
+Creates a \pkg{ggplot2} plot object from a Raster\*
 object. The returned plot object can be plotted or can be enhanced with
 additional \pkg{ggplot2} intructions.
 }
 \details{
-If a list of \code{Raster\*} objects is provided, a small-multiples
+If a list of Raster\* objects is provided, a small-multiples
 plot is created.
 
 The \code{index} is typically associated with a time-axis or \code{RasterLayer},

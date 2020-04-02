@@ -13,7 +13,7 @@
 #' @param models a list of valid monitors to plot
 #' @param subDir Subdirectory path containing netcdf data. (Passed to
 #' \code{raster_load()})
-#' @param buffer a radial buffer around the selected monitor to collapse the
+#' @param radius a radial buffer around the selected monitor to collapse the
 #' model about.
 monitor_forecast <- function(
   ws_monitor,
@@ -21,7 +21,7 @@ monitor_forecast <- function(
   endtime = NULL,
   models = c('CANSAC-1.33km', 'CANSAC-4km'),
   subDir = 'forecast',
-  buffer = 2000
+  radius = 5
 ) {
 
   # ----- Validate parameters --------------------------------------------------
@@ -69,7 +69,7 @@ monitor_forecast <- function(
       raster_toMonitor( raster = bs_raster,
                         longitude = lon,
                         latitude = lat,
-                        buffer = buffer,
+                        radius = radius,
                         FUN = mean, # Mean of the buffer region
                         monitorID = model )
     })
@@ -112,7 +112,7 @@ if ( FALSE ) {
   endtime = NULL
   models = c('CANSAC-1.33km', 'CANSAC-4km')
   subDir = 'forecast'
-  buffer = 2000
+  radiusi = 5
   version = "3.5"
 
   setModelDataDir('~/Data/BlueSky')

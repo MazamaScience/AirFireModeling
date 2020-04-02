@@ -1,6 +1,23 @@
 #' @export
 #' @keywords internal
 #'
+#' @title Create raster layer times
+#'
+#' @param layerName Name of the \code{rasterLayer} object
+#'
+#' @return \code{POSIXct} time.
+
+createLayerTime <- function(
+  layerName = ""
+) {
+
+  epochSecs <- as.numeric(stringr::str_remove(layerName, 'X'))
+  layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
+
+  return(layerTime)
+
+}
+
 #' @title Create raster layer time string
 #'
 #' @param layerName Name of the \code{rasterLayer} object

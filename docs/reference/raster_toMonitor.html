@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create a ws_monitor object from raster object — raster_toMonitor • AirFireModeling</title>
+<title>Create a PWFSLSmoke ws_monitor object from raster object — raster_toMonitor • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,12 +35,12 @@
 
 
 
-<meta property="og:title" content="Create a ws_monitor object from raster object — raster_toMonitor" />
-<meta property="og:description" content="Time series associated with multiple grid cells are merged into a single
-time series by using FUN to collapse a given grid cell count, or
-or a grid cell radi, to a single coordinate. For instance, if the
-FUN = mean then the grid cells within the paramters are averaged to a
-single central coordinate." />
+<meta property="og:title" content="Create a PWFSLSmoke ws_monitor object from raster object — raster_toMonitor" />
+<meta property="og:description" content="Time series associated with multiple grid cells are merged into
+a single time series by using FUN to collapse all cells (up to
+count) within radius km of the target location. For example,
+if FUN = mean then the selected grid cells are averaged to
+a single central coordinate." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -107,27 +107,28 @@ single central coordinate." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create a ws_monitor object from raster object</h1>
+    <h1>Create a PWFSLSmoke ws_monitor object from raster object</h1>
     
     <div class="hidden name"><code>raster_toMonitor.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Time series associated with multiple grid cells are merged into a single
-time series by using <code>FUN</code> to collapse a given grid cell count, or
-or a grid cell radi, to a single coordinate. For instance, if the
-<code>FUN = mean</code> then the grid cells within the paramters are averaged to a
-single central coordinate.</p>
+    <p>Time series associated with multiple grid cells are merged into
+a single time series by using <code>FUN</code> to collapse all cells (up to
+<code>count</code>) within <code>radius</code> km of the target location. For example,
+if <code>FUN = mean</code> then the selected grid cells are averaged to
+a single central coordinate.</p>
     </div>
 
     <pre class="usage"><span class='fu'>raster_toMonitor</span>(
   <span class='no'>raster</span>,
   <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>buffer</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-  <span class='kw'>monitorID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>radius</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+  <span class='kw'>count</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>FUN</span> <span class='kw'>=</span> <span class='no'>mean</span>,
-  <span class='kw'>combine</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>monitorID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -135,44 +136,82 @@ single central coordinate.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>raster</th>
-      <td><p>A raster object</p></td>
+      <td><p>A Raster* object.</p></td>
     </tr>
     <tr>
       <th>longitude</th>
-      <td><p>Target longitude</p></td>
+      <td><p>Target longitude from which the radius will be calculated.</p></td>
     </tr>
     <tr>
       <th>latitude</th>
-      <td><p>Target latitude</p></td>
+      <td><p>Target latitude from which the radius will be calculated.</p></td>
     </tr>
     <tr>
-      <th>buffer</th>
-      <td><p>A radial buffer about the buffer, in meters.</p></td>
+      <th>radius</th>
+      <td><p>Distance (km) of radius from target location.</p></td>
     </tr>
     <tr>
-      <th>monitorID</th>
-      <td><p>An optional monitor identification name.</p></td>
+      <th>count</th>
+      <td><p>Number of grid cells within radius to return.</p></td>
     </tr>
     <tr>
       <th>FUN</th>
-      <td><p>A function to collapse cells if buffer &gt; 0.</p></td>
+      <td><p>A function to collapse raster cells into a single timeseries.</p></td>
     </tr>
     <tr>
-      <th>combine</th>
-      <td><p>Logical. If to</p></td>
+      <th>na.rm</th>
+      <td><p>Logical value passed as an argument to <code>FUN</code>.</p></td>
+    </tr>
+    <tr>
+      <th>monitorID</th>
+      <td><p>Character identifer for the created <em>ws_monitor</em> object.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A <em>ws_monitor</em> object representing a single monitor.</p>
+    <p>A <span class="pkg">PWFSLSmoke</span> <em>ws_monitor</em> object representing a single
+monitor.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
+    <p>If <code>raster</code> is a <code>RasterList</code>, names from the list will
+be used as <code>monitorID</code>. If <code>raster</code> is of class <code>RasterBrick</code>,
+the user is expected to supply a <code>monitorID</code>.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
+<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky'</span>)
+
+<span class='co'># Load from server</span>
+<span class='no'>rasterList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_load.html'>raster_load</a></span>(
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
+  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2019100900</span>),
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>115</span>),
+  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>42</span>, <span class='fl'>50</span>)
+)
+
+<span class='co'># MazamaSpatialUtils are needed to determine timezone and state</span>
+<span class='kw pkg'>PWFSLSmoke</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/PWFSLSmoke/man/initializeMazamaSpatialUtils.html'>initializeMazamaSpatialUtils</a></span>()
+
+<span class='no'>fake_Portland</span> <span class='kw'>&lt;-</span> <span class='fu'>raster_toMonitor</span>(
+  <span class='no'>rasterList</span><span class='kw'>[[</span><span class='fl'>1</span>]],
+  <span class='kw'>longitude</span> <span class='kw'>=</span> -<span class='fl'>122.68</span>,
+  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='fl'>45.52</span>,
+  <span class='kw'>radius</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>monitorID</span> <span class='kw'>=</span> <span class='st'>"fake_Portland"</span>
+)
+
+<span class='kw pkg'>PWFSLSmoke</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/PWFSLSmoke/man/monitor_timeseriesPlot.html'>monitor_timeseriesPlot</a></span>(<span class='no'>fake_Portland</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#details">Details</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>

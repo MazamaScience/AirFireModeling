@@ -11,7 +11,7 @@
 #' #' @param verbose Logical to display messages.
 #' #'
 #' #' @description Load or download models and automatically convert NetCDF (.nc)
-#' #' format to a spatio-temporal \code{Raster*} object.
+#' #' format to a spatio-temporal Raster\* object.
 #' #'
 #' #' @details \code{model} and \code{modelRun} are vectorised parameters. If
 #' #' multiple datasets need to be downloaded, this will be performed in parallel

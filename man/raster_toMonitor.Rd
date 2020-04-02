@@ -2,40 +2,77 @@
 % Please edit documentation in R/raster_toMonitor.R
 \name{raster_toMonitor}
 \alias{raster_toMonitor}
-\title{Create a ws_monitor object from raster object}
+\title{Create a PWFSLSmoke ws_monitor object from raster object}
 \usage{
 raster_toMonitor(
   raster,
   longitude = NULL,
   latitude = NULL,
-  buffer = 1000,
-  monitorID = NULL,
+  radius = 5,
+  count = NULL,
   FUN = mean,
-  combine = TRUE
+  na.rm = TRUE,
+  monitorID = NULL
 )
 }
 \arguments{
-\item{raster}{A raster object}
+\item{raster}{A Raster* object.}
 
-\item{longitude}{Target longitude}
+\item{longitude}{Target longitude from which the radius will be calculated.}
 
-\item{latitude}{Target latitude}
+\item{latitude}{Target latitude from which the radius will be calculated.}
 
-\item{buffer}{A radial buffer about the buffer, in meters.}
+\item{radius}{Distance (km) of radius from target location.}
 
-\item{monitorID}{An optional monitor identification name.}
+\item{count}{Number of grid cells within radius to return.}
 
-\item{FUN}{A function to collapse cells if buffer > 0.}
+\item{FUN}{A function to collapse raster cells into a single timeseries.}
 
-\item{combine}{Logical. If to}
+\item{na.rm}{Logical value passed as an argument to \code{FUN}.}
+
+\item{monitorID}{Character identifer for the created \emph{ws_monitor} object.}
 }
 \value{
-A \emph{ws_monitor} object representing a single monitor.
+A \pkg{PWFSLSmoke} \emph{ws_monitor} object representing a single
+monitor.
 }
 \description{
-Time series associated with multiple grid cells are merged into a single
-time series by using \code{FUN} to collapse a given grid cell count, or
-or a grid cell radi, to a single coordinate. For instance, if the
-\code{FUN = mean} then the grid cells within the paramters are averaged to a
-single central coordinate.
+Time series associated with multiple grid cells are merged into
+a single time series by using \code{FUN} to collapse all cells (up to
+\code{count}) within \code{radius} km of the target location. For example,
+if \code{FUN = mean} then the selected grid cells are averaged to
+a single central coordinate.
+}
+\details{
+If \code{raster} is a \code{RasterList}, names from the list will
+be used as \code{monitorID}. If \code{raster} is of class \code{RasterBrick},
+the user is expected to supply a \code{monitorID}.
+}
+\examples{
+\dontrun{
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
+
+# Load from server
+rasterList <- raster_load(
+  model = "PNW-4km",
+  modelRun = c(2019100900),
+  xlim = c(-125, -115),
+  ylim = c(42, 50)
+)
+
+# MazamaSpatialUtils are needed to determine timezone and state
+PWFSLSmoke::initializeMazamaSpatialUtils()
+
+fake_Portland <- raster_toMonitor(
+  rasterList[[1]],
+  longitude = -122.68,
+  latitude = 45.52,
+  radius = 10,
+  monitorID = "fake_Portland"
+)
+
+PWFSLSmoke::monitor_timeseriesPlot(fake_Portland)
+}
+
 }

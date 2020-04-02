@@ -7,9 +7,9 @@
 raster_subsetByPolygon(raster = NULL, polygon = NULL)
 }
 \arguments{
-\item{raster}{\code{Raster*} object.}
+\item{raster}{Raster\* object.}
 
-\item{polygon}{\code{Spatial*} object.}
+\item{polygon}{Spatial\* object.}
 }
 \value{
 A Raster* object.

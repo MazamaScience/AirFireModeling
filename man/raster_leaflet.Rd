@@ -19,9 +19,9 @@ raster_leaflet(
 )
 }
 \arguments{
-\item{raster}{A \code{Raster\*} object.}
+\item{raster}{A Raster\* object.}
 
-\item{index}{And index into the \code{Raster*} object. See details.}
+\item{index}{And index into the Raster\* object. See details.}
 
 \item{palette}{Color palette used to map cell values. This must be one
 of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
@@ -38,16 +38,16 @@ of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
 
 \item{timezone}{Olson timezone in which times will be displayed.}
 
-\item{compare}{Optional comparison \code{Raster*} object.}
+\item{compare}{Optional comparison Raster\* object.}
 
-\item{index2}{Index of the comparison \code{Raster*} object.}
+\item{index2}{Index of the comparison Raster\* object.}
 }
 \value{
 A leaflet map.
 }
 \description{
 Create a leaflet interactive map using a model output
-\code{Raster\*} object.
+Raster\* object.
 }
 \details{
 The \code{index} is associated with the z axis or time-axis of

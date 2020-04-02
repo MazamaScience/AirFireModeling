@@ -4,6 +4,7 @@
 * Removed use of "promises" (*parallel* and *future* packages) everywhere 
 because it interferes with *raster* package delayed evaluation.
 * Improvements to `raster_aggregate()`.
+* Improvements to `raster_toMonitor()`.
 
 # AirFireModeling 0.2.8
 

@@ -1,18 +1,18 @@
 #' @export
 #' @title Geographic map of BlueSky model output
 #'
-#' @description Creates a \pkg{ggplot2} plot object from a \code{Raster\*}
+#' @description Creates a \pkg{ggplot2} plot object from a Raster\*
 #' object. The returned plot object can be plotted or can be enhanced with
 #' additional \pkg{ggplot2} intructions.
 #'
-#' @details If a list of \code{Raster\*} objects is provided, a small-multiples
+#' @details If a list of Raster\* objects is provided, a small-multiples
 #' plot is created.
 #'
 #' The \code{index} is typically associated with a time-axis or \code{RasterLayer},
 #' e.g \code{index = 1} is the first hour of a model.
 #'
-#' @param raster A \code{Raster\*} object or a list of \code{Raster\*} objects.
-#' @param index And index into the \code{Raster*} object. See details.
+#' @param raster A Raster\* object or a list of Raster\* objects.
+#' @param index And index into the Raster\* object. See details.
 #' @param palette The color palette used to map cell values. This must be one
 #' of the palettes available through \code{ggplot2::scale_colour_brewer()}.
 #' @param breaks The breaks used to map cell values to colors.
@@ -56,7 +56,9 @@ raster_map <- function(
   # ----- Validate parameters --------------------------------------------------
 
   MazamaCoreUtils::stopIfNull(raster)
-  # NOTE:  raster can be a Raster* object or a list of such objects
+  if ( class(raster) != "list" &&
+       !stringr::str_detect(class(raster), 'Raster*') )
+    stop("Parameter 'raster' must be a single or a list of Raster* objects.")
 
   if ( !is.numeric(index) )
     stop("Parameter 'index' must be numeric.")
@@ -169,6 +171,8 @@ raster_map.list <- function(
   col_state = 'black',
   col_county = 'gray80'
 ) {
+
+  # Parameter validation handled in calling funcitions
 
   # ----- Prepare data ---------------------------------------------------------
 

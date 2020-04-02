@@ -10,7 +10,7 @@ monitor_forecast(
   endtime = NULL,
   models = c("CANSAC-1.33km", "CANSAC-4km"),
   subDir = "forecast",
-  buffer = 2000
+  radius = 5
 )
 }
 \arguments{
@@ -25,7 +25,7 @@ monitor_forecast(
 \item{subDir}{Subdirectory path containing netcdf data. (Passed to
 \code{raster_load()})}
 
-\item{buffer}{a radial buffer around the selected monitor to collapse the
+\item{radius}{a radial buffer around the selected monitor to collapse the
 model about.}
 }
 \description{

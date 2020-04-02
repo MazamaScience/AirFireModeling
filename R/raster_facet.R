@@ -1,7 +1,7 @@
 #' @export
 #' @title Small multiples map of BlueSky model output
 #'
-#' @param raster A \code{Raster\*} object.
+#' @param raster A Raster\* object.
 #' @param index Vector of indices used to subset \code{raster}
 #' @param palette Color palette used to map cell values. This must be one
 #' of the palettes available through \code{ggplot2::scale_colour_brewer()}.

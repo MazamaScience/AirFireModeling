@@ -1,8 +1,8 @@
 #' @export
 #' @title Raster Leaflet Map
 #'
-#' @param raster A \code{Raster\*} object.
-#' @param index And index into the \code{Raster*} object. See details.
+#' @param raster A Raster\* object.
+#' @param index And index into the Raster\* object. See details.
 #' @param palette Color palette used to map cell values. This must be one
 #' of the palettes available through \code{ggplot2::scale_colour_brewer()}.
 #' @param breaks The breaks used to map cell values to colors. CURRENTLY UNUSED
@@ -11,11 +11,11 @@
 #' @param maptype Name of leaflet ProviderTiles to use.
 #' @param title (Optional) A plot title. CURRENTLY UNUSED
 #' @param timezone Olson timezone in which times will be displayed.
-#' @param compare Optional comparison \code{Raster*} object.
-#' @param index2 Index of the comparison \code{Raster*} object.
+#' @param compare Optional comparison Raster\* object.
+#' @param index2 Index of the comparison Raster\* object.
 #'
 #' @description Create a leaflet interactive map using a model output
-#' \code{Raster\*} object.
+#' Raster\* object.
 #'
 #' @details The \code{index} is associated with the z axis or time-axis of
 #' \code{RasterBrick} object, e.g \code{index = 1} is the first hour of a model.

@@ -46,9 +46,9 @@ rasterList <- raster_load(
 
 Portland_area <- raster_subsetByDistance(
   rasterList,
-  longitude <- -122.68,
-  latitude <- 45.52,
-  radius <- 100
+  longitude = -122.68,
+  latitude = 45.52,
+  radius = 100
 )
 
 raster_map(Portland_area)

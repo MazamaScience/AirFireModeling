@@ -1,8 +1,8 @@
 #' @export
 #' @title Subset a Raster* by polygon
 #'
-#' @param raster \code{Raster*} object.
-#' @param polygon \code{Spatial*} object.
+#' @param raster Raster\* object.
+#' @param polygon Spatial\* object.
 #'
 #' @description This function subsets a raster object using cookie cutter
 #' defined by \code{polygon}. All cells within the polygon are returned.

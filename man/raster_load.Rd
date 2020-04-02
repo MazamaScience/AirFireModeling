@@ -38,7 +38,7 @@ A list of one or more raster objects.
 }
 \description{
 Load or download models and automatically convert NetCDF (.nc)
-format to a spatio-temporal \code{Raster*} object.
+format to a spatio-temporal Raster\* object.
 }
 \details{
 \code{model} and \code{modelRun} are vectorised parameters. Multiple

@@ -19,4 +19,3 @@ Time string formatted for \code{timezone}.
 \description{
 Create raster layer time string
 }
-\keyword{internal}
