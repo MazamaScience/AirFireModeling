@@ -1,0 +1,83 @@
+---
+title: "Smoke_COVID_crosswalk"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+## Per Polygon Statistics
+
+Rasters are gridded cells that exist in an extent, or bounding box. Although incredibly useful and powerful for geospatial analysis, visualization with Rasters is not always as simple. Rasters take no shape (except projection mapping) and are restrictive because there are only so many ways to visualize a grid. 
+
+We can instead work with the rasters data to create polygon data for plotting. There are many ways to work with polygon data, so lets focus on per-polygon statistics. 
+
+In other words, given we have a raster with cells of some value, we can use a polygon to extract the data from each cell that exists within a polygon, etc. 
+
+First we will need to load the necessary libraries. 
+
+```{r}
+library(AirFireModeling) # For base package support
+library(raster) # For raster engine
+library(ggplot2) # For plotting
+library(sf) # For more intuitve polygons 
+```
+
+We can start by loading our Polygon data using raster's getData function, and the GADM database. 
+In this example, we will focus on Washington State Counties, and their BlueSky Model values.
+
+```{r}
+# Load the Spatial Polygons data
+usa <- getData('GADM', country = 'usa', level = 1 )
+usa_counties <- getData('GADM', country = 'usa', level = 2)
+# Subset WA
+wa_state <- usa[usa$NAME_1 == 'Washington',]
+wa_counties <- usa_counties[usa_counties$NAME_1 == 'Washington',]
+```
+
+
+```{r}
+# Load our model data
+setModelDataDir('~/Data/BlueSky')
+pnw <- raster_load(model = 'PNW-4km', modelRun = 20181109)
+```
+
+Here is a map of the raster at the first hour index of the BlueSky model. 
+
+```{r}
+dpnw <- crop(pnw$`PNW-4km_2018110900`, wa_state)
+raster_map(dpnw, index = 1, palette = 'BuPu')
+```
+
+We can then use polygon data we loaded to extract the cells within each polygon (by centroid) and apply function over the cell values. In the example below, we apply an averaging function to each polygon domain cells, and then convert the Spatial* st Object to an sf object, a more well supported spatial type object. 
+
+```{r}
+# Using the first layer of the pnw model brick, and wa counties, extract the data and convert to Spatial* object while aggregating with a function. For example, below is county PM2.5 Model means:
+x <- extract(pnw[[1]][[1]], wa_counties, fun = function(x, ...) mean(x, ...), sp = TRUE)
+# convert the spatial object to an sf object -- much easier to use
+xsf <- st_as_sf(x)
+# rename for easier plot access
+names(xsf)[which(grepl('^X', names(xsf)))] <- 'mean'
+```
+
+After sf conversion, the model is ready to be plotted. 
+
+```{r}
+gg <- ggplot(xsf) + 
+  geom_sf(aes(fill = mean)) + 
+  labs(title = 'Average County BlueSky PM2.5', 
+       subtitle = names(pnw)) + 
+      scale_fill_fermenter(palette = 'BuPu', direction = 1)
+gg
+```
+
+This makes per-polygon statistics pretty straightforward and intuitive. 
+
+<!-- ```{r} -->
+<!-- library(dismo) -->
+<!-- v <- voronoi(wa_counties) -->
+<!-- vwa <- intersect(v, wa_state) -->
+
+<!-- spplot(vwa, 'NAME_2') -->
+<!-- ``` -->
