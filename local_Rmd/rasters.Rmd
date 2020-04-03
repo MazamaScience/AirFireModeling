@@ -12,7 +12,7 @@ us <- raster::getData(country = 'USA', level = 1)
 ca <- us[us$NAME_1 == 'California',]
 
 # Read NetCDF
-rasterBrick <- brick('~/Data/Bluesky/CANSAC-4km_2019103100_V2.nc')
+rasterBrick <- brick('~/Data/BlueSky/CANSAC-4km_2019103100_V2.nc')
 
 # Define Color breaks
 breaks <- c(1, 12, 35, 55, 150, 250, 350, 500)
@@ -86,7 +86,7 @@ gplot(us_raster[[1]]) + geom_raster(aes(fill = value))
 
 library(magrittr)
 ca_monitors <- monitor_load(20191031, 20191103) %>% monitor_subset(stateCodes = 'CA')
-cansac_raster <- brick('~/Data/Bluesky/CANSAC-4km_2019103100_V2.nc')
+cansac_raster <- brick('~/Data/BlueSky/CANSAC-4km_2019103100_V2.nc')
 ca_raster <- monitor_toRaster(ca_monitors, res = 0.1)
 
 corr <- raster::corLocal(ca_raster[[2]], ca_raster[[1]])

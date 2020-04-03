@@ -47,10 +47,9 @@ datasets can be loaded at once.
 \examples{
 \dontrun{
 library(AirFireModeling)
-
 setModelDataDir('~/Data/BlueSky')
 
-# Load from server
+# Load model data
 rasterList <- raster_load(
   model = "PNW-4km",
   modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),

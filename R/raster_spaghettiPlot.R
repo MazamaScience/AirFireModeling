@@ -6,24 +6,69 @@
 #' @param latitude Target latitude from which the radius will be calculated.
 #' @param radius Distance (km) of radius from target location.
 #' @param count Number of grid cells within radius to return.
-#' @param monitorID PWFSLSmoke monitorID used to retrieve and plot monitor data.
+#' @param verbose Logical to display messages.
+#' @param ylim Optional Y axis limits.
+#' @param ... Additional arguments passed to \code{PWFSLSmoke::monitor_timeseriesPlot()}.
 #'
-#' @description Plot a spaghetti plot of all model adjacent cells to a target
-#' location
+#' @description Plot a "spaghetti plot" of model data near a target location.
+#'
+#' For each Raster\* object in \code{raster}, cells near the target location
+#' are extracted using \code{raster_subsetByDistance()}. These are converted
+#' into individual \pkg{PWFSLSMoke} \emph{ws_monitor} objects using
+#' \code{raster_toMonitor()} and then plotted.
 #'
 #' @seealso \code{\link{raster_subsetByDistance}}
+#' @seealso \code{\link{raster_toMonitor}}
+#' @seealso \code{\link[PWFSLSmoke]{monitor_timeseriesPlot}}
 #'
 #' @return A ggplot object.
 #'
 #' @examples
+#' \dontrun{
+#' library(AirFireModeling)
+#' setModelDataDir('~/Data/BlueSky')
 #'
+#' # Creating PWFSLSmoke ws_monitor objects requires:
+#' library(MazamaSpatialUtils)
+#' PWFSLSmoke:::initializeMazamaSpatialUtils()
+#'
+#' # Portland, Oregon
+#' longitude <- -122.68
+#' latitude <- 45.52
+#'
+#' models <- bluesky_findModels(longitude, latitude)
+#' # > models
+#' # [1] "NAM84-0.15deg"                    "GFS-0.15deg-CanadaUSA-p25deg-68N"
+#' # [3] "NAM-3km"                          "CANSAC-4km"
+#' # [5] "PNW-4km"                          "PNW-1.33km"
+#'
+#' # We will only use a subset for this example
+#'
+#' # Load model data
+#' rasterList <- raster_load(
+#'   model = c("PNW-1.33km", "PNW-4km"),
+#'   modelRun = 2019100900,
+#'   xlim = c(-125, -115),
+#'   ylim = c(42, 50)
+#' )
+#'
+#' raster_spaghettiPlot(
+#'   rasterList,
+#'   longitude = longitude,
+#'   latitude = latitude,
+#'   radius = 10 # km
+#' )
+#'
+#' }
 raster_spaghettiPlot <- function(
   raster = NULL,
   longitude = NULL,
   latitude = NULL,
-  radius = 50,
+  radius = 5,
   count = NULL,
-  monitorID = NULL
+  verbose = TRUE,
+  ylim = NULL,
+  ...
 ) {
 
   # ----- Validate parameters --------------------------------------------------
@@ -33,8 +78,7 @@ raster_spaghettiPlot <- function(
   MazamaCoreUtils::stopIfNull(latitude)
   MazamaCoreUtils::stopIfNull(radius)
 
-  if ( class(raster) != "list" &&
-       !stringr::str_detect(class(raster), 'Raster*') )
+  if ( !is.list(raster) && !raster_isRaster(raster) )
     stop("Parameter 'raster' must be a single or a list of Raster* objects.")
 
   if ( !is.numeric(longitude) )
@@ -52,7 +96,7 @@ raster_spaghettiPlot <- function(
   }
 
   # Check domain
-  if ( class(raster) == 'list' ) {
+  if ( is.list(raster) ) {
     r <- raster[[1]]
   } else {
     r <- raster
@@ -63,148 +107,136 @@ raster_spaghettiPlot <- function(
     stop('Check Coordinates: Target location is outside the raster domain.')
   }
 
+  # Defaults
+  if ( !is.logical(verbose) ) verbose <- TRUE
+
   # ----- Prepare data ---------------------------------------------------------
 
-  localRaster <- raster_subsetByDistance(
+  monitorList <- raster_toMonitor(
     raster,
     longitude = longitude,
     latitude = latitude,
     radius = radius,
-    count = count
+    count = count,
+    verbose = verbose
   )
 
+  # ----- Prepare default plot arguments ---------------------------------------
 
+  argsList <- list(...)
 
+  if ( !('type' %in% names(argsList)) )
+    argsList$type <- 'l'
 
-  # # # NOTE: Look into including cell counts as well as radius in the future.
-  # # args <- list(...)
-  # # if ( 'radius' %in% names(args) ) {
-  # #   subbed <- raster_subsetByDistance( raster,
-  # #                                      longitude = longitude,
-  # #                                      latitude = latitude,
-  # #                                      radius = args[['radius']] )
-  # # } else if ('n' %in% names(args) ) {
-  # #   subbed <- raster_subsetByDistance( raster,
-  # #                                      longitude = longitude,
-  # #                                      latitude = latitude,
-  # #                                      n = args[['n']],
-  # #                                      snapToGrid = args[['snapToGrid']] )
-  # # } else {
-  # #   stop('Must provide subset parameter')
-  # # }
-  #
-  # # NOTE: Look into including cell counts as well as radius in the future.
-  # args <- list(...)
-  # if ( 'radius' %in% names(args) ) {
-  #   subbed <- raster_subsetByDistance( raster,
-  #                                      longitude = longitude,
-  #                                      latitude = latitude,
-  #                                      radius = args[['radius']] )
-  # } else if ('n' %in% names(args) ) {
-  #   subbed <- raster_subsetByDistance( raster,
-  #                                      longitude = longitude,
-  #                                      latitude = latitude,
-  #                                      radius = args[['radius']],
-  #                                      count = args[['n']] )
-  # } else {
-  #   stop('Must provide subset parameter')
-  # }
+  if ( !('lwd' %in% names(argsList)) )
+    argsList$lwd <- 2
 
-  # color param
-  if ( 'color' %in% names(args) ) {
-    color <- args[['color']]
-  } else {
-    color <- 'dodgerblue4'
+  if ( !('localTime' %in% names(argsList)) )
+    argsList$localTime <- TRUE
+
+  if ( !('shadedNight' %in% names(argsList)) )
+    argsList$shadedNight <- TRUE
+
+  if ( !('ylab' %in% names(argsList)) )
+    argsList$ylab <- "PM2.5"
+
+  if ( !('main' %in% names(argsList)) )
+    argsList$main <- "PM2.5"
+
+  if ( !('add' %in% names(argsList)) )
+    argsList$add <- FALSE
+
+  # Always use UTC to avoid multiple-timezone issues
+  if ( !('add' %in% names(argsList)) )
+    argsList$localTime <- FALSE
+
+  # Awkward chain to get min and max datetimes from monitorList
+  tlim <-
+    lapply(monitorList, function(x) { return(range(x$data$datetime)) }) %>%
+    unlist() %>%
+    as.numeric() %>%
+    range() %>%
+    as.POSIXct(tz = "UTC", origin = lubridate::origin)
+
+  # NOTE:  Because of a bug in monitor_timeseriesPlot(), we need to specify
+  # NOTE:  tlim in the local timezone if we want to display
+
+  # TODO:  Improve decision on choosing a timezone
+  if ( argsList$localTime ) {
+    timezone <- monitorList[[1]]$meta$timezone[1]
+    tlim <- lubridate::with_tz(tlim, tzone = timezone)
   }
 
-  # Alpha Param
-  if ( 'alpha' %in% names(args) ) {
-    alpha <- args[['alpha']]
-  } else {
-    alpha <- ~-target_dist
+  # Get ylim from the range of data values
+  if ( is.null(ylim) ) {
+    ymax <-
+      sapply(monitorList, function(x) { return(max(x$data[,-1], na.rm = TRUE)) }) %>%
+      max(na.rm = TRUE)
+
+    ylim <- c(0, ymax)
   }
 
-  if ( 'title' %in% names(args) ) {
-    title <- args[['title']]
+  # ----- Create the plot ------------------------------------------------------
+
+  if ( 'col' %in% names(argsList) ) {
+    colors <- rep(argsList$col, times = length(monitorList))
   } else {
-    title <- expression('PM'[2.5])
+    colors <- RColorBrewer::brewer.pal(12, "Paired")
   }
 
+  # Create a blank plot first to get the x and y limits
+  if ( !argsList$add ) {
 
+    graphics::plot(
+      x = tlim[1],
+      y = 0,
+      col = 'transparent',
+      ylab = argsList$ylab,
+      main = argsList$main,
+      xlim = tlim,
+      ylim = ylim,
+      las = 1
+    )
 
-  # If monitor ID is provided, load it and plot it
-  if ( 'monitorID' %in% names(args) & !is.null(args[['monitorID']]) ) {
-    # Assume names of raster layers are POSIX dates
-    # Remove 'X' from string convert to numeric
-    datetime <- as.numeric(stringr::str_remove( string = names(raster),
-                                                pattern = 'X' ))
-    # TIMEZONES!
-    tzone <- c('UTC')
-    # Assimilate datetime class
-    class(datetime) <- c('POSIXct', 'POSIXt')
-    # Set TIMEZONE to UTC
-    attr(datetime, 'tzone') <- tzone
-    sd <- range(datetime)[1]
-    ed <- range(datetime)[2]
-    # Load monitor
-    monitor <- PWFSLSmoke::monitor_load(startdate = sd, enddate = ed, monitorIDs = args[['monitorID']])
-    df <- monitor$data
-    names(df) <- c('datetime', 'pm25')
+  }
+
+  # NOTE:  Having created a blank plot we have to add our own shaded night
+  # NOTE:  with code borrowed from PWFSLSmoke::monitor_timeseriesPlot().
+
+  if ( argsList$shadedNight ) {
+    times <- seq(tlim[1], tlim[2], by = "hour")
+    lat <- mean(monitorList[[1]]$meta$latitude)
+    lon <- mean(monitorList[[1]]$meta$longitude)
+    timeInfo <- PWFSLSmoke::timeInfo(times, lon, lat, timezone)
+    PWFSLSmoke::addShadedNight(timeInfo)
+  }
+
+  # All subsequent plots are added
+  argsList$add <- TRUE
+
+  for ( i in seq_along(monitorList) ) {
+
+    argsList$ws_monitor <- monitorList[[i]]
+    argsList$col <- colors[i]
+
+    # # First plot
+    # if ( i == 1 && !('add' %in% names(argsList)) )
+    #   argsList$add <- FALSE
+    #
+    # if ( i > 1 )
+    #   argsList$add <- TRUE
+
     # Plot
-    gg_monitor <- ggplot2::geom_line(ggplot2::aes_(x = ~datetime, y = ~pm25), data = df, linetype = 'dashed')
+    do.call(PWFSLSmoke::monitor_timeseriesPlot, argsList)
+
   }
 
-  raster::crs(subbed) <- raster::crs(raster)
-
-  # Use each coordinate cell -> convert to monitor -> combine mons -> plot
-  coords <- raster::coordinates(subbed)
-
-
-  # Generate unique names for Monitor Identification
-  unique_names <- mapply(
-    function(x,y) {
-      paste('monitor', x, y, sep = '_')
-    },
-    coords[,1],
-    coords[,2]
+  graphics::legend(
+    "topright",
+    legend = names(monitorList),
+    col = colors[1:length(monitorList)],
+    lwd = argsList$lwd
   )
-
-  # Convert each raster to monitor at each cell coordinate
-  monitor_list <- mapply(
-    function(x,y,z) {
-      raster_toMonitor(raster, x, y, monitorID = z)
-    },
-    coords[,1],
-    coords[,2],
-    unique_names,
-    SIMPLIFY = FALSE
-  )
-
-  # Combine all the monitors
-  monitors <- PWFSLSmoke::monitor_combine(monitor_list)
-
-  # Create Target Distance field for line alpha
-  monitors$meta$target_dist <- geosphere::distGeo(c(longitude, latitude), coords)
-
-  # Tidyify
-  df <- PWFSLSmoke::monitor_toTidy(monitors)
-
-  # Plot the monitors
-  gg <- ggplot2::ggplot( data = df,
-                         ggplot2::aes_(x = ~datetime, y = ~pm25) ) +
-    # Organize by the distance. Less distance = Greater Alpha
-    ggplot2::geom_line( ggplot2::aes_(group = ~monitorID, alpha = alpha),
-                        color = color ) +
-    ggplot2::labs( x = 'Datetime',
-                   y = '\u03bcg / m\u00b3',
-                   title = title ) +
-    ggplot2::guides(alpha = FALSE)
-
-  if ( exists('gg_monitor') ) {
-    return(gg + gg_monitor)
-  } else {
-    return(gg)
-  }
 
 }
 

@@ -53,7 +53,7 @@ subset the hours.
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 
-# Load from server
+# Load model data
 rasterList <- raster_load(
   model = "PNW-4km",
   modelRun = c(2019100900),

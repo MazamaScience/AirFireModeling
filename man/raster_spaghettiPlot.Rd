@@ -8,9 +8,11 @@ raster_spaghettiPlot(
   raster = NULL,
   longitude = NULL,
   latitude = NULL,
-  radius = 50,
+  radius = 5,
   count = NULL,
-  monitorID = NULL
+  verbose = TRUE,
+  ylim = NULL,
+  ...
 )
 }
 \arguments{
@@ -24,18 +26,65 @@ raster_spaghettiPlot(
 
 \item{count}{Number of grid cells within radius to return.}
 
-\item{monitorID}{PWFSLSmoke monitorID used to retrieve and plot monitor data.}
+\item{verbose}{Logical to display messages.}
+
+\item{ylim}{Optional Y axis limits.}
+
+\item{...}{Additional arguments passed to \code{PWFSLSmoke::monitor_timeseriesPlot()}.}
 }
 \value{
 A ggplot object.
 }
 \description{
-Plot a spaghetti plot of all model adjacent cells to a target
-location
+Plot a "spaghetti plot" of model data near a target location.
+
+For each Raster\* object in \code{raster}, cells near the target location
+are extracted using \code{raster_subsetByDistance()}. These are converted
+into individual \pkg{PWFSLSMoke} \emph{ws_monitor} objects using
+\code{raster_toMonitor()} and then plotted.
 }
 \examples{
+\dontrun{
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
 
+# Creating PWFSLSmoke ws_monitor objects requires:
+library(MazamaSpatialUtils)
+PWFSLSmoke:::initializeMazamaSpatialUtils()
+
+# Portland, Oregon
+longitude <- -122.68
+latitude <- 45.52
+
+models <- bluesky_findModels(longitude, latitude)
+# > models
+# [1] "NAM84-0.15deg"                    "GFS-0.15deg-CanadaUSA-p25deg-68N"
+# [3] "NAM-3km"                          "CANSAC-4km"
+# [5] "PNW-4km"                          "PNW-1.33km"
+
+# We will only use a subset for this example
+
+# Load model data
+rasterList <- raster_load(
+  model = c("PNW-1.33km", "PNW-4km"),
+  modelRun = 2019100900,
+  xlim = c(-125, -115),
+  ylim = c(42, 50)
+)
+
+raster_spaghettiPlot(
+  rasterList,
+  longitude = longitude,
+  latitude = latitude,
+  radius = 10 # km
+)
+
+}
 }
 \seealso{
 \code{\link{raster_subsetByDistance}}
+
+\code{\link{raster_toMonitor}}
+
+\code{\link[PWFSLSmoke]{monitor_timeseriesPlot}}
 }

@@ -371,7 +371,7 @@ summary {
 
 <pre class="r"><code>knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 library(AirFireModeling)
-setModelDataDir(&#39;~/MS/Data/Bluesky/&#39;)</code></pre>
+setModelDataDir(&#39;~/MS/Data/BlueSky/&#39;)</code></pre>
 <div id="batch-mode" class="section level2">
 <h2>Batch Mode</h2>
 <p>Following the 0.25 “batch” update, the <code>AirFireModeling</code> package now supports batch multi-threaded operations for model rasters. This means a user can download models, create plots and visualizations, and preform complex calculations quickly and efficiently.</p>
@@ -399,7 +399,7 @@ pnw_4km &lt;- raster_load(model = &#39;PNW-4km&#39;, run = dates )</code></pre>
 pnw_1.33km_path &lt;- bluesky_downloaded(pattern = &#39;PNW-1.33km.+_V2.nc&#39;, full = TRUE)
 pnw_1.3km &lt;- raster_load(local = pnw_1.33km_path)</code></pre>
 <pre><code>## 
-## Loading Local Files: /home/hans/MS/Data/Bluesky//PNW-1.33km_2020031500_V2.nc, /home/hans/MS/Data/Bluesky//PNW-1.33km_2020031600_V2.nc, /home/hans/MS/Data/Bluesky//PNW-1.33km_2020031700_V2.nc</code></pre>
+## Loading Local Files: /home/hans/MS/Data/BlueSky//PNW-1.33km_2020031500_V2.nc, /home/hans/MS/Data/BlueSky//PNW-1.33km_2020031600_V2.nc, /home/hans/MS/Data/BlueSky//PNW-1.33km_2020031700_V2.nc</code></pre>
 <p>Most plotting functionality has been updated to support plot grids when plotted using batch mode.</p>
 <p>For example, below we can quickly compare our different loaded models at their twelfth hour using a familiar function and syntax.</p>
 <pre class="r"><code>maps_at_noon &lt;- raster_map(pnw_1.33km, index = 12, palette = &#39;Spectral&#39;)

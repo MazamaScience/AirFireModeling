@@ -80,6 +80,7 @@ within the area defined by \code{xlim} and \code{ylim}.
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 
+# Load model data
 raster <- bluesky_load(
   model = "PNW-4km",
   modelRun = 2019100900,

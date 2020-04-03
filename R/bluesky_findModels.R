@@ -2,6 +2,7 @@
 #' @importFrom dplyr filter
 #' @importFrom rlang .data
 #' @title Find models covering a location
+#'
 #' @description Searches \code{bluesky_modelInfo} for all models whose domain
 #' includes the incoming location.
 #'
@@ -9,6 +10,17 @@
 #' @param latitude the target latitude
 #'
 #' @return Vector of model names.
+#'
+#' @examples
+#' library(AirFireModeling)
+#' setModelDataDir('~/Data/BlueSky')
+#'
+#' # Models covering Portland, Oregon
+#' bluesky_findModels(
+#'   longitude = -122.68,
+#'   latitude = 45.52
+#' )
+#'
 bluesky_findModels <- function(
   longitude = NULL,
   latitude = NULL

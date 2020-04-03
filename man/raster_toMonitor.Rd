@@ -2,7 +2,7 @@
 % Please edit documentation in R/raster_toMonitor.R
 \name{raster_toMonitor}
 \alias{raster_toMonitor}
-\title{Create a PWFSLSmoke ws_monitor object from raster object}
+\title{Create a PWFSLSmoke ws_monitor object from a Raster\* object}
 \usage{
 raster_toMonitor(
   raster,
@@ -10,9 +10,8 @@ raster_toMonitor(
   latitude = NULL,
   radius = 5,
   count = NULL,
-  FUN = mean,
-  na.rm = TRUE,
-  monitorID = NULL
+  rasterName = NULL,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -26,53 +25,55 @@ raster_toMonitor(
 
 \item{count}{Number of grid cells within radius to return.}
 
-\item{FUN}{A function to collapse raster cells into a single timeseries.}
+\item{rasterName}{Optional string prepended to monitorIDs.}
 
-\item{na.rm}{Logical value passed as an argument to \code{FUN}.}
-
-\item{monitorID}{Character identifer for the created \emph{ws_monitor} object.}
+\item{verbose}{Logical to display messages.}
 }
 \value{
 A \pkg{PWFSLSmoke} \emph{ws_monitor} object representing a single
 monitor.
 }
 \description{
-Time series associated with multiple grid cells are merged into
-a single time series by using \code{FUN} to collapse all cells (up to
-\code{count}) within \code{radius} km of the target location. For example,
-if \code{FUN = mean} then the selected grid cells are averaged to
-a single central coordinate.
+Time series associated with multiple grid cells are converted
+into a \pkg{PWFSLSmoke} \emph{ws_monitor}. The \code{monitorID} associated
+with each location is generated with:
+
+\preformatted{
+  MazamaLocationUtils::location_createID(x, y)
 }
-\details{
-If \code{raster} is a \code{RasterList}, names from the list will
-be used as \code{monitorID}. If \code{raster} is of class \code{RasterBrick},
-the user is expected to supply a \code{monitorID}.
 }
 \examples{
 \dontrun{
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 
-# Load from server
+# Load model data
 rasterList <- raster_load(
-  model = "PNW-4km",
+  model = c("PNW-1.33km", "PNW-4km"),
   modelRun = c(2019100900),
   xlim = c(-125, -115),
   ylim = c(42, 50)
 )
 
 # MazamaSpatialUtils are needed to determine timezone and state
+library(MazamaSpatialUtils)
 PWFSLSmoke::initializeMazamaSpatialUtils()
 
-fake_Portland <- raster_toMonitor(
-  rasterList[[1]],
+model_Portland <- raster_toMonitor(
+  rasterList,
   longitude = -122.68,
   latitude = 45.52,
-  radius = 10,
-  monitorID = "fake_Portland"
+  radius = 5
 )
 
-PWFSLSmoke::monitor_timeseriesPlot(fake_Portland)
+PWFSLSmoke::monitor_timeseriesPlot(
+  model_Portland[[1]],
+  type = 'l', col = 'salmon'
+)
+PWFSLSmoke::monitor_timeseriesPlot(
+  model_Portland[[2]],
+  type = 'l', col = 'dodgerblue', add = TRUE
+)
 }
 
 }

@@ -378,7 +378,7 @@ summary {
 library(PWFSLSmoke)
 
 # Set the directory to download to and load models from
-setModelDataDir('~/Data/Bluesky/')</code></pre>
+setModelDataDir('~/Data/BlueSky/')</code></pre>
 </div>
 <div id="loading-bluesky-models" class="section level2">
 <h2>Loading BlueSky models</h2>
@@ -392,7 +392,7 @@ batch_bs &lt;- raster_load(model = c('PNW-1.33km', 'PNW-4km'), modelRun = 202003
 # Additionally, we could instead load multiple dates of a model with modelRun = c(20200325, 2020032, ...)</code></pre>
 <div id="raster-details" class="section level4">
 <h4>Raster details</h4>
-<p>When a model is loaded into R, it takes the object type <code>Raster*</code>. Because most Bluesky models are temporal in nature, each model has multiple spatial slice-of-time, or a layers of gridded values, along a time axis. In <code>AirFireModeling</code> terminology, each slice is called a <code>RasterLayer</code> object, or layer for short, and when together, such as when model runs are loaded, are called <code>RasterBrick</code> objects, or (a) brick. Accessing a layer in a brick is effectively accessing a model-slice at a certain time. For example, to access the eleventh hour in an hourly updated model may look something like this: <code>model[[11]]</code>.</p>
+<p>When a model is loaded into R, it takes the object type <code>Raster*</code>. Because most BlueSky models are temporal in nature, each model has multiple spatial slice-of-time, or a layers of gridded values, along a time axis. In <code>AirFireModeling</code> terminology, each slice is called a <code>RasterLayer</code> object, or layer for short, and when together, such as when model runs are loaded, are called <code>RasterBrick</code> objects, or (a) brick. Accessing a layer in a brick is effectively accessing a model-slice at a certain time. For example, to access the eleventh hour in an hourly updated model may look something like this: <code>model[[11]]</code>.</p>
 </div>
 </div>
 <div id="working-with-models" class="section level2">

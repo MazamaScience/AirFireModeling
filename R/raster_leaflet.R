@@ -86,7 +86,7 @@ raster_leaflet <- function(
   raster,
   index = 1,
   palette = 'Spectral', # 'Greys',
-  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
+  breaks = c(0, 12, 35, 55, 150, 250, 350, Inf),
   direction = -1,
   opacity = 0.6,
   maptype = 'terrain',
@@ -99,7 +99,8 @@ raster_leaflet <- function(
   # ----- Validate parameters --------------------------------------------------
 
   MazamaCoreUtils::stopIfNull(raster)
-  if ( !grepl('[Rr]aster', class(raster)) )
+
+  if ( !raster_isRaster(raster) )
     stop("Parameter 'raster' is not a `Raster*` object")
 
   if ( !is.numeric(index) )
@@ -180,13 +181,13 @@ raster_leaflet <- function(
         raster,
         colors = pal,
         opacity = opacity,
-        group = createLayerTimeString(names(raster), timezone, prefix = "A: ")
+        group = raster_createTimeStrings(raster, timezone, prefix = "A: ")
       ) %>%
       leaflet::addRasterImage(
         compare,
         colors = pal,
         opacity = opacity,
-        group = createLayerTimeString(names(compare), timezone, prefix = "B: ")
+        group = raster_createTimeStrings(compare, timezone, prefix = "B: ")
       ) %>%
       leaflet::addLegend(
         pal = pal,
@@ -195,8 +196,8 @@ raster_leaflet <- function(
       ) %>%
       leaflet::addLayersControl(
         baseGroups = c(
-          createLayerTimeString(names(raster), timezone, prefix = "A: "),
-          createLayerTimeString(names(compare), timezone, prefix = "B: ")
+          raster_createTimeStrings(raster, timezone, prefix = "A: "),
+          raster_createTimeStrings(compare, timezone, prefix = "B: ")
         ),
         options = leaflet::layersControlOptions(collapsed = FALSE)
       )

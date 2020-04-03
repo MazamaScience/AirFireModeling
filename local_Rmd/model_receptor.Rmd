@@ -8,7 +8,7 @@ params:
   longitude: -120.25
   latitude: 45.55
   spatialDataDir: "~/Data/Spatial"
-  modelDataDir: "~/Data/Bluesky"
+  modelDataDir: "~/Data/BlueSky"
   version: "4.1"
 runtime: shiny
 ---
@@ -43,7 +43,7 @@ if ( !is.null(params$monitorID) ) {
 ```
 
 ```{r load_data}
-setModelDataDir('~/Data/Bluesky')
+setModelDataDir('~/Data/BlueSky')
 bs <- bluesky_load(
   modelRun = modelRun, 
   model = model, 

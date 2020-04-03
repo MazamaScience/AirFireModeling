@@ -18,7 +18,7 @@
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
 #'
-#' # Load from server
+#' # Load model data
 #' rasterList <- raster_load(
 #'   model = "PNW-4km",
 #'   modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),
@@ -50,8 +50,7 @@ raster_subsetByDistance <- function(
   MazamaCoreUtils::stopIfNull(latitude)
   MazamaCoreUtils::stopIfNull(radius)
 
-  if ( class(raster) != "list" &&
-       !stringr::str_detect(class(raster), 'Raster*') )
+  if ( !is.list(raster) && !raster_isRaster(raster) )
     stop("Parameter 'raster' must be a single or a list of Raster* objects.")
 
   if ( !is.numeric(longitude) )
@@ -70,7 +69,7 @@ raster_subsetByDistance <- function(
 
   # ----- Subset the Raster(s) -------------------------------------------------
 
-  if ( stringr::str_detect(class(raster), 'Raster*') ) {
+  if ( raster_isRaster(raster) ) {
 
     rasterBrick <- .subsetByDistance(
       raster = raster,
@@ -82,7 +81,7 @@ raster_subsetByDistance <- function(
 
     return(rasterBrick)
 
-  } else if ( class(raster) == 'list' ) {
+  } else {
 
     rasterList <- lapply(
       X = raster,
@@ -143,10 +142,13 @@ raster_subsetByDistance <- function(
   # Subset pointsMatrix
   nearbyPoints <- pointsMatrix[which(distanceVector <= max(closestDistances)),]
 
-  # Convert subsetted df back to raster
+  # Convert subset pointsMatrix back to raster
   rasterBrick <- suppressWarnings(
     raster::rasterFromXYZ(nearbyPoints)
   )
+
+  # Restore original projection information
+  raster::crs(rasterBrick) <- raster::crs(raster)
 
   return(rasterBrick)
 

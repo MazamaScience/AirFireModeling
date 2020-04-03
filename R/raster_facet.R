@@ -25,7 +25,7 @@
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
 #'
-#' # Load from server
+#' # Load model data
 #' rasterList <- raster_load(
 #'   model = "PNW-4km",
 #'   modelRun = c(2019100900),
@@ -80,8 +80,9 @@ raster_facet <- function(
   # ----- Validate parameters --------------------------------------------------
 
   MazamaCoreUtils::stopIfNull(raster)
-  if ( !grepl('[rR]aster.+', class(raster)) )
-    stop(print('A valid Raster object is required.'))
+
+  if ( !raster_isRaster(raster) )
+    stop("Parameter 'raster' must be a single Raster* object.")
 
   if ( !is.null(index) ) {
     if ( !is.numeric(index) )
@@ -146,10 +147,10 @@ raster_facet <- function(
 
   if ( timezone %in% c("UTC", "GMT") ) {
     # Shorthand timestamp when there are lots of plots
-    labellerFUN <- createLayerTimeStamp
+    labellerFUN <- .createTimeStamps
   } else {
     # Human friendly when they ask for it (though it may not always fit)
-    labellerFUN <- createLayerTimeString
+    labellerFUN <- .createTimeStrings
     # NOTE:  Fancy R monkey-patch to modify the default behavior of a function
     formals(labellerFUN) <- list(layerName = "", timezone = timezone, prefix = "")
   }
@@ -168,7 +169,6 @@ raster_facet <- function(
         data = counties,
         ggplot2::aes(x = .data$long, y = .data$lat, group = .data$group),
         fill = 'NA',
-        ###alpha = 0.2,
         color = col_county
       )
   }
@@ -202,3 +202,34 @@ raster_facet <- function(
   return(gg)
 
 }
+
+# ===== Internal Functions =====================================================
+
+# Just like raster_createTimeStamps but gets the name passed in
+.createTimeStrings <- function(
+  layerName = NULL,
+  timezone = "UTC",
+  prefix = ""
+) {
+
+  epochSecs <- as.numeric(stringr::str_remove(layerName, 'X'))
+  layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
+  timeString <- paste0(prefix, strftime(layerTime, format = "%Y-%m-%d %H:00 %Z", tz = timezone))
+
+  return(timeString)
+
+}
+
+# Just like raster_createTimeStamps but gets the name passed in
+.createTimeStamps <- function(
+  layerName = NULL
+) {
+
+  epochSecs <- as.numeric(stringr::str_remove(layerName, 'X'))
+  layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
+  timeString <- strftime(layerTime, format = "%Y%m%d%H", tz = "UTC")
+
+  return(timeString)
+
+}
+

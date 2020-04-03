@@ -18,3 +18,14 @@ Vector of model names.
 Searches \code{bluesky_modelInfo} for all models whose domain
 includes the incoming location.
 }
+\examples{
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
+
+# Models covering Portland, Oregon
+bluesky_findModels(
+  longitude = -122.68,
+  latitude = 45.52
+)
+
+}

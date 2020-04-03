@@ -23,7 +23,7 @@ raster_map(
   raster,
   index = 1,
   palette = "Greys",
-  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
+  breaks = c(0, 12, 35, 55, 150, 250, 350, Inf),
   direction = 1,
   title = "PM2.5",
   timezone = "UTC",
@@ -36,7 +36,7 @@ raster_map(
   raster,
   index = 1,
   palette = "Greys",
-  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
+  breaks = c(0, 12, 35, 55, 150, 250, 350, Inf),
   direction = 1,
   title = "PM2.5",
   timezone = "UTC",
@@ -94,7 +94,7 @@ e.g \code{index = 1} is the first hour of a model.
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 
-# Load from server
+# Load model data
 rasterList <- raster_load(
   model = "PNW-4km",
   modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),

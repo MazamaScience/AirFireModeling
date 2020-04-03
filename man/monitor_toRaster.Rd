@@ -4,27 +4,18 @@
 \alias{monitor_toRaster}
 \title{Create a Raster from monitor object}
 \usage{
-monitor_toRaster(
-  ws_monitor,
-  res,
-  crs = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0",
-  extent = NULL,
-  projectTo = NULL
-)
+monitor_toRaster(ws_monitor = NULL, raster = NULL, FUN = mean)
 }
 \arguments{
-\item{ws_monitor}{A ws_monitor object.}
+\item{ws_monitor}{\pkg{PWFSLSMoke} \emph{ws_monitor} object.}
 
-\item{res}{Set the resolution of a Raster* object}
+\item{raster}{Raster* object defining the output grid.}
 
-\item{crs}{Set the coordinate reference system (CRS) of a Raster* object.}
-
-\item{extent}{Set or inherit the extent of the Raster* object.}
-
-\item{projectTo}{Project the values of a Raster* object to a different Raster.}
+\item{FUN}{Function used to collapse values when multiple monitors lie within
+a single grid cell.}
 }
 \value{
-a \code{raster} object.
+A \code{RasterBrick} object.
 }
 \description{
 Create a Raster from monitor object

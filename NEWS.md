@@ -1,3 +1,15 @@
+# AirFireModeling 0.2.11
+
+* Improvements to `raster_spaghetti()`.
+
+# AirFireModeling 0.2.10
+
+* Improvements to `raster_spaghettiPlot()`.
+* Removed `skill_roc()` and `skill_confusionMatrix()`.
+* Removed `raster_correlation()`.
+* Removed `monitor_forecast()`, `raster_coordianteTrace()` and
+`raster_loadNearestMonitor()`.
+
 # AirFireModeling 0.2.9
 
 * New `raster_subsetByPolygon()` function.

@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11</span>
       </span>
     </div>
 
@@ -83,6 +83,18 @@
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/AirFireModeling_Introduction.html">Introduction to AirFireModeling</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -112,42 +124,29 @@
     <p>Create a Raster from monitor object</p>
     </div>
 
-    <pre class="usage"><span class='fu'>monitor_toRaster</span>(
-  <span class='no'>ws_monitor</span>,
-  <span class='no'>res</span>,
-  <span class='kw'>crs</span> <span class='kw'>=</span> <span class='st'>"+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"</span>,
-  <span class='kw'>extent</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>projectTo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>monitor_toRaster</span>(<span class='kw'>ws_monitor</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>raster</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>FUN</span> <span class='kw'>=</span> <span class='no'>mean</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>ws_monitor</th>
-      <td><p>A ws_monitor object.</p></td>
+      <td><p><span class="pkg">PWFSLSMoke</span> <em>ws_monitor</em> object.</p></td>
     </tr>
     <tr>
-      <th>res</th>
-      <td><p>Set the resolution of a Raster* object</p></td>
+      <th>raster</th>
+      <td><p>Raster* object defining the output grid.</p></td>
     </tr>
     <tr>
-      <th>crs</th>
-      <td><p>Set the coordinate reference system (CRS) of a Raster* object.</p></td>
-    </tr>
-    <tr>
-      <th>extent</th>
-      <td><p>Set or inherit the extent of the Raster* object.</p></td>
-    </tr>
-    <tr>
-      <th>projectTo</th>
-      <td><p>Project the values of a Raster* object to a different Raster.</p></td>
+      <th>FUN</th>
+      <td><p>Function used to collapse values when multiple monitors lie within
+a single grid cell.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a <code>raster</code> object.</p>
+    <p>A <code>RasterBrick</code> object.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

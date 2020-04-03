@@ -30,7 +30,7 @@
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
 #'
-#' # Load from server
+#' # Load model data
 #' rasterList <- raster_load(
 #'   model = "PNW-4km",
 #'   modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),
@@ -56,12 +56,16 @@ raster_map <- function(
   # ----- Validate parameters --------------------------------------------------
 
   MazamaCoreUtils::stopIfNull(raster)
-  if ( class(raster) != "list" &&
-       !stringr::str_detect(class(raster), 'Raster*') )
+
+  if ( !is.list(raster) && !raster_isRaster(raster) )
     stop("Parameter 'raster' must be a single or a list of Raster* objects.")
 
-  if ( !is.numeric(index) )
-    stop("Parameter 'index' must be numeric.")
+  if ( !is.numeric(index) || length(index) > 1 ) {
+    stop(paste0(
+      "Parameter 'index' must be a single numeric value.  ",
+      "Use raster_facet() to plot multiple timesteps.")
+    )
+  }
 
   availablePalettes <- rownames(RColorBrewer::brewer.pal.info)
   if ( !palette %in% availablePalettes )
@@ -96,7 +100,7 @@ raster_map.Raster <- function(
   raster, # a single RasterBrick
   index = 1,
   palette = 'Greys',
-  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
+  breaks = c(0, 12, 35, 55, 150, 250, 350, Inf),
   direction = 1,
   title = 'PM2.5',
   timezone = 'UTC',
@@ -121,7 +125,7 @@ raster_map.list <- function(
   raster, # a list of RasterBricks
   index = 1,
   palette = 'Greys',
-  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
+  breaks = c(0, 12, 35, 55, 150, 250, 350, Inf),
   direction = 1,
   title = 'PM2.5',
   timezone = 'UTC',
@@ -164,7 +168,7 @@ raster_map.list <- function(
 .plot_map <- function(
   layer,
   palette = 'Greys',
-  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
+  breaks = c(0, 12, 35, 55, 150, 250, 350, Inf),
   direction = 1,
   title = 'PM2.5',
   timezone = 'UTC',
@@ -181,7 +185,7 @@ raster_map.list <- function(
   xlim <- c(limits@xmin, limits@xmax)
   ylim <- c(limits@ymin, limits@ymax)
 
-  timeString <- createLayerTimeString(names(layer))
+  timeString <- raster_createTimeStrings(layer)
 
   # Get state and counties data for plotting
   states <- ggplot2::map_data('state', xlim = xlim, ylim = ylim)

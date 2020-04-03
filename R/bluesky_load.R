@@ -1,4 +1,4 @@
-
+#' @export
 #' @title Load data for a single BlueSky model
 #'
 #' @description This function encapsulates the process of downloading, and formatting
@@ -47,12 +47,13 @@
 #' @param verbose Logical to display messages.
 #'
 #' @return A \pkg{raster} package \emph{RasterBrick} object.
-#' @export
+#'
 #' @examples
 #' \dontrun{
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
 #'
+#' # Load model data
 #' raster <- bluesky_load(
 #'   model = "PNW-4km",
 #'   modelRun = 2019100900,

@@ -36,7 +36,7 @@ the target location are returned.
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 
-# Load from server
+# Load model data
 rasterList <- raster_load(
   model = "PNW-4km",
   modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),

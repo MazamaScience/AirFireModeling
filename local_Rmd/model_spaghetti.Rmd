@@ -28,7 +28,7 @@ library(PWFSLSmoke)
 initializeMazamaSpatialUtils()
   
 library(AirFireModeling)
-setModelDataDir('~/Data/Bluesky')
+setModelDataDir('~/Data/BlueSky')
 
 library(AirMonitorPlots)
 

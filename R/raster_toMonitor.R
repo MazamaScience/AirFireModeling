@@ -1,24 +1,21 @@
 #' @export
-#' @title Create a PWFSLSmoke ws_monitor object from raster object
+#' @title Create a PWFSLSmoke ws_monitor object from a Raster\* object
 #'
 #' @param raster A Raster* object.
 #' @param longitude Target longitude from which the radius will be calculated.
 #' @param latitude Target latitude from which the radius will be calculated.
 #' @param radius Distance (km) of radius from target location.
 #' @param count Number of grid cells within radius to return.
-#' @param FUN A function to collapse raster cells into a single timeseries.
-#' @param na.rm Logical value passed as an argument to \code{FUN}.
-#' @param monitorID Character identifer for the created \emph{ws_monitor} object.
+#' @param rasterName Optional string prepended to monitorIDs.
+#' @param verbose Logical to display messages.
 #'
-#' @description Time series associated with multiple grid cells are merged into
-#' a single time series by using \code{FUN} to collapse all cells (up to
-#' \code{count}) within \code{radius} km of the target location. For example,
-#' if \code{FUN = mean} then the selected grid cells are averaged to
-#' a single central coordinate.
+#' @description Time series associated with multiple grid cells are converted
+#' into a \pkg{PWFSLSmoke} \emph{ws_monitor}. The \code{monitorID} associated
+#' with each location is generated with:
 #'
-#' @details If \code{raster} is a \code{RasterList}, names from the list will
-#' be used as \code{monitorID}. If \code{raster} is of class \code{RasterBrick},
-#' the user is expected to supply a \code{monitorID}.
+#' \preformatted{
+#'   MazamaLocationUtils::location_createID(x, y)
+#' }
 #'
 #' @return A \pkg{PWFSLSmoke} \emph{ws_monitor} object representing a single
 #' monitor.
@@ -28,26 +25,33 @@
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
 #'
-#' # Load from server
+#' # Load model data
 #' rasterList <- raster_load(
-#'   model = "PNW-4km",
+#'   model = c("PNW-1.33km", "PNW-4km"),
 #'   modelRun = c(2019100900),
 #'   xlim = c(-125, -115),
 #'   ylim = c(42, 50)
 #' )
 #'
 #' # MazamaSpatialUtils are needed to determine timezone and state
+#' library(MazamaSpatialUtils)
 #' PWFSLSmoke::initializeMazamaSpatialUtils()
 #'
-#' fake_Portland <- raster_toMonitor(
-#'   rasterList[[1]],
+#' model_Portland <- raster_toMonitor(
+#'   rasterList,
 #'   longitude = -122.68,
 #'   latitude = 45.52,
-#'   radius = 10,
-#'   monitorID = "fake_Portland"
+#'   radius = 5
 #' )
 #'
-#' PWFSLSmoke::monitor_timeseriesPlot(fake_Portland)
+#' PWFSLSmoke::monitor_timeseriesPlot(
+#'   model_Portland[[1]],
+#'   type = 'l', col = 'salmon'
+#' )
+#' PWFSLSmoke::monitor_timeseriesPlot(
+#'   model_Portland[[2]],
+#'   type = 'l', col = 'dodgerblue', add = TRUE
+#' )
 #' }
 #'
 raster_toMonitor <- function(
@@ -56,9 +60,8 @@ raster_toMonitor <- function(
   latitude = NULL,
   radius = 5,
   count = NULL,
-  FUN = mean,
-  na.rm = TRUE,
-  monitorID = NULL
+  rasterName = NULL,
+  verbose = TRUE
 ) {
 
   # ----- Validate parameters --------------------------------------------------
@@ -68,8 +71,7 @@ raster_toMonitor <- function(
   MazamaCoreUtils::stopIfNull(latitude)
   MazamaCoreUtils::stopIfNull(radius)
 
-  if ( class(raster) != "list" &&
-       !stringr::str_detect(class(raster), 'Raster*') )
+  if ( !is.list(raster) && !raster_isRaster(raster) )
     stop("Parameter 'raster' must be a single or a list of Raster* objects.")
 
   if ( !is.numeric(longitude) )
@@ -86,14 +88,8 @@ raster_toMonitor <- function(
       stop("Parameter 'count' must be numeric.")
   }
 
-  # Create a random monitorID if needed
-  if ( is.null(monitorID) ) {
-    if ( stringr::str_detect(class(raster), 'Raster*') )
-      monitorID <- basename(tempfile("monitor_"))
-  }
-
   # Check domain
-  if ( class(raster) == 'list' ) {
+  if ( is.list(raster) ) {
     r <- raster[[1]]
   } else {
     r <- raster
@@ -104,14 +100,23 @@ raster_toMonitor <- function(
     stop('Check Coordinates: Target location is outside the raster domain.')
   }
 
+  # Defaults
+  if ( !is.character(rasterName) ) rasterName <- "raster"
+  if ( !is.logical(verbose) ) verbose <- TRUE
+
+  # Guarantee rasterName is not mult-values
+  rasterName <- rasterName[1]
+
   # ----- Subset the Raster(s) -------------------------------------------------
 
-  if ( class(raster) == 'list' ) {
+  if ( is.list(raster) ) {
 
     names <- names(raster)
     monitorList <- list()
     for ( i in seq_along(raster) ) {
       name <- names[i]
+      if ( verbose )
+        message(sprintf("Converting %s to ws_monitor ...", name))
       monitorList[[name]] <-
         .toMonitor(
           raster = raster[[i]],
@@ -119,15 +124,15 @@ raster_toMonitor <- function(
           latitude = latitude,
           radius = radius,
           count = count,
-          FUN = FUN,
-          na.rm = na.rm,
-          monitorID = name
+          rasterName = name
         )
     }
 
     return(monitorList)
 
-  } else if ( stringr::str_detect(class(raster), 'Raster*') ) {
+  } else {
+
+    message(sprintf("Converting raster to ws_monitor ..."))
 
     monitor <-
       .toMonitor(
@@ -136,9 +141,7 @@ raster_toMonitor <- function(
         latitude = latitude,
         radius = radius,
         count = count,
-        FUN = FUN,
-        na.rm = na.rm,
-        monitorID = monitorID
+        rasterName = rasterName
       )
 
     return(monitor)
@@ -156,46 +159,79 @@ raster_toMonitor <- function(
   latitude = NULL,
   radius = 5,
   count = NULL,
-  FUN = mean,
-  na.rm = TRUE,
-  monitorID = NULL
+  rasterName = NULL
 ) {
 
   # Parameter validation handled in calling funcitions
 
-  # ----- Prepare data ---------------------------------------------------------
+  # ----- Prepare meta ---------------------------------------------------------
 
-  # Create target Spatial Point
-  target_sp <- sp::SpatialPoints(
-    coords = cbind(longitude, latitude),
-    proj4string = raster::crs(raster)
+  # Subset by distance
+  localRaster <- raster_subsetByDistance(
+    raster,
+    longitude = longitude,
+    latitude = latitude,
+    radius = radius,
+    count = count
   )
 
-  # Extract values from Raster Object at the target spatial point(s)
-  targetData <- c(t(raster::extract(
-    x = raster,
-    y = target_sp,
-    buffer = radius * 1000, # radius is always in km in AirFireModeling
-    fun = FUN
-  )))
+  # Extract coordinates
+  coords <- raster::coordinates(localRaster)
 
-  layerTimes <- createLayerTime(names(raster))
+  # Generate unique monitorIDs
+  cellMonitorIDs <- mapply(
+    function(x,y) {
+      ###sprintf("mon_%.4f_%.4f", x, y)
+      MazamaLocationUtils::location_createID(x, y)
+    },
+    coords[,1],
+    coords[,2]
+  )
 
-  # ----- Create ws_monitor object and populate --------------------------------
+  cellMonitorIDs <- make.names(sprintf("%s_%s", rasterName, cellMonitorIDs))
 
-  # Fill Meta
-  meta <- PWFSLSmoke::createEmptyMetaDataframe(rows = 1)
-  meta$monitorID <- as.character(monitorID)
-  meta$longitude <- as.numeric(longitude)
-  meta$latitude <- as.numeric(latitude)
-  rownames(meta) <- as.character(monitorID)
+  # Create "meta"
+  meta <- PWFSLSmoke::createEmptyMetaDataframe(rows = nrow(coords))
+  meta$monitorID <- cellMonitorIDs
+  meta$longitude <- coords[,"x"]
+  meta$latitude <- coords[,"y"]
+  meta$monitorType <- "MODEL_DATA"
+  rownames(meta) <- meta$monitorID
+
+  # Extract model and modelRun from, e.g. "PNW-4km_2019100900"
+  # Returns NA if a custom rasterName is passed in.
+  parts <- stringr::str_match(rasterName, "(.*)_([0-9]+)")
+  meta$model <- parts[1,2]
+  meta$modelRun <- parts[1,3]
+
+  # Add distance from target (km)
+  meta$targetDistance <- geosphere::distGeo(c(longitude, latitude), coords) / 1000
 
   # Add timezone, stateCode, countryCode
   meta <- PWFSLSmoke::addMazamaMetadata(meta)
 
-  # Fill Data
-  data <- data.frame(layerTimes, targetData)
-  colnames(data) <- c('datetime', monitorID)
+  # ----- Prepare data ---------------------------------------------------------
+
+  # Create POSIXct times from the Raster layers
+  datetime <- raster_createTimes(localRaster)
+
+  # Extract values from Raster Object at the target spatial point(s)
+  localValues <- raster::getValues(localRaster)
+
+  # Remove targetData names and transpose
+  colnames(localValues) <- NULL
+  localData <- t(localValues)
+
+  # Add monitorID names
+  colnames(localData) <- cellMonitorIDs
+
+  # Create "data"
+  data <- cbind(
+    data.frame(datetime = datetime),
+    data.frame(localData)
+  )
+
+  # ----- Return 0--------------------------------------------------------------
 
   # Combine into ws_monitor list object
   ws_monitor <- list('meta' = meta, 'data' = data)
@@ -226,8 +262,5 @@ if ( FALSE ) {
   latitude = 45.52
   radius = 5
   count = NULL
-  FUN = mean
-  na.rm = TRUE
-  monitorID = NULL
 
 }

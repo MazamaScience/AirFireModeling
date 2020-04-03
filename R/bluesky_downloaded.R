@@ -1,7 +1,7 @@
 #' @title List downloaded models
 #'
-#' @param path The path in which models are located.
-#' @param pattern A regex pattern to use for filtering model files
+#' @param modelDataDir Directory in which models are located.
+#' @param pattern A regex pattern to use for filtering model files.
 #' @param full Logical. Show the full path of the model (used for local loading).
 #' @param ... Additional arguments to be passed to \code{list.files()}.
 #'
@@ -18,15 +18,16 @@
 #' }
 #'
 bluesky_downloaded <- function(
-  path = getModelDataDir(),
+  modelDataDir = getModelDataDir(),
   pattern = '.nc',
   full = FALSE,
   ...
 ) {
   list.files(
-    path = path,
+    path = modelDataDir,
     full.names = full,
     no.. = TRUE,
-    pattern = pattern
+    pattern = pattern,
+    ...
   )
 }

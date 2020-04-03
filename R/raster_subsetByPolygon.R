@@ -14,7 +14,7 @@
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
 #'
-#' # Load data
+#' # Load model data
 #' rasterList <- raster_load(
 #'   model = "PNW-4km",
 #'   modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),
@@ -34,7 +34,7 @@
 #' raster_map(
 #'   OregonList,
 #'   palette = "Spectral",
-#'   breaks = c(-1, 0, 1, 2, 4, 8, 16, 32, 500),
+#'   breaks = c(-1, 0, 1, 2, 4, 8, 16, 32, Inf),
 #'   direction = -1
 #' )
 #' }
@@ -48,8 +48,7 @@ raster_subsetByPolygon <- function(
   MazamaCoreUtils::stopIfNull(raster)
   MazamaCoreUtils::stopIfNull(polygon)
 
-  if ( class(raster) != "list" &&
-       !stringr::str_detect(class(raster), 'Raster*') )
+  if ( !is.list(raster) && !raster_isRaster(raster) )
     stop("Parameter 'raster' must be a single or a list of Raster* objects.")
 
   if ( !stringr::str_detect(class(polygon), 'Spatial*') )
@@ -57,7 +56,7 @@ raster_subsetByPolygon <- function(
 
   # ----- Subset the Raster(s) -------------------------------------------------
 
-  if ( stringr::str_detect(class(raster), 'Raster*') ) {
+  if ( raster_isRaster(raster) ) {
 
     rasterBrick <- suppressWarnings({
       raster::mask(raster, polygon)
@@ -65,7 +64,7 @@ raster_subsetByPolygon <- function(
 
     return(rasterBrick)
 
-  } else if ( class(raster) == 'list' ) {
+  } else {
 
     rasterList <- lapply(
       X = raster,

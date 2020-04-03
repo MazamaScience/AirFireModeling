@@ -1,16 +1,37 @@
+
+
+#' @export
+#' @keywords hidden
+#'
+#' @title Test for Raster\* class
+#'
+#' @param raster Object to test.
+#'
+#' @return \code{TRUE} if \code{raster} is a Raster\* object, \code{FALSE} otherwise.
+#'
+
+raster_isRaster <- function(raster) {
+
+  return( stringr::str_detect(class(raster), 'Raster*') )
+
+}
+
+# ===== Layer Times ============================================================
+
 #' @export
 #' @keywords internal
 #'
 #' @title Create raster layer times
 #'
-#' @param layerName Name of the \code{rasterLayer} object
+#' @param raster A Raster\* object.
 #'
 #' @return \code{POSIXct} time.
 
-createLayerTime <- function(
-  layerName = ""
+raster_createTimes <- function(
+  raster = NULL
 ) {
 
+  layerName <- names(raster)
   epochSecs <- as.numeric(stringr::str_remove(layerName, 'X'))
   layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
 
@@ -20,18 +41,19 @@ createLayerTime <- function(
 
 #' @title Create raster layer time string
 #'
-#' @param layerName Name of the \code{rasterLayer} object
+#' @param raster A Raster\* object.
 #' @param timezone Olson timezone in which times will be displayed.
 #' @param prefix String prepended to the time
 #'
 #' @return Time string formatted for \code{timezone}.
 
-createLayerTimeString <- function(
-  layerName = "",
+raster_createTimeStrings <- function(
+  raster = NULL,
   timezone = "UTC",
   prefix = ""
 ) {
 
+  layerName <- names(raster)
   epochSecs <- as.numeric(stringr::str_remove(layerName, 'X'))
   layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
   timeString <- paste0(prefix, strftime(layerTime, format = "%Y-%m-%d %H:00 %Z", tz = timezone))
@@ -45,16 +67,17 @@ createLayerTimeString <- function(
 #'
 #' @title Create raster layer timestamp
 #'
-#' @param layerName Name of the \code{rasterLayer} object
+#' @param raster A Raster\* object.
 #' @param timezone Olson timezone in which times will be displayed.
 #' @param prefix String prepended to the time
 #'
 #' @return UTC timestamp as YYYYmmddHH.
 
-createLayerTimeStamp <- function(
-  layerName = ""
+raster_createTimeStamps <- function(
+  raster = NULL
 ) {
 
+  layerName <- names(raster)
   epochSecs <- as.numeric(stringr::str_remove(layerName, 'X'))
   layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
   timeString <- strftime(layerTime, format = "%Y%m%d%H", tz = "UTC")

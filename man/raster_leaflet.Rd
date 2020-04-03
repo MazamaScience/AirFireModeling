@@ -8,7 +8,7 @@ raster_leaflet(
   raster,
   index = 1,
   palette = "Spectral",
-  breaks = c(0, 12, 35, 55, 150, 250, 350, 500),
+  breaks = c(0, 12, 35, 55, 150, 250, 350, Inf),
   direction = -1,
   opacity = 0.6,
   maptype = "terrain",

@@ -148,7 +148,7 @@ raster_aggregate <- function(
   medianSpacing <-
     diff(modelTimes, unit = "hour") %>%
     as.numeric() %>%
-    median()
+    stats::median()
 
   # Make sure spaing is defined
   if ( is.null(spacing) )

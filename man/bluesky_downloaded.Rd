@@ -5,16 +5,16 @@
 \title{List downloaded models}
 \usage{
 bluesky_downloaded(
-  path = getModelDataDir(),
+  modelDataDir = getModelDataDir(),
   pattern = ".nc",
   full = FALSE,
   ...
 )
 }
 \arguments{
-\item{path}{The path in which models are located.}
+\item{modelDataDir}{Directory in which models are located.}
 
-\item{pattern}{A regex pattern to use for filtering model files}
+\item{pattern}{A regex pattern to use for filtering model files.}
 
 \item{full}{Logical. Show the full path of the model (used for local loading).}
 

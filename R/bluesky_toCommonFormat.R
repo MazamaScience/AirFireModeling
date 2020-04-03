@@ -1,5 +1,4 @@
 #' @export
-#'
 #' @title Convert BlueSky NetCDF output to modernized NetCDF
 #'
 #' @param filePath Absolute path of file to be converted.

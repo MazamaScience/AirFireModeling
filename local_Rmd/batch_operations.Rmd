@@ -7,7 +7,7 @@ output: html_document
 ```{r}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 library(AirFireModeling)
-setModelDataDir('~/MS/Data/Bluesky/')
+setModelDataDir('~/MS/Data/BlueSky/')
 ```
 
 ## Batch Mode 

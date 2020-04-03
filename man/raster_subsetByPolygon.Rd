@@ -23,7 +23,7 @@ defined by \code{polygon}. All cells within the polygon are returned.
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 
-# Load data
+# Load model data
 rasterList <- raster_load(
   model = "PNW-4km",
   modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),
@@ -43,7 +43,7 @@ OregonList <- raster_subsetByPolygon(
 raster_map(
   OregonList,
   palette = "Spectral",
-  breaks = c(-1, 0, 1, 2, 4, 8, 16, 32, 500),
+  breaks = c(-1, 0, 1, 2, 4, 8, 16, 32, Inf),
   direction = -1
 )
 }
