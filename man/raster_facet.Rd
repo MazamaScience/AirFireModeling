@@ -22,10 +22,12 @@ raster_facet(
 
 \item{index}{Vector of indices used to subset \code{raster}}
 
-\item{palette}{Color palette used to map cell values. This must be one
-of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
+\item{palette}{Color palette used to map cell values. This must be either
+\code{"aqi"} or one of the palette names available through
+\code{ggplot2::scale_colour_brewer()}.}
 
-\item{breaks}{The breaks used to map cell values to colors.}
+\item{breaks}{The breaks used to map cell values to colors. (Unless
+\code{palette = "aqi"} in which case AQI breaks are used.)}
 
 \item{direction}{Numeric. \code{direction = -1} reverses color palette.}
 

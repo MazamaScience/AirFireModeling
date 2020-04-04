@@ -3,8 +3,9 @@
 #'
 #' @param raster A Raster\* object.
 #' @param index And index into the Raster\* object. See details.
-#' @param palette Color palette used to map cell values. This must be one
-#' of the palettes available through \code{ggplot2::scale_colour_brewer()}.
+#' @param palette Color palette used to map cell values. This must be either
+#' \code{"aqi"} or one of the palette names available through
+#' \code{ggplot2::scale_colour_brewer()}.
 #' @param breaks The breaks used to map cell values to colors. CURRENTLY UNUSED
 #' @param direction Numeric. \code{direction = -1} reverses color palette.
 #' @param opacity Opacity of raster layer.
@@ -85,7 +86,7 @@
 raster_leaflet <- function(
   raster,
   index = 1,
-  palette = 'Spectral', # 'Greys',
+  palette = 'Spectral',
   breaks = c(0, 12, 35, 55, 150, 250, 350, Inf),
   direction = -1,
   opacity = 0.6,
@@ -106,7 +107,9 @@ raster_leaflet <- function(
   if ( !is.numeric(index) )
     stop("Parameter 'index' must be numeric.")
 
-  availablePalettes <- rownames(RColorBrewer::brewer.pal.info)
+  brewerPalettes <- rownames(RColorBrewer::brewer.pal.info)
+  otherPalettes <- c('aqi') # from PWFSLSmoke
+  availablePalettes <- union(brewerPalettes, otherPalettes)
   if ( !palette %in% availablePalettes )
     stop(sprintf("'%s' is not a recognized palette. Please see ?ggplot2::scale_colour_brewer."))
 
@@ -149,12 +152,21 @@ raster_leaflet <- function(
   # )
 
   # Color palette function
-  pal <- leaflet::colorNumeric(
-    palette,
-    raster::values(raster),
-    reverse = ifelse(direction == -1, TRUE, FALSE),
-    na.color = "transparent"
-  )
+  if ( palette == "aqi" ) {
+    pal <- leaflet::colorBin(
+      palette = PWFSLSmoke::AQI$colors,
+      bins = PWFSLSmoke::AQI$breaks_24,
+      reverse = ifelse(direction == -1, TRUE, FALSE),
+      na.color = "transparent"
+    )
+  } else {
+    pal <- leaflet::colorNumeric(
+      palette,
+      raster::values(raster),
+      reverse = ifelse(direction == -1, TRUE, FALSE),
+      na.color = "transparent"
+    )
+  }
 
   # Convert maptype to a character string that addProviderTiles can read
   if ( missing(maptype) || maptype == "terrain") {

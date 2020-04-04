@@ -3,9 +3,11 @@
 #'
 #' @param raster A Raster\* object.
 #' @param index Vector of indices used to subset \code{raster}
-#' @param palette Color palette used to map cell values. This must be one
-#' of the palettes available through \code{ggplot2::scale_colour_brewer()}.
-#' @param breaks The breaks used to map cell values to colors.
+#' @param palette Color palette used to map cell values. This must be either
+#' \code{"aqi"} or one of the palette names available through
+#' \code{ggplot2::scale_colour_brewer()}.
+#' @param breaks The breaks used to map cell values to colors. (Unless
+#' \code{palette = "aqi"} in which case AQI breaks are used.)
 #' @param direction Numeric. \code{direction = -1} reverses color palette.
 #' @param title (Optional) A plot title.
 #' @param timezone Olson timezone in which times will be displayed.
@@ -90,10 +92,10 @@ raster_facet <- function(
   }
 
   brewerPalettes <- rownames(RColorBrewer::brewer.pal.info)
-  viridisPalettes <- c("viridis_A")
-  availablePalettes <- union(brewerPalettes, viridisPalettes)
+  otherPalettes <- c("viridis_A")
+  availablePalettes <- union(brewerPalettes, otherPalettes)
   if ( !palette %in% availablePalettes )
-    stop(sprintf("'%s' is not a recognized palette. Please see ?ggplot2::scale_colour_brewer."))
+    stop(sprintf("'%s' is not a recognized palette. Please see ?ggplot2::scale_colour_brewer.", palette))
 
   if ( !is.numeric(breaks) )
     stop("Parameter 'breaks' must be a numeric vector.")
@@ -128,6 +130,12 @@ raster_facet <- function(
   }
 
   # Determine color scaler
+  # TODO:  Get AQI coloring to work
+  # if ( palette == 'aqi') {
+  #   breaks <- PWFSLSmoke::AQI$breaks_24
+  #   scale_colors <- ggplot2::scale_fill_manual(
+  #     palette = PWFSLSmoke::aqiPalette()
+  #   )
   if ( palette == 'viridis_A' ) {
     scale_colors <-  ggplot2::scale_fill_viridis_d(
       option = 'A',

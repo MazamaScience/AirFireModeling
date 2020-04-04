@@ -32,11 +32,19 @@ to ingest and manipulate BluesSky model data in *R*. When combined with the
 of model and regulatory monitoring data.
 
 This article is meant to introduce *AirFireModeling* basic functionality, 
-concepts, and terminology, and is not meant to be an exhaustive tutorial. 
+concepts, and terminology, and is not meant to be an exhaustive tutorial. The 
+most important aspect of this package is its embrace of the incredibly full 
+featured *raster* package which allows simple, mathematical style manipulation
+of `Raster*` objects (multi-dimensional gridded data bricks).
+
+For more information on working with `Raster*` objects please see:
+
+ * [Spatial Data Science with R](https://rspatial.org/raster/index.html)
+ * [RasterVis](https://oscarperpinan.github.io/rastervis/)
 
 ## Preparation
 
-```{r}
+```{r preparation}
 library(PWFSLSmoke)
 library(AirFireModeling)
 
@@ -77,7 +85,7 @@ functions.
 
 Below is an example of loading a model using the two functions:
 
-```{r}
+```{r raster_load}
 # Single model and modelRun
 raster <- raster_load(
   model = 'PNW-1.33km', 
@@ -93,8 +101,6 @@ rasterList <- raster_load(
   xlim = c(-125, -115),
   ylim = c(42, 50)
 )
-
-# We could also specify modelRuns 
 ```
 
 ## Raster data types
@@ -118,7 +124,7 @@ object passed in can be either a single `RasterBrick` or a list of them.
 
 A single map will be plotted for a single model. 
 
-```{r}
+```{r raster_map}
 # Create a map from a RasterBrick
 raster_map(
   raster, 
@@ -130,7 +136,7 @@ raster_map(
 
 A batch map will be plotted for a batch model. 
 
-```{r}
+```{r raster_map_2}
 # Create a map from a list of RasterBricks
 raster_map(
   rasterList, 
@@ -161,7 +167,7 @@ raster_map(
 <!-- raster_coordinateTrace(rasterList, monitorID = '530330057_01') -->
 <!-- ``` -->
 
-## Working with Monitors
+## Working with monitoring data
 
 `Raster*` objects are inherently spatial (and temporal) whereas regulatory 
 monitors loaded via the *PWFSLSmoke* R package are primarily temporal. In order 
@@ -179,7 +185,7 @@ and radius and convert all model grid cells within that radius into
 *PWFSLSmoke*-compatible  _ws_monitor_ objects. These can then be used with any
 functions from the *PWFSLSmoke* or *AirMonitorPlots* packages.
 
-```{r}
+```{r raster_toMonitor}
 model_Portland <- raster_toMonitor(
   rasterList,
   longitude = -122.68,
@@ -194,27 +200,70 @@ PWFSLSmoke::monitor_timeseriesPlot(
 title("15 Grid cells near Portland")
 ```
 
+Converting model data to _ws_monitor_ objects makes it easy to compare model
+and monitor data in the _timeseries_ domain.
+
+### Monitor to Raster
+
+The `monitor_toRaster()` function accepts a _ws_monitor_ object and a 
+Raster* object defining the grid. Grid cells where monitors exist are loaded 
+with monitor values while all others cells are filled with `NA` values. The
+returned raster can then be mainuplated with other functions in the raster
+package.
+
+Having monitor values defined on a specifc model grid also makes it easier
+to perform mathematical comparisons of model and monitor data in the _spatial_
+domain.
+
+```{r monitor_toRaster}
+# All PWFSLSmoke monitors within 20 km of Portland, OR
+Portland_monitors <-
+  monitor_load(
+    startdate = 2019100900,
+    enddate = 2019101123
+  ) %>%
+  monitor_subsetByDistance(
+    longitude = -122.68,
+    latitude = 45.52,
+    radius = 20
+  )
 
 
-<!-- #### Model Conversion  -->
+# Create a Portland area RasterBrick
+rasterList <- raster_load(
+  model = "PNW-4km",
+  modelRun = 2019100900,
+  xlim = c(-123.08, -122.28),
+  ylim = c(45.22, 45.92)
+)
 
-<!-- Additionally, we can extend monitor to raster conversion to look at *PWFSLSmoke* monitors in a more spatial way. This even allows us to directly compare the *PWFSLSmoke* regulatory monitors to the BlueSky model outputs, while preserving the spatial nature of the models.  -->
+# Put monitor data on raster grid
+Portland_rasterBrick <-
+  monitor_toRaster(
+    Portland_monitors,
+    rasterList[[1]]
+  )
 
-<!-- ```{r} -->
-<!-- # Convert ALL NW monitors to raster -->
-<!-- nw_monitors <- monitor_load(startdate = 20181109, 20181111) %>%  -->
-<!--   monitor_subset(stateCodes = c('WA', 'OR')) -->
-<!-- nw_monitors_raster <- monitor_toRaster(nw_monitors, res = 0.25) -->
-<!-- raster_map(nw_monitors_raster, index = 2, palette = 'Spectral') -->
-<!-- # TODO: adjust time axis index -->
-<!-- ``` -->
+# Leaflet map of monitors
+PWFSLSmoke::monitor_leaflet(
+  ws_monitor = Portland_monitors
+)
+
+# Leaflet map of rasterized monitors
+raster_leaflet(
+  raster = Portland_rasterBrick,
+  index = 32,
+  palette = "aqi",
+  direction = 1
+)
+```
 
 ## Conclusion
 
 The *AirFireModeling* package is intended to simplify downloading, analyzing, 
-and comparing spatiotemporal BlueSky Model and monitor data. The package focuses 
-on memory efficient exploration and analysis while providing a simple and 
-consistent syntax.  
+and comparing spatio-temporal BlueSky Model and monitor data. The package focuses 
+on harnessingn the *raster* package for memory efficient exploration and 
+analysis while providing a simple and consistent syntax.  
 
 **_Mazama Science_**
 

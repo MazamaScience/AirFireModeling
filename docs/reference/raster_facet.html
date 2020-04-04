@@ -72,7 +72,7 @@ subset the hours." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.12</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.13</span>
       </span>
     </div>
 
@@ -156,12 +156,14 @@ subset the hours.</p>
     </tr>
     <tr>
       <th>palette</th>
-      <td><p>Color palette used to map cell values. This must be one
-of the palettes available through <code><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>ggplot2::scale_colour_brewer()</a></code>.</p></td>
+      <td><p>Color palette used to map cell values. This must be either
+<code>"aqi"</code> or one of the palette names available through
+<code><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>ggplot2::scale_colour_brewer()</a></code>.</p></td>
     </tr>
     <tr>
       <th>breaks</th>
-      <td><p>The breaks used to map cell values to colors.</p></td>
+      <td><p>The breaks used to map cell values to colors. (Unless
+<code>palette = "aqi"</code> in which case AQI breaks are used.)</p></td>
     </tr>
     <tr>
       <th>direction</th>

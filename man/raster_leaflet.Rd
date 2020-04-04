@@ -23,8 +23,9 @@ raster_leaflet(
 
 \item{index}{And index into the Raster\* object. See details.}
 
-\item{palette}{Color palette used to map cell values. This must be one
-of the palettes available through \code{ggplot2::scale_colour_brewer()}.}
+\item{palette}{Color palette used to map cell values. This must be either
+\code{"aqi"} or one of the palette names available through
+\code{ggplot2::scale_colour_brewer()}.}
 
 \item{breaks}{The breaks used to map cell values to colors. CURRENTLY UNUSED}
 

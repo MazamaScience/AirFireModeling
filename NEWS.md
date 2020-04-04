@@ -1,3 +1,8 @@
+# AirFireModeling 0.2.13
+
+* Added support for 'aqi' colors to `raster_leaflet()`.
+* Finished "Introduction to AirFireModeling" vignette.
+
 # AirFireModeling 0.2.12
 
 * Restored improved `monitor_toRaster()`.
