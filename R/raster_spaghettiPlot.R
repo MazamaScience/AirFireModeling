@@ -219,13 +219,6 @@ raster_spaghettiPlot <- function(
     argsList$ws_monitor <- monitorList[[i]]
     argsList$col <- colors[i]
 
-    # # First plot
-    # if ( i == 1 && !('add' %in% names(argsList)) )
-    #   argsList$add <- FALSE
-    #
-    # if ( i > 1 )
-    #   argsList$add <- TRUE
-
     # Plot
     do.call(PWFSLSmoke::monitor_timeseriesPlot, argsList)
 

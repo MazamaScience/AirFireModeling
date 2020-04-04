@@ -20,3 +20,39 @@ A \code{RasterBrick} object.
 \description{
 Create a Raster from monitor object
 }
+\examples{
+\dontrun{
+# library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
+
+
+# Load model data
+rasterList <- raster_load(
+  model = c("PNW-4km"),
+  modelRun = c(2019100900),
+  xlim = c(-125, -117),
+  ylim = c(45.5, 49)
+)
+
+# Load monitor data
+ws_monitor <-
+  PWFSLSmoke::monitor_load(
+    startdate = 2019100901,
+    enddate = 2019101223
+  ) \%>\%
+  PWFSLSmoke::monitor_subset(stateCodes = "WA")
+
+monitor_rasterBrick <- monitor_toRaster(ws_monitor, rasterList[[1]], mean)
+
+raster_facet(
+  monitor_rasterBrick,
+  index = 1:6,
+  title = "Monitoring data",
+  palette = 'Spectral',
+  col_county = 'gray95',
+  direction = -1,
+  breaks = c(-Inf, 0, 12, 35, 55, 150, 250, 350, Inf)
+)
+}
+
+}

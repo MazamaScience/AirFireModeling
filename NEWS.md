@@ -1,3 +1,7 @@
+# AirFireModeling 0.2.12
+
+* Restored improved `monitor_toRaster()`.
+
 # AirFireModeling 0.2.11
 
 * Improvements to `raster_spaghetti()`.

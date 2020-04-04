@@ -8,6 +8,41 @@
 #'
 #' @return A \code{RasterBrick} object.
 #'
+#' @examples
+#' \dontrun{
+#' # library(AirFireModeling)
+#' setModelDataDir('~/Data/BlueSky')
+#'
+#'
+#' # Load model data
+#' rasterList <- raster_load(
+#'   model = c("PNW-4km"),
+#'   modelRun = c(2019100900),
+#'   xlim = c(-125, -117),
+#'   ylim = c(45.5, 49)
+#' )
+#'
+#' # Load monitor data
+#' ws_monitor <-
+#'   PWFSLSmoke::monitor_load(
+#'     startdate = 2019100901,
+#'     enddate = 2019101223
+#'   ) %>%
+#'   PWFSLSmoke::monitor_subset(stateCodes = "WA")
+#'
+#' monitor_rasterBrick <- monitor_toRaster(ws_monitor, rasterList[[1]], mean)
+#'
+#' raster_facet(
+#'   monitor_rasterBrick,
+#'   index = 1:6,
+#'   title = "Monitoring data",
+#'   palette = 'Spectral',
+#'   col_county = 'gray95',
+#'   direction = -1,
+#'   breaks = c(-Inf, 0, 12, 35, 55, 150, 250, 350, Inf)
+#' )
+#'}
+#'
 monitor_toRaster <- function(
   ws_monitor = NULL,
   raster = NULL,
@@ -29,65 +64,47 @@ monitor_toRaster <- function(
   if ( !raster_isRaster(raster) )
     stop("Parameter 'raster' must be a single Raster* object.")
 
-  # # ---- Get all of the monitor locations ----------------------------------------
-  # us_monitors <- monitor_loadAnnual(2018) %>% monitor_subset(tlim = c(20180601,20181030))
-  #
-  # # ---- Load US States and plot the monitor locations over it. ------------------
-  # loadSpatialData("USCensusStates")
-  #
-  # # create a CONUS subset that excludes Alaska, Hawaii, etc.
-  # omit_codes <- c("HI", "AK", "AS", "PR", "GU", "MP", "VI")
-  # conus_states <- subset(USCensusStates, !(USCensusStates@data$stateCode %in% omit_codes))
-  # plot(conus_states)
-  #
-  # # Get the monitor locations into a SpatialPointsDataFrame. This will allow us to
-  # # use rgeos and do some spatial subsetting
-  #
-  # monitor_location_df <- subset(us_monitors$meta,
-  #                               select = c("monitorID", "longitude", "latitude", "stateCode", "countryCode"))
-  #
-  # xy <- monitor_location_df[c("longitude", "latitude")]
-  #
-  # monitor_spdf <- SpatialPointsDataFrame(coords = xy, data = monitor_location_df,
-  #                                        proj4string = CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
+  if ( !rlang::is_closure(FUN) )
+    stop("Parameter 'UN' must be a function.")
 
+  # ----- Create SpatialPointsDataFrame ----------------------------------------
 
+  # NOTE:  Prepare coords and data so that rows are locations
+  coords <-
+    PWFSLSmoke::monitor_extractMeta(ws_monitor) %>%
+    dplyr::select("longitude", "latitude")
 
+  data <-
+    PWFSLSmoke::monitor_extractData(ws_monitor)[,-1] %>%
+    t() %>%
+    data.frame()
 
+  # Assign raster package style timestamps
+  colnames(data) <- paste0("X", as.numeric(ws_monitor$data$datetime))
 
+  SP <- sp::SpatialPoints(
+    coords = coords,
+    proj4string = sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+  )
 
-  # # Checks
-  # if ( ncol(ws_monitor$data) == 2 ) {
-  #   stop('Needs more than a single ws_monitor object.')
-  # }
-  # if ( PWFSLSmoke::monitor_isEmpty(ws_monitor) ) {
-  #   stop('Cannot be an empty ws_monitor object.')
-  # }
-  #
-  # # Round the coordinates to the cell resolution
-  # roundCell <- function(x, r) ceiling(x*(1/r))/(1/r)
-  #
-  # # Create the XYZ data.frame with x lat, y lon, and z data
-  # M <- data.frame( x = roundCell(ws_monitor$meta$longitude, res),
-  #                  y = roundCell(ws_monitor$meta$latitude, res),
-  #                  z = t(ws_monitor$data[,-1]) )
-  # # Create raster from coordinates and values
-  # ras <-
-  #   suppressWarnings({ raster::rasterFromXYZ( xyz = M,
-  #                                             crs = crs,
-  #                                             res = res ) })
-  #
-  # # Apply POSIX numeric names to raster layers
-  # names(ras) <- as.numeric(ws_monitor$data$datetime)
-  #
-  # # Project to a different raster crs
-  # if ( !is.null(projectTo) ) {
-  #   ras <-
-  #     suppressWarnings({ raster::projectRaster( from = ras,
-  #                                               to = projectTo,
-  #                                               method = 'bilinear' ) })
-  # }
-  #
-  # return(ras)
+  # ----- Rasterize ------------------------------------------------------------
+
+  # Create empty RasterLayer
+  rasterLayer <- raster[[1]]
+  raster::values(rasterLayer) <- NA
+
+  # Rasterize
+  rasterBrick <- raster::rasterize(
+    x = SP,
+    y = rasterLayer,
+    field = data,
+    fun = FUN,
+    background = NA,
+    mask = FALSE,
+    update = FALSE,
+    updateValue = "all",
+    filename = "",
+    na.rm = TRUE
+  )
 
 }
