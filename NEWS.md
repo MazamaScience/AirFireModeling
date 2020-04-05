@@ -2,6 +2,7 @@
 
 * Added support for 'aqi' colors to `raster_leaflet()`.
 * Finished "Introduction to AirFireModeling" vignette.
+* Added support for `localPath` in `bluesky_load()` and `raster_load()`.
 
 # AirFireModeling 0.2.12
 
@@ -16,7 +17,7 @@
 * Improvements to `raster_spaghettiPlot()`.
 * Removed `skill_roc()` and `skill_confusionMatrix()`.
 * Removed `raster_correlation()`.
-* Removed `monitor_forecast()`, `raster_coordianteTrace()` and
+* Removed `monitor_forecast()`, `raster_coordnanteTrace()` and
 `raster_loadNearestMonitor()`.
 
 # AirFireModeling 0.2.9

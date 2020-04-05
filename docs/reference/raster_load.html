@@ -131,6 +131,7 @@ format to a spatio-temporal Raster\* object.</p>
   <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>modelType</span> <span class='kw'>=</span> <span class='st'>"forecast"</span>,
   <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://haze.airfire.org/bluesky-daily/output/standard"</span>,
+  <span class='kw'>localPath</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>clean</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
@@ -157,12 +158,16 @@ format to a spatio-temporal Raster\* object.</p>
       <td><p>Base URL for BlueSky output.</p></td>
     </tr>
     <tr>
+      <th>localPath</th>
+      <td><p>Vector of absolute paths to NetCDF files not found in `modelDataDir`.</p></td>
+    </tr>
+    <tr>
       <th>xlim</th>
-      <td><p>A vector of coordinate longitude bounds.</p></td>
+      <td><p>Vector of coordinate longitude bounds.</p></td>
     </tr>
     <tr>
       <th>ylim</th>
-      <td><p>A vector of coordinate latitude bounds.</p></td>
+      <td><p>Vector of coordinate latitude bounds.</p></td>
     </tr>
     <tr>
       <th>clean</th>

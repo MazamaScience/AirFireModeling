@@ -207,8 +207,7 @@ or any of the <code>raster_~()</code> functions provided by <span class="pkg">Ai
     </tr>
     <tr>
       <th>localPath</th>
-      <td><p>Absolute path to a downloaded NetCDF file that is not found
-in `modelDataDir`.</p></td>
+      <td><p>Absolute path to a NetCDF file not found in `modelDataDir`.</p></td>
     </tr>
     <tr>
       <th>xlim</th>
@@ -236,6 +235,8 @@ to "v2" format.</p></td>
 
     <p>The regurned <em>RasterBrick</em> object will contain all grid cells
 within the area defined by <code>xlim</code> and <code>ylim</code>.</p>
+<p>If <code>localPath</code> is used, <code>clean = FALSE</code> is automatically set.
+The package will never remove original model output that it has not downloaded.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {

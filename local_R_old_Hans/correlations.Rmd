@@ -23,19 +23,26 @@ monitor_leaflet(all_monitors)
 ```{r}
 # Create California Raster from monitor
 ca_monitors <- all_monitors %>% monitor_subset(stateCodes = 'CA')
-ca_raster <- monitor_toRaster(ca_monitors, res = 0.2)
 
 # Load bluesky rasters
 setModelDataDir('~/Data/Bluesky')
-bs_raster <- bluesky_load(modelRun = 2019111500)
+bs_raster <- bluesky_load(
+  model = "CANSAC-4km",
+  modelRun = 2019111500
+)
+
+ca_raster <- monitor_toRaster(
+  ws_monitor = ca_monitors, 
+  raster = bs_raster
+)
 ```
 
 ```{r}
 # Looking at the 12th hour
-raster_map(ca_raster[[12]], 'Spectral')
+raster_map(ca_raster[[12]], palette = 'Spectral')
 ```
 ```{r}
-raster_map(bs_raster[[12]], 'Spectral')
+raster_map(bs_raster[[12]], palette = 'Spectral')
 ```
 
 ```{r}

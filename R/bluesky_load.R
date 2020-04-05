@@ -34,12 +34,14 @@
 #' @note The regurned \emph{RasterBrick} object will contain all grid cells
 #' within the area defined by \code{xlim} and \code{ylim}.
 #'
+#' @note If \code{localPath} is used, \code{clean = FALSE} is automatically set.
+#' The package will never remove original model output that it has not downloaded.
+#'
 #' @param model Model identifier.
 #' @param modelRun Model initialization datestamp as "YYYYMMDDHH".
 #' @param modelType Subdirectory path containing BlueSky output, i.e. 'forcast'.
 #' @param baseUrl Base URL for BlueSky output.
-#' @param localPath Absolute path to a downloaded NetCDF file that is not found
-#' in `modelDataDir`.
+#' @param localPath Absolute path to a NetCDF file not found in `modelDataDir`.
 #' @param xlim A vector of coordinate longitude bounds.
 #' @param ylim A vector of coordinate latitude bounds.
 #' @param clean Logical specifying removal of original model data after conversion
@@ -78,17 +80,25 @@ bluesky_load <- function(
 
   # ----- Validate parameters --------------------------------------------------
 
-  MazamaCoreUtils::stopIfNull(model)
-  MazamaCoreUtils::stopIfNull(modelRun)
-  MazamaCoreUtils::stopIfNull(modelType)
   MazamaCoreUtils::stopIfNull(baseUrl)
+
+  if ( is.null(localPath) ) {
+
+    MazamaCoreUtils::stopIfNull(model)
+    MazamaCoreUtils::stopIfNull(modelRun)
+    MazamaCoreUtils::stopIfNull(modelType)
+
+  } else {
+
+    clean <- FALSE
+    if ( !file.exists(localPath) )
+      stop(sprintf("File not found at localPath = '%s'", localPath))
+
+  }
 
   # Defaults
   if ( !is.logical(clean) ) clean <- TRUE
   if ( !is.logical(verbose) ) verbose <- TRUE
-
-  if ( !is.null(localPath) && !file.exists(localPath) )
-    stop(sprintf("File not found at localPath = '%s'", localPath))
 
   # ----- Download and convert -------------------------------------------------
 

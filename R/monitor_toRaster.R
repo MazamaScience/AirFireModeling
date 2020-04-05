@@ -107,4 +107,8 @@ monitor_toRaster <- function(
     na.rm = TRUE
   )
 
+  # ----- Return ---------------------------------------------------------------
+
+  return(rasterBrick)
+
 }

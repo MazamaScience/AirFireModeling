@@ -25,8 +25,7 @@ bluesky_load(
 
 \item{baseUrl}{Base URL for BlueSky output.}
 
-\item{localPath}{Absolute path to a downloaded NetCDF file that is not found
-in `modelDataDir`.}
+\item{localPath}{Absolute path to a NetCDF file not found in `modelDataDir`.}
 
 \item{xlim}{A vector of coordinate longitude bounds.}
 
@@ -74,6 +73,9 @@ On 2019-10-11, available model identifiers include the following:
 \note{
 The regurned \emph{RasterBrick} object will contain all grid cells
 within the area defined by \code{xlim} and \code{ylim}.
+
+If \code{localPath} is used, \code{clean = FALSE} is automatically set.
+The package will never remove original model output that it has not downloaded.
 }
 \examples{
 \dontrun{

@@ -4,8 +4,9 @@
 #' @param modelRun Model initialization datestamp as "YYYYMMDDHH".
 #' @param modelType Subdirectory path containing BlueSky output, i.e. 'forcast'.
 #' @param baseUrl Base URL for BlueSky output.
-#' @param xlim A vector of coordinate longitude bounds.
-#' @param ylim A vector of coordinate latitude bounds.
+#' @param localPath Vector of absolute paths to NetCDF files not found in `modelDataDir`.
+#' @param xlim Vector of coordinate longitude bounds.
+#' @param ylim Vector of coordinate latitude bounds.
 #' @param clean Logical specifying removal of original model data after conversion
 #' to "v2" format.
 #' @param verbose Logical to display messages.
@@ -39,6 +40,7 @@ raster_load <- function(
   modelRun = NULL,
   modelType = 'forecast',
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
+  localPath = NULL,
   xlim = NULL,
   ylim = NULL,
   clean = TRUE,
@@ -47,72 +49,112 @@ raster_load <- function(
 
   # ----- Validate parameters --------------------------------------------------
 
-  MazamaCoreUtils::stopIfNull(model)
-  MazamaCoreUtils::stopIfNull(modelType)
-  MazamaCoreUtils::stopIfNull(baseUrl)
+  if ( is.null(localPath) ) {
 
-  if ( is.null(modelRun) ) {
-    # Use todays date if modelRun is null
-    now <- lubridate::now(tzone = 'UTC')
-    modelRun <- paste0(strftime(now, '%Y%m%d', tz = 'UTC'), '00')
-  } else {
-    # Make sure we end up with YYYYmmddHH
-    modelRun <- as.character(modelRun)
-    length <- stringr::str_length(modelRun)[1]
-    if ( length == 8 ) { # if the length is 8 append 00 (model runs work YYYYmmddHH)
-      modelRun <- paste0(modelRun, '00')
+    MazamaCoreUtils::stopIfNull(model)
+    MazamaCoreUtils::stopIfNull(modelType)
+    MazamaCoreUtils::stopIfNull(baseUrl)
+
+    if ( is.null(modelRun) ) {
+      # Use todays date if modelRun is null
+      now <- lubridate::now(tzone = 'UTC')
+      modelRun <- paste0(strftime(now, '%Y%m%d', tz = 'UTC'), '00')
+    } else {
+      # Make sure we end up with YYYYmmddHH
+      modelRun <- as.character(modelRun)
+      length <- stringr::str_length(modelRun)[1]
+      if ( length == 8 ) { # if the length is 8 append 00 (model runs work YYYYmmddHH)
+        modelRun <- paste0(modelRun, '00')
+      }
     }
+
+    # Verify YYYYmmddHH
+    for ( singleModelRun in modelRun ) {
+      if ( !stringr::str_detect(singleModelRun, '[0-9]{10}') )
+        stop(sprintf("'modelRun' parameter '%s' must have 10 digits"))
+    }
+
+    if ( length(modelType) > 1 )
+      stop("Only a single 'modelType' can be used in each call to raster_load().")
+
+    # Defaults
+    if ( !is.logical(clean) ) clean <- FALSE
+    if ( !is.logical(verbose) ) verbose <- TRUE
+
   }
-
-  # Verify YYYYmmddHH
-  for ( singleModelRun in modelRun ) {
-    if ( !stringr::str_detect(singleModelRun, '[0-9]{10}') )
-      stop(sprintf("'modelRun' parameter '%s' must have 10 digits"))
-  }
-
-  if ( length(modelType) > 1 )
-    stop("Only a single 'modelType' can be used in each call to raster_load().")
-
-  # Defaults
-  if ( !is.logical(clean) ) clean <- FALSE
-  if ( !is.logical(verbose) ) verbose <- TRUE
 
   # ----- Load data ------------------------------------------------------------
 
   # Empty list
   dataList <- list()
 
-  # NOTE:  We need to create all combinations of model and modelRun for
-  # NOTE:  downloading. The expand.grid() function does just that.
+  if ( !is.null(localPath) ) {
 
-  # Create combinations
-  allModelsDF <- expand.grid(model = model, modelRun = modelRun)
+    for ( i in seq_along(localPath) ) {
 
-  for ( i in seq_len(nrow(allModelsDF)) ) {
+      # Get the filePath and create a name
+      filePath <- localPath[i]
+      name <-
+        basename(filePath) %>%
+        stringr::str_replace(".nc", "") %>%
+        stringr::str_replace("_v2", "")
 
-    singleModel <- allModelsDF$model[i]
-    singleModelRun <- allModelsDF$modelRun[i]
-    name <- sprintf("%s_%s", singleModel, singleModelRun)
+      if ( verbose )
+        message(sprintf("Loading %s ...", name))
 
-    if ( verbose )
-      message(sprintf("Loading %s ...", name))
+      # Try to load model data
+      result <- try({
+        dataList[[name]] <- bluesky_load(
+          model = NULL,
+          modelRun = NULL,
+          modelType = 'forecast',
+          baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
+          localPath = filePath,
+          xlim = xlim,
+          ylim = ylim,
+          clean = FALSE,
+          verbose = verbose
+        )
+      }, silent = !verbose)
 
-    # Try to load model data
-    result <- try({
-      dataList[[name]] <- bluesky_load(
-        model = singleModel,
-        modelRun = singleModelRun,
-        modelType = modelType,
-        baseUrl = baseUrl,
-        localPath = NULL,
-        xlim = xlim,
-        ylim = ylim,
-        clean = clean,
-        verbose = verbose
-      )
-    }, silent = !verbose)
+    }
 
-  }
+  } else {
+
+    # NOTE:  We need to create all combinations of model and modelRun for
+    # NOTE:  downloading. The expand.grid() function does just that.
+
+    # Create combinations
+    allModelsDF <- expand.grid(model = model, modelRun = modelRun)
+
+    for ( i in seq_len(nrow(allModelsDF)) ) {
+
+      singleModel <- allModelsDF$model[i]
+      singleModelRun <- allModelsDF$modelRun[i]
+      name <- sprintf("%s_%s", singleModel, singleModelRun)
+
+      if ( verbose )
+        message(sprintf("Loading %s ...", name))
+
+      # Try to load model data
+      result <- try({
+        dataList[[name]] <- bluesky_load(
+          model = singleModel,
+          modelRun = singleModelRun,
+          modelType = modelType,
+          baseUrl = baseUrl,
+          localPath = NULL,
+          xlim = xlim,
+          ylim = ylim,
+          clean = clean,
+          verbose = verbose
+        )
+      }, silent = !verbose)
+
+    }
+
+  } # END is.null(localPath)
+
 
   return(dataList)
 

@@ -84,7 +84,7 @@ We can utilize various properties of the BlueSky Raster data model. For example,
 twelve_hr <- bs[[24]]
 
 # Add custom color breaks for visualization 
-cols <- c(0, 2, 5, 10, 25, 50, 100, 200)
+cols <- c(-Inf, 0, 2, 5, 10, 25, 50, 100, 200, Inf)
 
 raster_map(twelve_hr, breaks = cols, direction = -1, palette = 'Spectral')
 ```
@@ -100,7 +100,7 @@ Furthermore, we can observe temporal specific spatial locations and regions usin
 # Sacramento Coordinates
 lat <- 38.55
 lon <- -121.46
-raster_spaghetti(bs, lon, lat, n = 10, snapToGrid = FALSE) 
+raster_spaghettiPlot(bs, lon, lat, radius = 50, count = 10) 
 ```
 
 There are many more functions available in the _AirFireModeling_ package and used properly in conjunction with the _raster_ package, powerful spatiotemporal air quality analytics can be achieved. To begin observing and comparing more specific locations and regions, we will need to employ our second data model, _ws_monitor_'s.

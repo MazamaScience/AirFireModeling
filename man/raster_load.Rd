@@ -9,6 +9,7 @@ raster_load(
   modelRun = NULL,
   modelType = "forecast",
   baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
+  localPath = NULL,
   xlim = NULL,
   ylim = NULL,
   clean = TRUE,
@@ -24,9 +25,11 @@ raster_load(
 
 \item{baseUrl}{Base URL for BlueSky output.}
 
-\item{xlim}{A vector of coordinate longitude bounds.}
+\item{localPath}{Vector of absolute paths to NetCDF files not found in `modelDataDir`.}
 
-\item{ylim}{A vector of coordinate latitude bounds.}
+\item{xlim}{Vector of coordinate longitude bounds.}
+
+\item{ylim}{Vector of coordinate latitude bounds.}
 
 \item{clean}{Logical specifying removal of original model data after conversion
 to "v2" format.}
