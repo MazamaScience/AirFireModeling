@@ -117,16 +117,16 @@ the eleventh hour in an hourly updated model may look something like this:
 
 ## Maps
 
-Mapping is easy with the *AirFireModeling* `raster_map()` function. The `raster`
+Mapping is easy with the *AirFireModeling* `raster_ggmap()` function. The `raster`
 object passed in can be either a single `RasterBrick` or a list of them.
 
 ### Single Map
 
 A single map will be plotted for a single model. 
 
-```{r raster_map}
+```{r raster_ggmap}
 # Create a map from a RasterBrick
-raster_map(
+raster_ggmap(
   raster, 
   index = 7
 )
@@ -136,15 +136,15 @@ raster_map(
 
 A batch map will be plotted for a batch model. 
 
-```{r raster_map_2}
+```{r raster_ggmap_2}
 # Create a map from a list of RasterBricks
-raster_map(
+raster_ggmap(
   rasterList, 
   index = 7
 )
 
 # Could plot a single one with
-#raster_map(
+#raster_ggmap(
 #  rasterList[[1]],
 #  index = 7
 #)

@@ -63,7 +63,7 @@
 #'   ylim = c(42, 50)
 #' )
 #'
-#' raster_map(raster, index = 3)
+#' raster_ggmap(raster, index = 3)
 #' }
 #'
 bluesky_load <- function(

@@ -38,9 +38,9 @@
 #'   ylim = c(42, 50)
 #' )
 #'
-#' raster_map(rasterList, title="PNW-4km", index = 3)
+#' raster_ggmap(rasterList, title="PNW-4km", index = 3)
 #' }
-raster_map <- function(
+raster_ggmap <- function(
   raster,
   index = 1,
   palette = 'Greys',
@@ -85,7 +85,7 @@ raster_map <- function(
 
   # ----- Dispatch method ------------------------------------------------------
 
-  UseMethod('raster_map', raster)
+  UseMethod('raster_ggmap', raster)
 
 }
 
@@ -94,9 +94,9 @@ raster_map <- function(
 # NOTE:  For an explanation of S3 method dispatch, see:
 # NOTE:    http://adv-r.had.co.nz/OO-essentials.html#s3
 
-#' @describeIn raster_map Method for Raster* objects.
+#' @describeIn raster_ggmap Method for Raster* objects.
 #' @export
-raster_map.Raster <- function(
+raster_ggmap.Raster <- function(
   raster, # a single RasterBrick
   index = 1,
   palette = 'Greys',
@@ -119,9 +119,9 @@ raster_map.Raster <- function(
 
 }
 
-#' @describeIn raster_map Multi-threaded method for a list of Raster* objects.
+#' @describeIn raster_ggmap Multi-threaded method for a list of Raster* objects.
 #' @export
-raster_map.list <- function(
+raster_ggmap.list <- function(
   raster, # a list of RasterBricks
   index = 1,
   palette = 'Greys',

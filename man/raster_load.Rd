@@ -60,6 +60,6 @@ rasterList <- raster_load(
   ylim = c(42, 50)
 )
 
-raster_map(rasterList, index = 3)
+raster_ggmap(rasterList, index = 3)
 }
 }

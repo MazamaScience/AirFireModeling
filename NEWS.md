@@ -1,3 +1,9 @@
+# AirFireModeling 0.2.14
+
+* Renamed `raster_map()` to `raster_ggmap()` to make it clear that it returns
+a *ggplot2* plot object.
+* Added `monitor_forecastPlot()`.
+
 # AirFireModeling 0.2.13
 
 * Added support for 'aqi' colors to `raster_leaflet()`.

@@ -7,20 +7,19 @@
 #'
 #' @description Plots monitor data and overlays models of the bluesky forecasts.
 #'
-#' For each model, timeseries is created by gathering \code{count} grid cells
+#' For each model, a timeseries is created by gathering \code{count} grid cells
 #' within \code{radius} meters of the \code{ws_monitor}. The resulting set of
 #' timeseries are then collapsed into a single timeseries by applying the
 #' \code{quantile()} using the user specified probability \code{prob}.
 #'
-#' @param ws_monitor a ws_monitor object.
-#' @param starttime an optional start time to subset with
-#' @param endtime an optional end time to subset with
-#' @param models a list of valid monitors to plot
-#' @param subDir Subdirectory path containing netcdf data. (Passed to
-#' @param radius Radius (m) used to select model grid cells.
-#' @param count Count of model grid cells to be used.
+#' @param ws_monitor ws_monitor object.
+#' @param model Model identifier(s).
+#' @param modelType Subdirectory path containing BlueSky output, i.e. 'forcast'.
+#' @param baseUrl Base URL for BlueSky output.
+#' @param radius Distance (km) of radius from target location.
+#' @param count Number of grid cells within radius to return.
 #' @param prob Quantile probability used when  plotting model data.
-#' \code{bluesky_load()})
+#' @param verbose Logical to display messages.
 #' @param ... Additional arguments passed to
 #' \code{PWFSLSmoke::monitor_timeseriesPlot()}.
 #'
@@ -32,21 +31,30 @@
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/Bluesky')
 #'
-#' yosemite_village <-
+#' San_Pablo <-
 #'   monitor_load(20191025, 20191029) %>%
 #'   monitor_subset(monitorIDs = '060131004_01')
 #'
-#' monitor_forecastPlot(yosemite_village)
+#' models <- bluesky_findModels(
+#'   San_Pablo$meta$longitude,
+#'   San_Pablo$meta$latitude
+#' )
+#'
+#' monitor_forecastPlot(
+#'   San_Pabol,
+#'   model = models
+#' )
+#'
 #' }
 monitor_forecastPlot <-  function(
   ws_monitor,
-  starttime = NULL,
-  endtime = NULL,
-  models = c('CANSAC-1.33km', 'CANSAC-4km'),
+  model = NULL,
   modelType = "forecast",
+  baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
   radius = 20,
   count = 9,
   prob = 0.5,
+  verbose = TRUE,
   ...
 ) {
 
@@ -60,19 +68,32 @@ monitor_forecastPlot <-  function(
   if ( PWFSLSmoke::monitor_isEmpty(ws_monitor) )
     stop("Parameter ws_monitor is empty")
 
+  if ( !is.numeric(radius) )
+    stop("Parameter 'radius' must be numeric.")
+
+  if ( !is.null(count) ) {
+    if ( !is.numeric(count) )
+      stop("Parameter 'count' must be numeric.")
+  }
+
+  longitude <- ws_monitor$meta$longitude
+  latitude <- ws_monitor$meta$latitude
+
+  availableModels <- bluesky_findModels(longitude, latitude)
+  modelIsValid <- model %in% availableModels
+  if ( any(!modelIsValid) ) {
+    missingModels <- model[!modelIsValid]
+    stop(paste0(
+      "These models do not cover this location: ",
+      paste0(missingModels, collapse = ", ")
+    ))
+  }
 
   # ----- Read in model data ---------------------------------------------------
 
-  # TODO:  Use a package internal list of model domains to automatically select
-  # TODO:  which models can be used.
-
-  # Extract target coordinates
-  lon <- ws_monitor$meta$longitude
-  lat <- ws_monitor$meta$latitude
-
-  # Create bbox for bs_grid ~100 km wide and tall, larger than the radius
-  xlim <- c(lon - 0.5, lon + 0.5)
-  ylim <- c(lat - 0.5, lat + 0.5)
+  # Create bbox ~100 km wide and tall, larger than any reasonable radius
+  xlim <- c(longitude - 0.5, longitude + 0.5)
+  ylim <- c(latitude - 0.5, latitude + 0.5)
 
   # Monitor enddate
   monitor_endtime <- utils::tail(ws_monitor$data$datetime, 1)
@@ -83,27 +104,33 @@ monitor_forecastPlot <-  function(
   model_starttime <- lubridate::floor_date(monitor_endtime, unit = "day")
   modelRun <- strftime(model_starttime, "%Y%m%d00", tz = "UTC")
 
+  # Create a list of "fake" monitors derived from model data
+
   fakeMonitorList <- list()
-  for ( model in models ) {
+  for ( modelName in model ) {
 
     result <- try({
-      fakeMonitorList[[model]] <-
+
+      fakeMonitorList[[modelName]] <-
+        # Load each model
         bluesky_load(
-          model = model,
+          model = modelName,
           modelRun = modelRun,
           modelType = modelType,
           xlim = xlim,
           ylim = ylim
         ) %>%
+        # Subset and convert to ws_monitor
         raster_toMonitor(
-          longitude = lon,
-          latitude = lat,
+          longitude = longitude,
+          latitude = latitude,
           radius = radius,
-          count,
-          raseterName = model
+          count = count,
+          rasterName = modelName
         ) %>%
-        monitor_collapse(
-          monitorID = model,
+        # Collapse to a single ws_monitor
+        PWFSLSmoke::monitor_collapse(
+          monitorID = modelName,
           FUN = quantile,
           probs = prob,
           na.rm = TRUE
@@ -112,10 +139,12 @@ monitor_forecastPlot <-  function(
     }, silent = TRUE)
 
     if ( "try-error" %in% result ) {
-      warning(sprintf("Unable to load %s %s for %s", model, subDir, modelRun))
+      warning(sprintf("Unable to load %s %s for %s", model, modelType, modelRun))
     }
 
   }
+
+  # NOTE:  Combining monitors ensures that they share a common time axis.
 
   # Combine the monitors
   fakeMonitors <- PWFSLSmoke::monitor_combine(fakeMonitorList)
@@ -123,38 +152,28 @@ monitor_forecastPlot <-  function(
 
   # ----- Create plot --------------------------------------------------------
 
-  # TODO:  Combine all time axes before sort(unique(...))
+  # Plot it once with transparent colors to get the right y scaling
+  argsList <- list(...)
+  argsList$ws_monitor <- allMonitors
+  argsList$col <- 'transparent'
+  do.call(PWFSLSmoke::monitor_timeseriesPlot, argsList)
 
-  # Create long time axis
-  time_axis <- sort(unique(c(ws_monitor$data$datetime,
-                             fakeMonitorList[[1]]$data$datetime)))
-
-  xlim_plot <- range(time_axis)
-  ylim_plot <- c(0, max(allMonitors$data[,-1], na.rm = TRUE))
-
-  # TODO:  Allow most of these parameters to be specified as arguments or as
-  # TODO:  part of ...
-
-  # Add ws_monitor to plot
-  PWFSLSmoke::monitorPlot_timeseries(
-    ws_monitor = ws_monitor,
-    xlim = xlim_plot,
-    ylim = ylim_plot,
-    ...
-  )
-
-  # Create colors and legend names
-  # cols <- RColorBrewer::brewer.pal(length(fakeMonitorList), 'Set1')
+  # Now add the ws_monitor data
+  argsList <- list(...)
+  argsList$ws_monitor <- allMonitors
+  argsList$monitorID <- ws_monitor$meta$monitorID
+  do.call(PWFSLSmoke::monitor_timeseriesPlot, argsList)
 
   # Create a list of more colors than we will use
   cols <- RColorBrewer::brewer.pal(9, 'Set1')
 
+  # Add all the "fake" monitors
   i <- 0
-  for ( model in names(fakeMonitorList) ) {
+  for ( name in names(fakeMonitorList) ) {
 
     i <- i + 1
     PWFSLSmoke::monitor_timeseriesPlot(
-      fakeMonitorList[[model]],
+      fakeMonitorList[[name]],
       add = TRUE,
       type = "b",
       lwd = 1,
@@ -170,6 +189,8 @@ monitor_forecastPlot <-  function(
     lwd = 2,
     col = cols
   )
+
+  graphics::title(ws_monitor$meta$siteName)
 
 }
 
@@ -188,20 +209,32 @@ if (FALSE) {
     PWFSLSmoke::monitor_load(20191007, 20191014) %>%
     PWFSLSmoke::monitor_subset(monitorIDs = "lon_.120.591_lat_38.714_arb2.1008")
 
-  starttime <- NULL
-  endtime <- NULL
-  models <- c('CANSAC-1.33km', 'CANSAC-4km')
+  ws_monitor
+  model = c('CANSAC-1.33km', 'CANSAC-4km')
+  modelType = "forecast"
+  radius = 20
+  count = 9
+  prob = 0.5
+  verbose = TRUE
 
-  monitor_forecastPlot(ws_monitor, models = models)
+  monitor_forecastPlot(
+    ws_monitor,
+    model = c('CANSAC-1.33km', 'CANSAC-4km'),
+    modelType = "forecast",
+    radius = 20,
+    count = 9,
+    prob = 0.5,
+    verbose = TRUE
+  )
 
   # Napa
   ws_monitor <-
     PWFSLSmoke::monitor_load(20191015, 20191026) %>%
     PWFSLSmoke::monitor_subset(monitorIDs = "060131004_01")
 
-  models <- list('CANSAC-1.33km', 'CANSAC-4km')
+  model <- c('CANSAC-1.33km', 'CANSAC-4km')
 
-  monitor_forecastPlot(ws_monitor, models = models)
+  monitor_forecastPlot(ws_monitor, model = model)
 
 }
 

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Load BlueSky model data — raster_load • AirFireModeling</title>
+<title>Geographic map of BlueSky model output — raster_ggmap • AirFireModeling</title>
 
 
 <!-- jquery -->
@@ -35,9 +35,10 @@
 
 
 
-<meta property="og:title" content="Load BlueSky model data — raster_load" />
-<meta property="og:description" content="Load or download models and automatically convert NetCDF (.nc)
-format to a spatio-temporal Raster\* object." />
+<meta property="og:title" content="Geographic map of BlueSky model output — raster_ggmap" />
+<meta property="og:description" content="Creates a ggplot2 plot object from a Raster\*
+object. The returned plot object can be plotted or can be enhanced with
+additional ggplot2 intructions." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -116,25 +117,55 @@ format to a spatio-temporal Raster\* object." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Load BlueSky model data</h1>
+    <h1>Geographic map of BlueSky model output</h1>
     
-    <div class="hidden name"><code>raster_load.Rd</code></div>
+    <div class="hidden name"><code>raster_ggmap.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Load or download models and automatically convert NetCDF (.nc)
-format to a spatio-temporal Raster\* object.</p>
+    <p>Creates a <span class="pkg">ggplot2</span> plot object from a Raster\*
+object. The returned plot object can be plotted or can be enhanced with
+additional <span class="pkg">ggplot2</span> intructions.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>raster_load</span>(
-  <span class='kw'>model</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>modelType</span> <span class='kw'>=</span> <span class='st'>"forecast"</span>,
-  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://haze.airfire.org/bluesky-daily/output/standard"</span>,
-  <span class='kw'>localPath</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>clean</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+    <pre class="usage"><span class='fu'>raster_ggmap</span>(
+  <span class='no'>raster</span>,
+  <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>palette</span> <span class='kw'>=</span> <span class='st'>"Greys"</span>,
+  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>12</span>, <span class='fl'>35</span>, <span class='fl'>55</span>, <span class='fl'>150</span>, <span class='fl'>250</span>, <span class='fl'>350</span>, <span class='fl'>Inf</span>),
+  <span class='kw'>direction</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"PM2.5"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
+  <span class='kw'>col_state</span> <span class='kw'>=</span> <span class='st'>"black"</span>,
+  <span class='kw'>col_county</span> <span class='kw'>=</span> <span class='st'>"gray80"</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)
+
+<span class='co'># S3 method for Raster</span>
+<span class='fu'>raster_ggmap</span>(
+  <span class='no'>raster</span>,
+  <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>palette</span> <span class='kw'>=</span> <span class='st'>"Greys"</span>,
+  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>12</span>, <span class='fl'>35</span>, <span class='fl'>55</span>, <span class='fl'>150</span>, <span class='fl'>250</span>, <span class='fl'>350</span>, <span class='fl'>Inf</span>),
+  <span class='kw'>direction</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"PM2.5"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
+  <span class='kw'>col_state</span> <span class='kw'>=</span> <span class='st'>"black"</span>,
+  <span class='kw'>col_county</span> <span class='kw'>=</span> <span class='st'>"gray80"</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)
+
+<span class='co'># S3 method for list</span>
+<span class='fu'>raster_ggmap</span>(
+  <span class='no'>raster</span>,
+  <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>palette</span> <span class='kw'>=</span> <span class='st'>"Greys"</span>,
+  <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>12</span>, <span class='fl'>35</span>, <span class='fl'>55</span>, <span class='fl'>150</span>, <span class='fl'>250</span>, <span class='fl'>350</span>, <span class='fl'>Inf</span>),
+  <span class='kw'>direction</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"PM2.5"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
+  <span class='kw'>col_state</span> <span class='kw'>=</span> <span class='st'>"black"</span>,
+  <span class='kw'>col_county</span> <span class='kw'>=</span> <span class='st'>"gray80"</span>,
   <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )</pre>
 
@@ -142,37 +173,41 @@ format to a spatio-temporal Raster\* object.</p>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>model</th>
-      <td><p>Model identifier.</p></td>
+      <th>raster</th>
+      <td><p>A Raster\* object or a list of Raster\* objects.</p></td>
     </tr>
     <tr>
-      <th>modelRun</th>
-      <td><p>Model initialization datestamp as "YYYYMMDDHH".</p></td>
+      <th>index</th>
+      <td><p>And index into the Raster\* object. See details.</p></td>
     </tr>
     <tr>
-      <th>modelType</th>
-      <td><p>Subdirectory path containing BlueSky output, i.e. 'forcast'.</p></td>
+      <th>palette</th>
+      <td><p>The color palette used to map cell values. This must be one
+of the palettes available through <code><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>ggplot2::scale_colour_brewer()</a></code>.</p></td>
     </tr>
     <tr>
-      <th>baseUrl</th>
-      <td><p>Base URL for BlueSky output.</p></td>
+      <th>breaks</th>
+      <td><p>The breaks used to map cell values to colors.</p></td>
     </tr>
     <tr>
-      <th>localPath</th>
-      <td><p>Vector of absolute paths to NetCDF files not found in `modelDataDir`.</p></td>
+      <th>direction</th>
+      <td><p>Numeric. <code>direction = -1</code> reverses color palette.</p></td>
     </tr>
     <tr>
-      <th>xlim</th>
-      <td><p>Vector of coordinate longitude bounds.</p></td>
+      <th>title</th>
+      <td><p>(Optional) A plot title.</p></td>
     </tr>
     <tr>
-      <th>ylim</th>
-      <td><p>Vector of coordinate latitude bounds.</p></td>
+      <th>timezone</th>
+      <td><p>Olson timezone in which times will be displayed.</p></td>
     </tr>
     <tr>
-      <th>clean</th>
-      <td><p>Logical specifying removal of original model data after conversion
-to "v2" format.</p></td>
+      <th>col_state</th>
+      <td><p>Color of state lines. (use <code>'transparent'</code> to hide them.)</p></td>
+    </tr>
+    <tr>
+      <th>col_county</th>
+      <td><p>Color of county lines. (use <code>'transparent'</code> to hide them.)</p></td>
     </tr>
     <tr>
       <th>verbose</th>
@@ -182,11 +217,20 @@ to "v2" format.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of one or more raster objects.</p>
+    <p>A ggplot object.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code>model</code> and <code>modelRun</code> are vectorised parameters. Multiple
-datasets can be loaded at once.</p>
+    <p>If a list of Raster\* objects is provided, a small-multiples
+plot is created.</p>
+<p>The <code>index</code> is typically associated with a time-axis or <code>RasterLayer</code>,
+e.g <code>index = 1</code> is the first hour of a model.</p>
+    <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
+
+    
+<ul>
+<li><p><code>Raster</code>: Method for Raster* objects.</p></li>
+<li><p><code>list</code>: Multi-threaded method for a list of Raster* objects.</p></li>
+</ul>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
@@ -194,14 +238,14 @@ datasets can be loaded at once.</p>
 <span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky'</span>)
 
 <span class='co'># Load model data</span>
-<span class='no'>rasterList</span> <span class='kw'>&lt;-</span> <span class='fu'>raster_load</span>(
+<span class='no'>rasterList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_load.html'>raster_load</a></span>(
   <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
   <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2019100800</span>, <span class='fl'>2019100900</span>, <span class='fl'>2019101000</span>, <span class='fl'>2019101100</span>),
   <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>115</span>),
   <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>42</span>, <span class='fl'>50</span>)
 )
 
-<span class='fu'><a href='raster_ggmap.html'>raster_ggmap</a></span>(<span class='no'>rasterList</span>, <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>3</span>)
+<span class='fu'>raster_ggmap</span>(<span class='no'>rasterList</span>, <span class='kw'>title</span><span class='kw'>=</span><span class='st'>"PNW-4km"</span>, <span class='kw'>index</span> <span class='kw'>=</span> <span class='fl'>3</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -210,6 +254,7 @@ datasets can be loaded at once.</p>
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
       <li><a href="#details">Details</a></li>
+      <li><a href="#methods-by-class-">Methods (by class)</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

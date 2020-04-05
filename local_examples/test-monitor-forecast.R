@@ -8,19 +8,21 @@ library(PWFSLSmoke)
 library(AirFireModeling)
 setModelDataDir("~/Data/Bluesky")
 
-Pollock_Pines <- 
+Pollock_Pines <-
   monitor_load(20191007, 20191014) %>%
   monitor_subset(monitorIDs = "lon_.120.591_lat_38.714_arb2.1008")
 
-Orleans <- 
+Orleans <-
   monitor_load(20191007, 20191014) %>%
   monitor_subset(monitorIDs = "lon_.123.537_lat_41.304_arb2.1016")
 
+
 targetTitle <- "Orleans Monitor and CANSAC Forecasts"
 targetMonitor <- Orleans
-targetLon <- Pollock_Pines$meta$longitude
-targetLat <- Pollock_Pines$meta$latitude
-timezone <- Pollock_Pines$meta$timezone
+targetLon <- targetMonitor$meta$longitude
+targetLat <- targetMonitor$meta$latitude
+timezone <- targetMonitor$meta$timezone
+
 
 timeAxis <- seq(
   MazamaCoreUtils::parseDatetime(20191007, timezone = "UTC"),
@@ -56,27 +58,58 @@ ylim <- c(targetLat - 0.5, targetLat + 0.5)
 
 # ----- CANSAC_1.33km
 
-CANSAC_1.33km <- bluesky_load(
-  model = "CANSAC-1.33km",
-  modelRun = 2019101400,
-  subDir = "forecast",
+CANSAC_1.33km_rasterBrick <- raster_aggregate(
+  model = "CANSAC-4km",
+  firstModelRun = 2019100700,
+  lastModelRun = 2019101400,
   xlim = xlim,
   ylim = ylim
 )
 
-monitor_CANSAC_1.33km <- grid_createMonitor(
-  CANSAC_1.33km,
+
+# CANSAC_1.33km_rasterBrick <- bluesky_load(
+#   model = "CANSAC-1.33km",
+#   modelRun = 2019101400,
+#   modelType = "forecast",
+#   xlim = xlim,
+#   ylim = ylim
+# )
+
+CANSAC_1.33km_monitor <- raster_toMonitor(
+  CANSAC_1.33km_rasterBrick,
   longitude = targetLon,
   latitude = targetLat,
-  radius = 10000,
-  monitorID = "Model data",
+  radius = 10
+)
+
+monitor_timeseriesPlot(
+  CANSAC_1.33km_monitor,
+  add = TRUE,
+  type = "l",
+  lwd = 1,
+  col = adjustcolor(
+    col = "salmon",
+    alpha.f = 0.2,
+    offset = c(0.1, 0.1, 0.1, 0) # more white"
+  )
+)
+
+CANSAC_1.33km_Orleans <- monitor_collapse(
+  CANSAC_1.33km_monitor,
   FUN = quantile,
-  probs = 0.80,
+  probs = 0.8,
   na.rm = TRUE
 )
 
-monitor_timeseriesPlot(monitor_CANSAC_1.33km, add = TRUE, 
-                       type = "b", lwd = 1, cex=0.8, col = "salmon")
+monitor_timeseriesPlot(
+  CANSAC_1.33km_Orleans,
+  add = TRUE,
+  type = "b",
+  lwd = 2,
+  cex = 0.8,
+  col = "salmon"
+)
+
 
 # ----- CANSAC_4km
 
@@ -100,7 +133,7 @@ monitor_CANSAC_4km <- grid_createMonitor(
   na.rm = TRUE
 )
 
-monitor_timeseriesPlot(monitor_CANSAC_4km, add = TRUE, 
+monitor_timeseriesPlot(monitor_CANSAC_4km, add = TRUE,
                        type = "b", lwd = 1, cex=0.8, col = "dodgerblue")
 
 # ----- PNW_4km
@@ -116,7 +149,7 @@ PNW_4km <- bluesky_load(
 
 # NOTE:  We get this when a model run isn't finished:
 # NOTE:
-# NOTE:  Error in grid_createMonitor(PNW_4km, longitude = targetLon, latitude = targetLat,  : 
+# NOTE:  Error in grid_createMonitor(PNW_4km, longitude = targetLon, latitude = targetLat,  :
 # NOTE:    Currently, only 3-D grids are supported.
 
 # monitor_PNW_4km <- grid_createMonitor(
@@ -129,8 +162,8 @@ PNW_4km <- bluesky_load(
 #   probs = 0.80,
 #   na.rm = TRUE
 # )
-# 
-# monitor_timeseriesPlot(monitor_PNW_4km, add = TRUE, 
+#
+# monitor_timeseriesPlot(monitor_PNW_4km, add = TRUE,
 #                        type = "b", lwd = 1, cex=0.8, col = "firebrick")
 
 
@@ -145,9 +178,9 @@ legend(
 # # Combine them and use AirMonitorPlots to plot them
 # Yosemite_combined <-
 #   PWFSLSmoke::monitor_combine(list(Yosemite_Village, Yosemite_fake))
-# 
+#
 # library(AirMonitorPlots)
-# 
+#
 # ggplot_pm25Timeseries(Yosemite_combined) +
 #   geom_pm25Points(aes(color = monitorID)) +
 #   stat_nowcast(aes(color = monitorID)) +

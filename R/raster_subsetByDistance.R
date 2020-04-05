@@ -33,7 +33,7 @@
 #'   radius = 100
 #' )
 #'
-#' raster_map(Portland_area)
+#' raster_ggmap(Portland_area)
 #' }
 raster_subsetByDistance <- function(
   raster = NULL,

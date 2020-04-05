@@ -51,6 +51,6 @@ Portland_area <- raster_subsetByDistance(
   radius = 100
 )
 
-raster_map(Portland_area)
+raster_ggmap(Portland_area)
 }
 }

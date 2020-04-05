@@ -31,7 +31,7 @@
 #'   polygon = subset(USCensusStates, stateCode == "OR")
 #' )
 #'
-#' raster_map(
+#' raster_ggmap(
 #'   OregonList,
 #'   palette = "Spectral",
 #'   breaks = c(-1, 0, 1, 2, 4, 8, 16, 32, Inf),
