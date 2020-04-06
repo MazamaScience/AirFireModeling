@@ -3,6 +3,7 @@
 * Renamed `raster_map()` to `raster_ggmap()` to make it clear that it returns
 a *ggplot2* plot object.
 * Added `monitor_forecastPlot()`.
+* Added "Aggregation by Polygon" vignette.
 
 # AirFireModeling 0.2.13
 

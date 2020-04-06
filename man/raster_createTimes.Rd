@@ -7,7 +7,7 @@
 raster_createTimes(raster = NULL)
 }
 \arguments{
-\item{raster}{A Raster\* object.}
+\item{raster}{A RasterBrick.}
 }
 \value{
 \code{POSIXct} time.

@@ -7,7 +7,7 @@
 raster_createTimeStrings(raster = NULL, timezone = "UTC", prefix = "")
 }
 \arguments{
-\item{raster}{A Raster\* object.}
+\item{raster}{A RasterBrick.}
 
 \item{timezone}{Olson timezone in which times will be displayed.}
 

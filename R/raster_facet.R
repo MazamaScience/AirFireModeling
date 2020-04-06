@@ -220,8 +220,7 @@ raster_facet <- function(
   prefix = ""
 ) {
 
-  epochSecs <- as.numeric(stringr::str_remove(layerName, 'X'))
-  layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
+  layerTime <- raster_createLayerNameTimes(layerName)
   timeString <- paste0(prefix, strftime(layerTime, format = "%Y-%m-%d %H:00 %Z", tz = timezone))
 
   return(timeString)
@@ -233,8 +232,7 @@ raster_facet <- function(
   layerName = NULL
 ) {
 
-  epochSecs <- as.numeric(stringr::str_remove(layerName, 'X'))
-  layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
+  layerTime <- raster_createLayerNameTimes(layerName)
   timeString <- strftime(layerTime, format = "%Y%m%d%H", tz = "UTC")
 
   return(timeString)

@@ -47,7 +47,7 @@ Here is a map of the raster at the first hour index of the BlueSky model.
 
 ```{r}
 dpnw <- crop(pnw$`PNW-4km_2018110900`, wa_state)
-raster_map(dpnw, index = 1, palette = 'BuPu')
+raster_ggmap(dpnw, index = 1, palette = 'BuPu')
 ```
 
 We can then use polygon data we loaded to extract the cells within each polygon (by centroid) and apply function over the cell values. In the example below, we apply an averaging function to each polygon domain cells, and then convert the Spatial* st Object to an sf object, a more well supported spatial type object. 
@@ -74,10 +74,12 @@ gg
 
 This makes per-polygon statistics pretty straightforward and intuitive. 
 
-<!-- ```{r} -->
-<!-- library(dismo) -->
-<!-- v <- voronoi(wa_counties) -->
-<!-- vwa <- intersect(v, wa_state) -->
+```{r voronoi}
+#library(dismo)
+#v <- voronoi(wa_counties)
+#vwa <- intersect(v, wa_state)
+#
+#spplot(vwa, 'NAME_2')
+```
 
-<!-- spplot(vwa, 'NAME_2') -->
-<!-- ``` -->
+

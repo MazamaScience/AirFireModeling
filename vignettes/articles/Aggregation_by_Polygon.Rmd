@@ -1,0 +1,245 @@
+---
+title: "Aggregation by Polygon"
+author: "Mazama Science"
+date: "2020-04-06"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Aggregation by Polygon}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 7, 
+  fig.height = 5
+)
+```
+
+## Overview
+
+This vignette demonstrates how to intersect spatial and gridded data,
+aggregating values by spatial polygon. This is useful when creating summary
+statistics at the state or county level. These statistics can then be 
+presenteted as a table or as a [chloropleth map](https://en.wikipedia.org/wiki/Choropleth_map).
+
+This technique uses *sp* style spatial objects and is for those already 
+familiar with the *MazamaSpatialUtils* package.
+
+### Spatial data setup
+
+The *MazamaSpatialUtils* package is already a requirement for *AirFireModeling* 
+and is therefore already installed. We will use datasets named
+`USCensusStates` and `USCensusCounties`. Each of these is an *sp* package
+`SpatialPolygonsDataFrame` (SPDF). These are "S4" objects with per-polygon data 
+stored in the `@data` slot.
+
+```{r MazamaSpatialUtils}
+library("MazamaSpatialUtils")
+setSpatialDataDir("~/Data/Spatial")
+
+loadSpatialData("USCensusStates")
+loadSpatialData("USCensusCounties")
+
+WA <- subset(USCensusStates, stateCode == "WA")
+WA_counties <- subset(USCensusCounties, stateCode == "WA")
+
+plot(WA_counties, col = "gray80", border = "gray95")
+plot(WA, add = TRUE)
+
+# If either dataset is missing you can install them with
+# installSpatialData()
+#
+# Then look to see what was installed
+# installedSpatialData()
+```
+
+Data are accessbile from the `@data` slot which can be accessed explicitly or
+by reference to the SPDF.
+
+```{r SPDF_data}
+# Column names 
+names(WA) # Explicitly: names(WA_counties@data)
+
+# County names
+WA_counties$name
+```
+
+### Load raster data
+
+We will load data from a bluesky model and create a subset for Washington state.
+
+Pay attention to the different types of "raster" operations. Functions named
+`raster_~()` all come from the *AirFireModeling* package while we will use
+explicit namespacing, _e.g._ `raster::crop()`, for functions that come from the 
+*raster* package. 
+
+```{r raster_load}
+library(AirFireModeling) # For base package support
+setModelDataDir("~/Data/BlueSky")
+
+WA_PNW_4km <- 
+  bluesky_load(model = 'PNW-4km', modelRun = 2018110900) %>%
+  raster::crop(WA) %>%
+  raster_subsetByPolygon(WA)
+
+# A quick ggplot map from the AirFireModeling package
+raster_ggmap(WA_PNW_4km)
+```
+
+### Summarizing data
+
+We will use the powerful `raster::extract()` function to summarize our data
+by individual polygon. In the example below, we take the median of the
+grid cell values within each polygon. The incoming SPDF is returned with 
+additional columns of data.
+
+*NOTE:  Summarizing by polygon can take a while.*
+
+```{r extract}
+# Summarize raster by polygon
+WA_counties_improved <-
+  raster::extract(
+    WA_PNW_4km,
+    WA_counties,
+    fun = function(x, ...) { mean(x, ...) },
+    na.rm = TRUE,
+    sp = TRUE
+  )
+
+# Additional columns or raster data have now been added to the SPDF
+names(WA_counties_improved)
+```
+
+The columns of the form `X1541725200` are all raster layers whose names encode
+the UTC time. These can be extracted with:
+
+```{r raster_createLay}
+layerNames <-
+  names(WA_counties_improved) %>%
+  stringr::str_subset("X[0-9]{10}")
+  
+layerTimes <- raster_createLayerNameTimes(layerNames)
+
+print(layerTimes)
+```
+
+### Summary dataframe
+
+Creating a summary dataframe is just a matter of rearranging things.
+
+```{r summary_table}
+# Extract summary data and transpose
+timeByCountyMatrix <-
+  WA_counties_improved@data[, layerNames] %>%
+  t()
+
+# Create dataframe with 'datetime' column and county names
+timeByCountyDF <- data.frame(timeByCountyMatrix)
+names(timeByCountyDF) <- WA_counties_improved$name
+timeByCountyDF <- dplyr::bind_cols(datetime = layerTimes, timeByCountyDF)
+
+# Look at a portion of the new dataframe
+knitr::kable(
+  timeByCountyDF[1:10,1:6],
+  format = "markdown",
+  digits = 0
+)
+```
+
+## Examples using *base* and *sp*
+
+The following exmaples demonstrate low level, data handling and plotting 
+that avoid the use of the *dplry* and *ggplot*. If you are more comfortable
+with lower level R functionality, this section is for you.
+
+### base::barplot
+
+At this point we have a well organized dataframe that we can use any way we
+want. Let's use base R functions to create a customized barplot showing 
+cumulative smoke impacts by county.
+
+```{r smoke_impact_table, fig.height = 12}
+# Remember to drop the initial 'datetime' column
+countySums <- 
+  colSums(timeByCountyDF[,-1])
+
+# NOTE:  Perhaps we should normalize by area?
+# NOTE:  The `areaLand` column in the SPDF is in units of m^2
+# NOTE:  If we do this we have to change the breaks when plotting maps.
+###countySums <- countySums / (WA_counties$area/1e6)
+
+# Extra margin on the left
+par(mar = c(5,10,5,4) + .1)
+
+# Sorted version for the barplot
+sortedCountySums <- sort(countySums)
+
+barplot(
+  sortedCountySums,
+  names = sprintf("%s  %5d", names(sortedCountySums), round(sortedCountySums)),
+  horiz = TRUE,
+  xlab = "PM2.5 (\u00b5g/m3)",
+  las = 1 # horizontal names
+)
+
+subtitle <- sprintf(
+  "%s  to  %s UTC",
+  strftime(range(layerTimes)[1], "%Y-%m-%m %H:00", tz = "UTC"),
+  strftime(range(layerTimes)[2], "%Y-%m-%m %H:00", tz = "UTC")
+)
+
+title("Cumulative PM2.5 in Washington Counties")
+mtext(subtitle, line = 0)
+
+# Restore margins
+par(mar = c(5,4,4,2) + .1)
+```
+
+### sp::map
+
+We can create a highly customized map using the *sp* package plotting functions.
+
+```{r sp_map}
+# Use a fun palette with 9 levels (10 breaks)
+library(wesanderson)
+paletteFUN <- wes_palette("Zissou1", 9, type = "continuous")
+breaks <- c(0, 10, 20, 50, 100, 200, 500, 1000, 2000, Inf)
+
+# Use the same intervals to generate a new vector colors
+binCode <- .bincode(countySums, breaks)
+col_county <- paletteFUN[binCode]
+
+# Change NA to "#bbbbbb" so that we get gray instead of white for NA counties
+col_county[is.na(col_county)] <- "#CCCCCC"
+
+# Chloropleth map
+plot(WA_counties, col = col_county, border = "gray80", lwd = 0.5)
+plot(WA, add = TRUE)
+
+legend(
+  "bottom",
+  cex = 0.6,
+  legend = paste0(round(breaks[1:9])," - ", round(breaks[2:10])), 
+  fill = paletteFUN,
+  ncol = 5,
+  xpd = NA,
+  yjust = 0
+)
+
+title("Cumulative PM2.5 in Washington Counties")
+mtext(subtitle, line = 0)
+```
+
+## Examples using *dplyr* and *ggplot*
+
+The following exmaples demonstrate higher level data handling and plotting 
+for those comfortable with *dplyr* and *ggplot*.
+
+*TODO*
+
+**_Mazama Science_**
+

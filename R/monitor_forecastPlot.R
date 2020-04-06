@@ -36,12 +36,12 @@
 #'   monitor_subset(monitorIDs = '060131004_01')
 #'
 #' models <- bluesky_findModels(
-#'   San_Pablo$meta$longitude,
-#'   San_Pablo$meta$latitude
+#'   yosemite_village$meta$longitude,
+#'   yosemite_village$meta$latitude
 #' )
 #'
 #' monitor_forecastPlot(
-#'   San_Pabol,
+#'   San_Pabo,
 #'   model = models
 #' )
 #'

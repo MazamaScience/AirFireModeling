@@ -21,17 +21,16 @@ raster_isRaster <- function(raster) {
 #' @export
 #' @keywords internal
 #'
-#' @title Create raster layer times
+#' @title Create raster layer name times
 #'
-#' @param raster A Raster\* object.
+#' @param layerName Vector of raster layer names.
 #'
 #' @return \code{POSIXct} time.
 
-raster_createTimes <- function(
-  raster = NULL
+raster_createLayerNameTimes <- function(
+  layerName
 ) {
 
-  layerName <- names(raster)
   epochSecs <- as.numeric(stringr::str_remove(layerName, 'X'))
   layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
 
@@ -39,9 +38,28 @@ raster_createTimes <- function(
 
 }
 
+#' @export
+#' @keywords internal
+#'
+#' @title Create raster layer times
+#'
+#' @param raster A RasterBrick.
+#'
+#' @return \code{POSIXct} time.
+
+raster_createTimes <- function(
+  raster = NULL
+) {
+
+  layerTime <- raster_createLayerNameTimes(names(raster))
+
+  return(layerTime)
+
+}
+
 #' @title Create raster layer time string
 #'
-#' @param raster A Raster\* object.
+#' @param raster A RasterBrick.
 #' @param timezone Olson timezone in which times will be displayed.
 #' @param prefix String prepended to the time
 #'
@@ -53,9 +71,7 @@ raster_createTimeStrings <- function(
   prefix = ""
 ) {
 
-  layerName <- names(raster)
-  epochSecs <- as.numeric(stringr::str_remove(layerName, 'X'))
-  layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
+  layerTime <- raster_createLayerNameTimes(names(raster))
   timeString <- paste0(prefix, strftime(layerTime, format = "%Y-%m-%d %H:00 %Z", tz = timezone))
 
   return(timeString)
@@ -67,7 +83,7 @@ raster_createTimeStrings <- function(
 #'
 #' @title Create raster layer timestamp
 #'
-#' @param raster A Raster\* object.
+#' @param raster A RasterBrick.
 #' @param timezone Olson timezone in which times will be displayed.
 #' @param prefix String prepended to the time
 #'
@@ -77,9 +93,7 @@ raster_createTimeStamps <- function(
   raster = NULL
 ) {
 
-  layerName <- names(raster)
-  epochSecs <- as.numeric(stringr::str_remove(layerName, 'X'))
-  layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
+  layerTime <- raster_createLayerNameTimes(names(raster))
   timeString <- strftime(layerTime, format = "%Y%m%d%H", tz = "UTC")
 
   return(timeString)

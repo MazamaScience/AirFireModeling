@@ -51,7 +51,7 @@ raster_subsetByPolygon <- function(
   if ( !is.list(raster) && !raster_isRaster(raster) )
     stop("Parameter 'raster' must be a single or a list of Raster* objects.")
 
-  if ( !stringr::str_detect(class(polygon), 'Spatial*') )
+  if ( !stringr::str_detect(as.character(class(polygon)), "^Spatial") )
     stop("Parameter 'polygon' must be a Spatial* object.")
 
   # ----- Subset the Raster(s) -------------------------------------------------
