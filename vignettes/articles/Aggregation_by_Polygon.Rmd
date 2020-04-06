@@ -234,12 +234,76 @@ title("Cumulative PM2.5 in Washington Counties")
 mtext(subtitle, line = 0)
 ```
 
-## Examples using *dplyr* and *ggplot*
+## Examples using *sf*, *dplyr* and *ggplot*
 
 The following exmaples demonstrate higher level data handling and plotting 
 for those comfortable with *dplyr* and *ggplot*.
 
-*TODO*
+When working with spatial data and ggplot/tidyverse, it is adventageous to use  the [`sf`](https://r-spatial.github.io/sf/) package in place of the `sp` package mentioned above. 
+
+```{r ggmap}
+# Import libraries
+library(ggplot2)
+library(dplyr)
+library(sf)
+
+# Create A backup of the original improved county data - for safety
+WA_counties_improved_alt <-  WA_counties_improved
+
+# Use dplyr mutate to a add a row summed column to the county spatial data. 
+# NOTE: Each column of the data represents a different hour, and each row a county. 
+#       Therefore a summation a cumulative rowwise sum of yields the total county PM2.5 count. 
+WA_counties_improved_alt@data <- 
+  WA_counties_improved_alt@data %>% 
+  mutate(PM_sum = rowSums(.[,10:ncol(.)])) 
+
+# Use the sf package to convert the sp/st data to sf
+sf_WA_counties_improved <- st_as_sf(WA_counties_improved_alt)
+
+# Plot using ggplot syntax
+WA_counties_map <- ggplot(sf_WA_counties_improved) + 
+  geom_sf(aes(fill = PM_sum)) + 
+  scale_fill_viridis_c(option = "C") + 
+  theme_void() + 
+  labs(
+    title = "Cumulative PM2.5 in Washington Counties", 
+    subtitle = paste0(range(layerTimes), collapse = ' to ') # use layer times
+    )
+print(WA_counties_map)
+```
+
+
+## Interactive Example using *plotly*
+
+```{r plotly}
+library(plotly)
+
+# add hover text HTML field
+sf_WA_counties_improved$hover <- 
+  with(sf_WA_counties_improved, paste(name, '<br>', "Cumulative PM2.5: ", PM_sum))
+
+# Create the interactive map
+interactive_map <- plot_ly(
+  sf_WA_counties_improved, 
+  split = ~name, 
+  hoveron = 'fills', 
+  text = ~hover,
+  color = ~PM_sum, 
+  showlegend = FALSE
+) %>% 
+  layout( 
+    title = list(
+      text = paste0('Cumulative PM2.5 in Washington Counties',
+                    '<br>',
+                    '<sup>',
+                    paste0(range(layerTimes), collapse = ' to '),
+                    '</sup>')
+    )
+  ) %>% 
+  config(displayModeBar = FALSE)
+# Show the map
+interactive_map
+```
 
 **_Mazama Science_**
 
