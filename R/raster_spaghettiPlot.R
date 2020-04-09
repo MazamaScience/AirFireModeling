@@ -6,6 +6,7 @@
 #' @param latitude Target latitude from which the radius will be calculated.
 #' @param radius Distance (km) of radius from target location.
 #' @param count Number of grid cells within radius to return.
+#' @param rasterName Name used when \code{raster} is a \code{RasterBrick}.
 #' @param verbose Logical to display messages.
 #' @param ylim Optional Y axis limits.
 #' @param ... Additional arguments passed to \code{PWFSLSmoke::monitor_timeseriesPlot()}.
@@ -66,6 +67,7 @@ raster_spaghettiPlot <- function(
   latitude = NULL,
   radius = 5,
   count = NULL,
+  rasterName = NULL,
   verbose = TRUE,
   ylim = NULL,
   ...
@@ -107,6 +109,22 @@ raster_spaghettiPlot <- function(
     stop('Check Coordinates: Target location is outside the raster domain.')
   }
 
+  # Check that rasterName is specified when raster is not a list
+  if ( raster_isRaster(raster) && is.null(rasterName) ) {
+    stop(paste0(
+      "When parameter 'raster' is a RasterBrick, the additional parameter ",
+      "'rasterName' must be specified."
+    ))
+  }
+
+  if ( is.list(raster) && is.null(names(raster)) ) {
+    stop(paste0(
+      "When parameter 'raster' is a list, it must have names."
+    ))
+  }
+
+
+
   # Defaults
   if ( !is.logical(verbose) ) verbose <- TRUE
 
@@ -118,6 +136,7 @@ raster_spaghettiPlot <- function(
     latitude = latitude,
     radius = radius,
     count = count,
+    rasterName = rasterName,
     verbose = verbose
   )
 

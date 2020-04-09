@@ -102,10 +102,10 @@ bluesky_load <- function(
 
   # ----- Download and convert -------------------------------------------------
 
-  v2FileName <- paste0(model, "_", modelRun, "_v2.nc")
-  v2FilePath <- file.path(getModelDataDir(), v2FileName)
-
   if ( is.null(localPath) ) { # No localPath
+
+    v2FileName <- paste0(model, "_", modelRun, "_v2.nc")
+    v2FilePath <- file.path(getModelDataDir(), v2FileName)
 
     if ( !file.exists(v2FilePath) ) {
       rawFilePath <- bluesky_download(

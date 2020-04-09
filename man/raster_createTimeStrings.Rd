@@ -4,14 +4,21 @@
 \alias{raster_createTimeStrings}
 \title{Create raster layer time string}
 \usage{
-raster_createTimeStrings(raster = NULL, timezone = "UTC", prefix = "")
+raster_createTimeStrings(
+  raster = NULL,
+  format = "\%Y-\%m-\%d \%H:00 \%Z",
+  timezone = "UTC",
+  prefix = ""
+)
 }
 \arguments{
 \item{raster}{A RasterBrick.}
 
+\item{format}{Format passed on to \code{strftime()}.}
+
 \item{timezone}{Olson timezone in which times will be displayed.}
 
-\item{prefix}{String prepended to the time}
+\item{prefix}{String prepended to the time.}
 }
 \value{
 Time string formatted for \code{timezone}.

@@ -10,6 +10,7 @@ raster_spaghettiPlot(
   latitude = NULL,
   radius = 5,
   count = NULL,
+  rasterName = NULL,
   verbose = TRUE,
   ylim = NULL,
   ...
@@ -25,6 +26,8 @@ raster_spaghettiPlot(
 \item{radius}{Distance (km) of radius from target location.}
 
 \item{count}{Number of grid cells within radius to return.}
+
+\item{rasterName}{Name used when \code{raster} is a \code{RasterBrick}.}
 
 \item{verbose}{Logical to display messages.}
 

@@ -10,7 +10,7 @@ PWFSLSmoke::initializeMazamaSpatialUtils(
 
 # Set up AirFire Modeling (version 0.2.14)
 library(AirFireModeling)
-setModelDataDir("~/Data/BlueSkky")
+###setModelDataDir("~/Data/BlueSkky") # Not needed when using bluesky_load(localPath = ...)
 
 # ----- Configurables ----------------------------------------------------------
 
@@ -68,8 +68,8 @@ monitor_timeseriesPlot(
 # Now try a "spaghetti plot"
 # Just use the first 168 time steps (1 week)
 raster_spaghettiPlot(
-  raster = list("MendocinoC.1" = mendo_rasterBrick[[1:168]]),
-  ###raster = mendo_rasterBrick,
+  ###raster = list("MendocinoC.1" = mendo_rasterBrick[[1:168]]),
+  raster = mendo_rasterBrick,
   longitude = longitude,
   latitude = latitude,
   radius = radius,

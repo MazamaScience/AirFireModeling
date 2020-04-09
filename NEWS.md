@@ -1,3 +1,11 @@
+# AirFireModeling 0.2.15
+
+* Removed need to specify `modelDataDir` when using `bluesky_load()` with the
+`localPath` argument. Converted data files will be saved in the same directory
+as the file specified with `localPath`.
+* Added `format` parameter to `raster_createTimeStrings()`.
+* Removed `raster_createTimeStamps()` as this functionality is no longer needed.
+
 # AirFireModeling 0.2.14
 
 * Renamed `raster_map()` to `raster_ggmap()` to make it clear that it returns

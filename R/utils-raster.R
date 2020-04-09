@@ -57,46 +57,26 @@ raster_createTimes <- function(
 
 }
 
+#' @export
 #' @title Create raster layer time string
 #'
 #' @param raster A RasterBrick.
+#' @param format Format passed on to \code{strftime()}.
 #' @param timezone Olson timezone in which times will be displayed.
-#' @param prefix String prepended to the time
+#' @param prefix String prepended to the time.
 #'
 #' @return Time string formatted for \code{timezone}.
 
 raster_createTimeStrings <- function(
   raster = NULL,
+  format = "%Y-%m-%d %H:00 %Z",
   timezone = "UTC",
   prefix = ""
 ) {
 
   layerTime <- raster_createLayerNameTimes(names(raster))
-  timeString <- paste0(prefix, strftime(layerTime, format = "%Y-%m-%d %H:00 %Z", tz = timezone))
+  timeString <- paste0(prefix, strftime(layerTime, format = format, tz = timezone))
 
   return(timeString)
 
 }
-
-#' @export
-#' @keywords internal
-#'
-#' @title Create raster layer timestamp
-#'
-#' @param raster A RasterBrick.
-#' @param timezone Olson timezone in which times will be displayed.
-#' @param prefix String prepended to the time
-#'
-#' @return UTC timestamp as YYYYmmddHH.
-
-raster_createTimeStamps <- function(
-  raster = NULL
-) {
-
-  layerTime <- raster_createLayerNameTimes(names(raster))
-  timeString <- strftime(layerTime, format = "%Y%m%d%H", tz = "UTC")
-
-  return(timeString)
-
-}
-

@@ -104,7 +104,7 @@ raster_toMonitor <- function(
   if ( !is.character(rasterName) ) rasterName <- "raster"
   if ( !is.logical(verbose) ) verbose <- TRUE
 
-  # Guarantee rasterName is not mult-values
+  # Guarantee rasterName is not mult-valued
   rasterName <- rasterName[1]
 
   # ----- Subset the Raster(s) -------------------------------------------------
