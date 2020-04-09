@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.14</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.15</span>
       </span>
     </div>
 
@@ -93,6 +93,12 @@
   <ul class="dropdown-menu" role="menu">
     <li>
       <a href="../articles/AirFireModeling_Introduction.html">Introduction to AirFireModeling</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Aggregation_by_Polygon.html">Aggregation by Polygon</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Smoke_by_County.html">Smoke by County</a>
     </li>
   </ul>
 </li>
@@ -124,14 +130,23 @@
     <p>Create raster layer time string</p>
     </div>
 
-    <pre class="usage"><span class='fu'>raster_createTimeStrings</span>(<span class='kw'>raster</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>, <span class='kw'>prefix</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
+    <pre class="usage"><span class='fu'>raster_createTimeStrings</span>(
+  <span class='kw'>raster</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"%Y-%m-%d %H:00 %Z"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
+  <span class='kw'>prefix</span> <span class='kw'>=</span> <span class='st'>""</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>raster</th>
-      <td><p>A Raster\* object.</p></td>
+      <td><p>A RasterBrick.</p></td>
+    </tr>
+    <tr>
+      <th>format</th>
+      <td><p>Format passed on to <code><a href='https://rdrr.io/r/base/strptime.html'>strftime()</a></code>.</p></td>
     </tr>
     <tr>
       <th>timezone</th>
@@ -139,7 +154,7 @@
     </tr>
     <tr>
       <th>prefix</th>
-      <td><p>String prepended to the time</p></td>
+      <td><p>String prepended to the time.</p></td>
     </tr>
     </table>
 

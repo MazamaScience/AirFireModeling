@@ -67,7 +67,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.14</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.15</span>
       </span>
     </div>
 
@@ -91,6 +91,12 @@
   <ul class="dropdown-menu" role="menu">
     <li>
       <a href="../articles/AirFireModeling_Introduction.html">Introduction to AirFireModeling</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Aggregation_by_Polygon.html">Aggregation by Polygon</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Smoke_by_County.html">Smoke by County</a>
     </li>
   </ul>
 </li>
@@ -117,12 +123,23 @@
       
     </div>
 
+    <div id="airfiremodeling-0-2-15" class="section level1">
+<h1 class="page-header">
+<a href="#airfiremodeling-0-2-15" class="anchor"></a>AirFireModeling 0.2.15</h1>
+<ul>
+<li>Removed need to specify <code>modelDataDir</code> when using <code><a href="../reference/bluesky_load.html">bluesky_load()</a></code> with the <code>localPath</code> argument. Converted data files will be saved in the same directory as the file specified with <code>localPath</code>.</li>
+<li>Added <code>format</code> parameter to <code><a href="../reference/raster_createTimeStrings.html">raster_createTimeStrings()</a></code>.</li>
+<li>Removed <code>raster_createTimeStamps()</code> as this functionality is no longer needed.</li>
+<li>Added “Smoke by County” vignette.</li>
+</ul>
+</div>
     <div id="airfiremodeling-0-2-14" class="section level1">
 <h1 class="page-header">
 <a href="#airfiremodeling-0-2-14" class="anchor"></a>AirFireModeling 0.2.14</h1>
 <ul>
 <li>Renamed <code>raster_map()</code> to <code><a href="../reference/raster_ggmap.html">raster_ggmap()</a></code> to make it clear that it returns a <em>ggplot2</em> plot object.</li>
 <li>Added <code><a href="../reference/monitor_forecastPlot.html">monitor_forecastPlot()</a></code>.</li>
+<li>Added “Aggregation by Polygon” vignette.</li>
 </ul>
 </div>
     <div id="airfiremodeling-0-2-13" class="section level1">
@@ -316,6 +333,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#airfiremodeling-0-2-15">0.2.15</a></li>
         <li><a href="#airfiremodeling-0-2-14">0.2.14</a></li>
         <li><a href="#airfiremodeling-0-2-13">0.2.13</a></li>
         <li><a href="#airfiremodeling-0-2-12">0.2.12</a></li>

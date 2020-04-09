@@ -5,6 +5,7 @@
 as the file specified with `localPath`.
 * Added `format` parameter to `raster_createTimeStrings()`.
 * Removed `raster_createTimeStamps()` as this functionality is no longer needed.
+* Added "Smoke by County" vignette.
 
 # AirFireModeling 0.2.14
 

@@ -1,10 +1,10 @@
 ---
-title: "Aggregation by Polygon"
+title: "Smoke by County"
 author: "Mazama Science"
 date: "2020-04-06"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Aggregation by Polygon}
+  %\VignetteIndexEntry{Smoke by County}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette demonstrates how to create county averages from gridded datasets.
+This vignette demonstrates how to create county averages from BlueSky model runs.
 This is particularly relevant in the COVID-19 era where health statistics are
 provided on a per-county basis.
 
@@ -27,7 +27,7 @@ provided on a per-county basis.
 
 The *MazamaSpatialUtils* package is already a requirement for *AirFireModeling* 
 and is therefore already installed. We will use datasets named
-`USCensusStates` and `USCensusCounties`. Each of these is an *sp* package
+`USCensusStates` and `USCensusCounties`. Each of these is a
 `SpatialPolygonsDataFrame` (SPDF). These are "S4" objects with per-polygon data 
 stored in the `@data` slot.
 
@@ -38,42 +38,45 @@ setSpatialDataDir("~/Data/Spatial")
 loadSpatialData("USCensusStates")
 loadSpatialData("USCensusCounties")
 
-WA <- subset(USCensusStates, stateCode == "WA")
-WA_counties <- subset(USCensusCounties, stateCode == "WA")
+stateCode_of_interest <- "WA"
+
+state_SPDF <- subset(USCensusStates, stateCode == stateCode_of_interest)
+county_SPDF <- subset(USCensusCounties, stateCode == stateCode_of_interest)
 ```
 
 ### Load raster data
 
-We will load data from a bluesky model and create a subset for Washington state.
+We will load data from a BlueSky model and create a subset for Washington state.
+The `state_PNW_4km` object is a "RasterBrick" with 72 layers.
 
 ```{r raster_load}
 library(AirFireModeling) # For base package support
 setModelDataDir("~/Data/BlueSky")
 
-WA_PNW_4km <- 
+state_PNW_4km <- 
   bluesky_load(model = 'PNW-4km', modelRun = 2018110900) %>%
-  raster::crop(WA) %>%
-  raster_subsetByPolygon(WA)
+  raster::crop(state_SPDF) %>%
+  raster_subsetByPolygon(state_SPDF)
 
 # A quick ggplot map from the AirFireModeling package
-raster_ggmap(WA_PNW_4km, index = 1)
+raster_ggmap(state_PNW_4km, index = 1)
 ```
 
 ### Thematic mapping with tmap
 
-The tmap package is a brilliantly simple way to make attractive plots using
-both raster and spatial data. It is thoroughly described in an
+The **tmap** package is a brilliantly simple way to make attractive plots using
+both raster and spatial data. It is thoroughly described at
 [Intro to GIS and Spatial Analysis](https://mgimond.github.io/Spatial/).
 
-We will demonstrate some of it's capabilities:
+Creating a nice looking plot is very straightforward:
 
 ```{r tmap_demo}
 library(tmap)
 
 # County boundaries with raster overlay
-tm_shape(WA_counties) +
+tm_shape(county_SPDF) +
   tm_polygons(col = 'white') +
-  tm_shape(WA_PNW_4km[[1]]) +
+  tm_shape(state_PNW_4km[[1]]) +
   tm_raster(
     title = "Layer 1",
     palette = 'Greys',
@@ -88,26 +91,30 @@ tm_shape(WA_counties) +
 
 ### Summarizing data
 
-We will use the powerful `raster::extract()` function to summarize our data
+We will use the powerful `raster::extract()` function from the *raster*
+package to summarize our data
 by individual polygon. In the example below, we calculate the number of
 grid cells within each polygon to make sure the size of counties is significantly
-large that the size of the grid cells. If we are concerned, we can allways 
-reduce the grid size using `raster::disaggregate()`. 
+larger than the size of the grid cells.
+
+If there are few grid cells per county, averages based on grid cell midpoints
+will be misleading. In such a case it would be prudent to increase the spatial
+resolution first by using the `raster::disaggregate()` function. 
 
 *NOTE:  Summarizing by polygon can take a while.*
 
 ```{r countyCellCount}
-# Summarize raster by polygon
+# Summarize a single RasterLayer by polygon
 countyCellCount_SPDF <-
   raster::extract(
-    WA_PNW_4km[[1]],
-    WA_counties,
+    state_PNW_4km[[1]],
+    county_SPDF,
     fun = function(x, ...) { length(x) }, 
     sp = TRUE
   )
 
-# Replace column name associated with this layer
-names(countyCellCount_SPDF) <- c(names(WA_counties), "cellCount")
+# Replace newly added column name associated with this layer
+names(countyCellCount_SPDF) <- c(names(county_SPDF), "cellCount")
 
 # Simple plot
 tm_shape(countyCellCount_SPDF) + 
@@ -122,22 +129,26 @@ Satisfied that we have enough cells per county, let's calculate the mean value
 for each of the 72 timesteps in our model run.
 
 ```{r countyMean}
+# Summarize the entire RasterBrick by polygon
 countyMean_SPDF <-
   raster::extract(
-    WA_PNW_4km,
-    WA_counties,
+    state_PNW_4km,
+    county_SPDF,
     fun = function(x, ...) { mean(x, ...) },
     na.rm = TRUE,
     sp = TRUE
   )
 
+# NOTE:  72 additional columns have been added, one per RasterBrick layer
+# NOTE:  (i.e. timestep). Here we give them sensible column names.
+
 # Replace additional columns with timestamps
 names(countyMean_SPDF) <- c(
-  names(WA_counties), 
-  raster_createTimeStrings(WA_PNW_4km, format = "UTC_%Y-%m-%dT%H")
+  names(county_SPDF), 
+  raster_createTimeStrings(state_PNW_4km, format = "UTC_%Y-%m-%dT%H")
 )
 
-# Simple plot
+# Simple plot for 2018-11-09 03:00
 tm_shape(countyMean_SPDF) + 
   tm_polygons(
     col = "UTC_2018-11-09T03",
@@ -146,80 +157,87 @@ tm_shape(countyMean_SPDF) +
   )
 ```
 
-### Tables
+### Static table
 
-Let's finish things up with a table or two:
+Let's finish things up with a table or two. First up, we can generate a nicely
+formatted static table using `knitr::kable()`:
 
 ```{r tables}
-
 # Get the model timesteps 
-layerTimes <- raster_createTimes(WA_PNW_4km)
+layerTimes <- raster_createTimes(state_PNW_4km)
 
+# Get the SPDF names associated with those timesteps
 layerNames <-
   names(countyMean_SPDF) %>%
   stringr::str_subset("^UTC_")
   
 # Extract summary data and transpose
-timeByCountyMatrix <-
+timeByCounty_Matrix <-
   countyMean_SPDF@data[, layerNames] %>%
   round(1) %>%
   t() 
 
-# Create dataframe with 'datetime' column and county names
-timeByCountyDF <- data.frame(timeByCountyMatrix)
-names(timeByCountyDF) <- countyMean_SPDF$name
-timeByCountyDF <- dplyr::bind_cols(datetime = layerTimes, timeByCountyDF)
+# Add county names to the columns and then add a 'datetime' column
+timeByCounty_DF <- data.frame(timeByCounty_Matrix)
+names(timeByCounty_DF) <- countyMean_SPDF$name
+timeByCounty_DF <- dplyr::bind_cols(datetime = layerTimes, timeByCounty_DF)
 
 # Look at a portion of the new dataframe
 knitr::kable(
-  timeByCountyDF[1:10,1:6],
+  timeByCounty_DF[1:10,1:10],
   format = "markdown",
   digits = 0
 )
 ```
 
-Or, we can show daily averages by county in an interactive table:
+### Interactive table
+
+Or, we can show daily averages by county in an interactive table. The **DT**
+package allows for easy creation of javascript based interactive tables. This
+time we use counties as rows and show daily averages as columns. 
 
 ```{r daily_by_county}
 # Create (UTC) daily averages
 dailyMean_PNW_4km <- raster::stackApply(
-  WA_PNW_4km,
+  state_PNW_4km,
   indices = c(rep(1,23),rep(2,24),rep(3,24)), 
   fun = mean
 )
 
-# Provide better names
+# Provide better names for the RasterBrick layers
 names(dailyMean_PNW_4km) <- 
   sprintf(
     "mean_for_%s",
     strftime(layerTimes[c(1,24,48)], "%Y-%m-%d")
   )
 
-# Extract per county values
+# Extract per county means
 countyDailyMean_SPDF <-
   raster::extract(
     dailyMean_PNW_4km,
-    WA_counties,
+    county_SPDF,
     fun = function(x, ...) { mean(x, ...) },
     na.rm = TRUE,
     sp = TRUE
   )
 
+# Get the SPDF names associated with the layers (daily timesteps)
 layerNames <-
   names(countyDailyMean_SPDF) %>%
   stringr::str_subset("^mean_for_")
 
-# Extract summary data and transpose
-dayByCounty_DF <-
+# Extract daily averages and transpose
+dayByCountyData_DF <-
   countyDailyMean_SPDF@data[, layerNames] %>%
   round(1)
 
-# Improve dataframe
-rownames(dayByCounty_DF) <- NULL
-colnames(dayByCounty_DF) <- stringr::str_replace(layerNames, "mean_for_", "")
-my_DF <- dplyr::bind_cols(county = WA_counties$name, dayByCounty_DF)
+# Improve the dataframe
+rownames(dayByCountyData_DF) <- NULL
+colnames(dayByCountyData_DF) <- stringr::str_replace(layerNames, "mean_for_", "")
+dayByCounty_DF <- dplyr::bind_cols(county = county_SPDF$name, dayByCountyData_DF)
 
-DT::datatable(my_DF)
+# Display as an interactive table
+DT::datatable(dayByCounty_DF)
 ```
 
 

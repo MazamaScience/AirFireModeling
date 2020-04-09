@@ -73,7 +73,7 @@ quantile() using the user specified probability prob." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.14</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.15</span>
       </span>
     </div>
 
@@ -97,6 +97,12 @@ quantile() using the user specified probability prob." />
   <ul class="dropdown-menu" role="menu">
     <li>
       <a href="../articles/AirFireModeling_Introduction.html">Introduction to AirFireModeling</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Aggregation_by_Polygon.html">Aggregation by Polygon</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Smoke_by_County.html">Smoke by County</a>
     </li>
   </ul>
 </li>
@@ -200,12 +206,12 @@ timeseries are then collapsed into a single timeseries by applying the
   <span class='fu'><a href='https://rdrr.io/pkg/PWFSLSmoke/man/monitor_subset.html'>monitor_subset</a></span>(<span class='kw'>monitorIDs</span> <span class='kw'>=</span> <span class='st'>'060131004_01'</span>)
 
 <span class='no'>models</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='bluesky_findModels.html'>bluesky_findModels</a></span>(
-  <span class='no'>San_Pablo</span>$<span class='no'>meta</span>$<span class='no'>longitude</span>,
-  <span class='no'>San_Pablo</span>$<span class='no'>meta</span>$<span class='no'>latitude</span>
+  <span class='no'>yosemite_village</span>$<span class='no'>meta</span>$<span class='no'>longitude</span>,
+  <span class='no'>yosemite_village</span>$<span class='no'>meta</span>$<span class='no'>latitude</span>
 )
 
 <span class='fu'>monitor_forecastPlot</span>(
-  <span class='no'>San_Pabol</span>,
+  <span class='no'>San_Pabo</span>,
   <span class='kw'>model</span> <span class='kw'>=</span> <span class='no'>models</span>
 )
 

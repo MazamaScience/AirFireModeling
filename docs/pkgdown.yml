@@ -3,4 +3,6 @@ pkgdown: 1.4.1
 pkgdown_sha: ~
 articles:
   AirFireModeling_Introduction: AirFireModeling_Introduction.html
+  Aggregation_by_Polygon: articles/Aggregation_by_Polygon.html
+  Smoke_by_County: articles/Smoke_by_County.html
 

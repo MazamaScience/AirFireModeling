@@ -26,8 +26,6 @@ Imports:
     AirMonitorPlots,
     cowplot, 
     dplyr,
-    future,
-    future.apply,
     geodist,
     geosphere,
     ggplot2,
@@ -55,7 +53,8 @@ Suggests:
     markdown,
     testthat (>= 2.1.0),
     rmarkdown,
-    roxygen2
+    roxygen2,
+    tmap
 SystemRequirements: netcdf
 Description: Utilities for working with USFS BlueSky model output
     and PM2.5 monitoring data available from AirNow, AIRSIS
