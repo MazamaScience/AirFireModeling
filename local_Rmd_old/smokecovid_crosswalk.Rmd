@@ -1,0 +1,117 @@
+---
+title: "Smoke_COVID_crosswalk"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+## Per Polygon Statistics
+
+Rasters are gridded cells that exist in an extent, or bounding box. Although incredibly useful and powerful for geospatial analysis, visualization with Rasters is not always as simple. Rasters take no shape (except projection mapping) and are restrictive because there are only so many ways to visualize a grid. 
+
+We can instead work with the rasters data to create polygon data for plotting. There are many ways to work with polygon data, so lets focus on per-polygon statistics. 
+
+In other words, given we have a raster with cells of some value, we can use a polygon to extract the data from each cell that exists within a polygon, etc. 
+
+First we will need to load the necessary libraries. 
+
+```{r}
+library(AirFireModeling) # For base package support
+library(PWFSLSmoke)
+library(raster) # For raster engine
+library(ggplot2) # For plotting
+library(sf) # For more intuitve polygons 
+```
+
+We can start by loading our Polygon data using raster's `getData` function, and the GADM database. 
+In this example, we will focus on Washington State Counties, and their BlueSky Model values.
+
+```{r}
+# Load the Spatial Polygons data
+usa <- getData('GADM', country = 'usa', level = 1 )
+usa_counties <- getData('GADM', country = 'usa', level = 2)
+# Subset WA
+wa_state <- usa[usa$NAME_1 == 'Washington',]
+wa_counties <- usa_counties[usa_counties$NAME_1 == 'Washington',]
+```
+
+
+```{r}
+# Load our model data
+setModelDataDir('~/Data/BlueSky')
+pnw_4km <- raster_load(model = 'PNW-4km', modelRun = 20181109)
+```
+
+Here is a map of the raster at the first hour index of the BlueSky model. 
+
+```{r}
+wa_bs <- crop(pnw_4km$`PNW-4km_2018110900`, wa_state)
+raster_map(wa_bs, index = 1, palette = 'BuPu')
+```
+
+#### Basic Statistics 
+
+We can use the polygon data we loaded to extract the cells within each polygon (by cell-ceneter coordinates) and apply a function over the cell values. In the example below, we apply an averaging function to each polygon domain cells, and then convert the `Spatial*` , `st`, Object to an `sf` object, a more well supported spatial type object. 
+
+```{r}
+# Using the first layer of the pnw model brick, and wa counties, extract the data and convert to Spatial* object while aggregating with a function. For example, below is county PM2.5 Model means:
+x <- extract(wa_bs[[1]], wa_counties, fun = function(x, ...) mean(x, ...), sp = TRUE)
+#  NOTE: needs the ... for na.rm and other extract internals 
+# convert the spatial object to an sf object -- much easier to use
+xsf <- st_as_sf(x)
+# rename for easier plot access
+names(xsf)[which(grepl('^X', names(xsf)))] <- 'mean'
+```
+
+After the `sf` conversion, the model is ready to be plotted using `ggplot2`. The plot colors the counties by the `mean` PM2.5 values of the model cells in the county polygon. 
+
+```{r}
+gg <- ggplot(xsf) + 
+  geom_sf(aes(fill = mean)) + 
+  labs(title = 'Average County BlueSky PM2.5', 
+       subtitle = names(pnw_4km)) + 
+      scale_fill_fermenter(palette = 'BuPu', direction = 1)
+gg
+```
+
+#### Interpolation
+
+ https://mgimond.github.io/Spatial/interpolation-in-r.html
+
+First, in order to really utilize our regulatory monitor data, we should interpolate across the region in order to get a good spread of information. Interpolation is of only for estimation purposes, but it will vastly increase correlation coverage, rather than just dense hotspots of information. So there is a trade off. 
+```{r}
+# LEts load washington monitoring data and interpolate it across the state to compare estimated correlations
+wa_mon <- monitor_load(20181109, 20181112) %>% 
+  monitor_subset(stateCodes = 'WA')
+# Convert to a raster using the pnw raster as a template 
+wa_ras <- monitor_toRaster(wa_mon, res = 0.1, projectTo = wa_bs)
+
+raster_map(wa_ras, palette = 'Reds')
+```
+
+For this specfic interpolation, it best too keep the data continous and use inverse-weighted-distancing, or IDW. You can read mofe about IDW here: http://resources.esri.com/help/9.3/ArcGISDesktop/com/GP_ToolRef/3d_analyst_tools/idw_3d_analyst_.htm
+
+
+```{r}
+library(gstat)
+# Convert the data to spatial points
+df <- na.exclude( data.frame(raster::rasterToPoints(wa_ras)) )
+# Interpolate using idw and the first POSIXt index named X1541721600
+g <- gstat(id = 'X1541721600', 
+           formula = X1541721600 ~ 1, 
+           locations = ~ x + y, 
+           data = df,
+           nmax = 21, 
+           set=list(idp = 3))
+# interpolate the corresponding index (1)
+r <- interpolate(wa_ras[[1]], g)
+# plot
+r %>% mask(wa_state) %>% raster_map(palette = 'Reds')
+```
+
+
+### Conclusion
+
+As seen from above, `AirFireModeling`, the `raster` package, and R can lead to incredible insight into spatial models. Working with `rasters` is not especially complex, nor is per-polygon statistics. 

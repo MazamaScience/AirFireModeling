@@ -1,0 +1,114 @@
+---
+title: "Model Receptor Analysis"
+output: html_document
+params:
+  model: "PNW-1.33km"
+  modelRun: 20200302
+  monitorID: NULL
+  longitude: -120.25
+  latitude: 45.55
+  spatialDataDir: "~/Data/Spatial"
+  modelDataDir: "~/Data/BlueSky"
+  version: "4.1"
+runtime: shiny
+---
+
+```{r setup, include = FALSE}
+# test monitor: '061010003_01'
+# test lat lon: 38.55 -121.46
+library(AirFireModeling)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+```{r set_location, echo = FALSE}
+model <- params$model
+modelRun <- params$modelRun
+version <- params$version
+
+if ( !is.null(params$monitorID) ) {
+  
+  mon <- PWFSLSmoke::monitor_load( startdate = modelRun - 1,
+                                   enddate = modelRun, 
+                                   monitorIDs = params$monitorID )
+  lat <- mon$meta$latitude
+  lon <- mon$meta$longitude
+  
+  
+} else {
+  
+  lat <- params$latitude
+  lon <- params$longitude
+  
+}
+```
+
+```{r load_data}
+setModelDataDir('~/Data/BlueSky')
+bs <- bluesky_load(
+  modelRun = modelRun, 
+  model = model, 
+  cleanup = FALSE
+)
+```
+#### Longitude: `r lon`   Latitude: `r lat`
+#### Model: `r model` 
+#### `r if (is.null(params$monitorID)) { paste0('') } else { paste0('Monitor: ', params$monitorID) }`
+
+## Time series
+Below is a time series of the coordinates `r paste0('+', lat, ',', lon)`.
+Specfically, this is a `spaghetti plot` of the coordinate location and it's `N` nearest cell count. This plot is intended to highlight the variance of the coordinates regional values.
+
+```{r}
+shiny::sliderInput( "cell_count", 
+                    label = "Nearest Neighbor Cell Count",
+                    min = 3, 
+                    max = 25, 
+                    value = 5, 
+                    step = 1, width = '100%' )
+```
+
+```{r}
+shiny::renderPlot({
+  raster_spaghetti( bs, 
+                    longitude = lon, 
+                    latitude = lat, 
+                    n = input$cell_count, 
+                    snapToGrid = FALSE )
+})
+```
+```{r}
+shiny::sliderInput( 'hours', 
+                    label = 'Select Hours', 
+                    min  = 1, 
+                    max = 72, 
+                    value = c(1,12), 
+                    dragRange = TRUE, 
+                    width = '100%', )
+
+```
+
+```{r}
+shiny::sliderInput( "radius", 
+                    label = "Radius (km)",
+                    min = 10, 
+                    max = 100, 
+                    value = 10, 
+                    step = 1, 
+                    width = '100%' )
+```
+
+Below is a matrix plot of the coordinates and it's radial cells. Each element of the plot indicates a different hour and can be useful for determining which slices and radius contain important information.
+
+```{r}
+shiny::renderPlot({
+  bs_cropped <- raster_subset( bs, 
+                               longitude = lon, 
+                               latitude = lat, 
+                               radius = input$radius*1000)
+  breaks <- seq(from = 0, to = max(raster::maxValue(bs_cropped)), length.out = 12)
+  raster_facet( bs_cropped[[input$hours[1]:input$hours[2]]], breaks = breaks)
+  })
+```
+
+
+

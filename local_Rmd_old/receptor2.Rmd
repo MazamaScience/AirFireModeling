@@ -1,0 +1,95 @@
+---
+title: "Model Receptor"
+author: "Mazama Science"
+params:
+  model: "PNW-1.33km"
+  modelRun: 20191010
+  monitorID: "lon_.120.591_lat_38.714_arb2.1008"
+  longitude: -120.25
+  latitude: 45.55
+  spatialDataDir: "~/Data/Spatial"
+  modelDataDir: "~/Data/BlueSky"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+library(AirFireModeling)
+library(PWFSLSmoke)
+library(AirMonitorPlots)
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+
+model <- params$model
+modelRun <- params$modelRun
+monitorID <- params$monitorID
+version <- params$version
+longitude <- params$longitude
+latitude <- params$latitude
+modelDataDir <- params$modelDataDir
+spatialDataDir <- params$spatialDataDir
+```
+
+## Model: `r model`
+
+Model Date: `r lubridate::ymd(modelRun)`
+
+Longitude: `r longitude`
+
+Latitude: `r latitude`
+
+Monitor: `r monitorID`
+
+## Monitoring Data
+
+```{r pollock_pines, echo = FALSE}
+monitor <- 
+  monitor_load(20191010, 20191013) %>% 
+  monitor_subset(monitorIDs = monitorID)
+
+gg <- ggplot_pm25Timeseries(monitor) +
+  geom_pm25Points() + 
+  stat_nowcast() +
+  theme(legend.position = "bottom") +
+  ggtitle(monitor$meta$siteName)
+
+print(gg)
+```
+
+## Avaliable BlueSky Models
+
+```{r available_models}
+models <- bluesky_availiableModels(monitor$meta$longitude, monitor$meta$latitude)
+print(models)
+```
+
+
+```{r downlaod}
+# Set the data archive directory
+setModelDataDir(modelDataDir)
+
+# bs <- bluesky_load( 
+#   modelRun = modelRun, 
+#   model = models,
+#   cleanup = FALSE
+# )
+```
+
+## Model Data at the location
+
+```{r model_plot, message = FALSE}
+gg <- 
+  bluesky_locationPlot(
+    modelRun = modelRun, 
+    models = models, 
+    longitude = monitor$meta$longitude, 
+    latitude = monitor$meta$latitude
+  ) + 
+  geom_line(
+    data = monitor$data, 
+    mapping = aes(x = monitor$data$datetime, y = monitor$data$lon_.120.591_lat_38.714_arb2.1008)
+  )  +
+  ggplot2::xlim(range(monitor$data$datetime))
+
+print(gg)
+```
+

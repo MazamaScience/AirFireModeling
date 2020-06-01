@@ -1,0 +1,116 @@
+---
+title: "AirFireModeling Introduction"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+## Overview
+
+The USFS Pacific Wildland Fire Sciences Lab AirFire team works to model wildland fire emissions and has created the BlueSky Modeling Framework. This system integrates a wide collection of models along the smoke modeling chain (fire information, fuel loadings, consumption modeling, emissions modeling, time rate of emissions modeling, plume height estimations, and smoke trajectory and dispersion modeling).The `AirFireModeling` package was created to ingest and analyze BlueSky models in R, allowing the monitors to be directly compared and processed with regulatory monitoring data.
+
+This article is meant to introduce `AirFireModeling` basic functionality, concepts, and terminology, and is not meant to be an exhaustive tutorial. 
+
+## Load the Libraries
+
+```{r}
+library(AirFireModeling)
+library(PWFSLSmoke)
+
+# Set the directory to download to and load models from
+setModelDataDir('~/Data/BlueSky/')
+```
+
+## Loading BlueSky models
+
+The `AirFireModeling` packagae offers consistent and flexible model loading functions. We can load multiple models or run dates all at once, or singularly using with the `raster_load()` function. `raster_load()` loads references to a common-format NetCDF model file, which all functionality of `AirFireModeling` stems from. If the model file already exists in the user's set directory (see `?setModelDataDir`), the model will load that data instead of re-downloading and processing. 
+
+Below is an example of loading a model using two techniques, singluar mode and batch mode, respectively. 
+
+```{r}
+# Singular model load
+singular_bs <- raster_load(model = 'PNW-1.33km', modelRun = 20200325)
+
+# Batch model load
+batch_bs <- raster_load(model = c('PNW-1.33km', 'PNW-4km'), modelRun = 20200325)
+# Additionally, we could instead load multiple dates of a model with modelRun = c(20200325, 2020032, ...)
+```
+
+#### Raster details
+When a model is loaded into R, it takes the object type `Raster*`. Because most BlueSky models are temporal in nature, each model has multiple spatial slice-of-time, or a layers of gridded values, along a time axis. In `AirFireModeling` terminology, each slice is called a `RasterLayer` object, or layer for short, and when together, such as when model runs are loaded, are called `RasterBrick` objects, or (a) brick. Accessing a layer in a brick is effectively accessing a model-slice at a certain time. For example, to access the eleventh hour in an hourly updated model may look something like this: `model[[11]]`. 
+
+
+## Working with Models
+
+Depending on the choice of model loading type (batch or singular), data within each model is accessed differently. Singluar mode `raster_load()` loads a model of `Raster*` type objects, whereas batch mode of `raster_load()` loads a `list` of `Raster*` models. As such, it is important to take note when working directly with model data loaded via `raster_load()`. For the most part, the user shouldn't have to consider the object type when working with the data within the `AirFireModeling` context. 
+
+### Maps
+
+Mapping is easy with `AirFireModeling`'s `raster_map()` function. Below is an example of singular and batch mode model map plotting. Specifically, we are accessing the seventh hour in the model.
+
+#### Singular Maps
+
+A single map will be plotted for a single model. 
+
+```{r}
+singular_map <- raster_map(singular_bs, index = 7, palette = 'Spectral')
+print(singular_map)
+```
+
+#### Batch Maps
+
+A batch map will be plotted for a batch model. 
+
+```{r}
+batch_map <- raster_map(batch_bs, index = 7, palette = 'Spectral')
+print(batch_map)
+```
+
+
+### Models and Monitors
+
+Much of the functionality of the pakcage is aimed to compare BlueSky models with regulatory monitoring data. There a a couple of ways to quickly do so in `AirFireModeling` that require little knowledge of other packages and databases. 
+
+Just by knowing a monitor ID that is within a BlueSky coordinate domain, we can load and compare the two traces produced by the model and regulatory monitor. 
+
+We can find monitor ID's through a number of methods, but the easiest is to vist [The AirFire tools monitoring site](https://tools.airfire.org/monitoring/v4/). 
+
+Here is how we can easily compare a monitor to our models.
+
+```{r}
+raster_coordinateTrace(batch_bs, monitorID = '530330057_01')
+```
+
+#### Monitor Conversions 
+
+Models are inherintly spatial (and temporal) whereas regulatory monitors loaded via the `PWFSLSmoke` R package are only temporal. Therefore in order to compare a BlueSky model with a regulatory monitor we introduce `raster_toMonitor()` and `monitor_toRaster()` functions, which allows us to directly convert from a model coordinate location to hourly `ws_monitor` objects, like those used in `PWFSLSmoke`, and vice-versa -- vastly expanding analysis capabilities.  
+
+```{r}
+# Convert models to the monitor format
+pnw <- raster_toMonitor(batch_bs, longitude = -120, latitude = 45)
+
+# The ws_monitor object pnw now allows us to use other capatible package functions
+AirMonitorPlots::monitor_ggTimeseries(pnw)
+```
+
+#### Model Conversion 
+
+Additionally, we can extend monitor to raster conversion to look at `PWFSLSmoke` monitors in a more spatial way. This even allows us to directly compare the `PWFSLSmoke` regulatory monitors to the BlueSky model outputs, while preserving the spatial nature of the models. 
+
+```{r}
+# Convert ALL NW monitors to raster
+nw_monitors <- monitor_load(startdate = 20181109, 20181111) %>% 
+  monitor_subset(stateCodes = c('WA', 'OR'))
+nw_monitors_raster <- monitor_toRaster(nw_monitors, res = 0.25)
+raster_map(nw_monitors_raster, index = 2, palette = 'Spectral')
+# TODO: adjust time axis index
+```
+
+## Conclusion
+
+The `AirFireModeling` package is intended to simplify downloading, analyzing, and comparing spatiotemporal BlueSky Model and monitor data. The package focuses on memory efficient exploration and analysis while providing a simple and consistent syntax.  
+
+**_Mazama Science_**
+

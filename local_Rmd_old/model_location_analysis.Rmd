@@ -1,0 +1,74 @@
+---
+title: "Model Location Analysis"
+output: html_document
+params: 
+  model: 'all' 
+  modelRun: 20200320
+  longitude: NULL
+  latitude: NULL
+  monitorID: '530330057_01'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
+# set params 
+model <- params$model
+modelRun <- params$modelRun
+longitude <- params$longitudegitude 
+latitude <- params$latitudeitude
+monitorID <- params$monitorID
+```
+
+
+```{r, echo=FALSE}
+if ( !is.null(monitorID) ) {
+  ws_monitor <- PWFSLSmoke::monitor_load(startdate = modelRun, enddate = modelRun + 3, monitorIDs = monitorID)
+  longitude <- ws_monitor$meta$longitude
+  latitude <- ws_monitor$meta$latitude
+}
+if ( model == 'all' ) {
+  model <- bluesky_findModels(longitude, latitude)
+}
+```
+
+### Model: `r model` 
+
+### Model Run: `r modelRun` 
+
+### `r ifelse(is.null(monitorID), paste0('Longitude: ', longitude, ' Latitude: ', latitude), paste0('MonitorID: ', monitorID))`
+
+
+# Monitor Information 
+
+#### Monitor Link `r paste0('[', monitorID, ']', '(', 'https://tools.airfire.org/monitor-data-report/v4/report?databaseversion=4.0&webserviceapi=4.0&monitors=', monitorID, ')')`
+
+```{r, echo=FALSE, fig.height=3}
+PWFSLSmoke::monitorLeaflet(ws_monitor)
+```
+
+```{r, echo=FALSE, fig.height=3}
+monitor_plot <- AirMonitorPlots::ggplot_pm25Timeseries(ws_monitor) + 
+  AirMonitorPlots::geom_pm25Points() + 
+  ggplot2::ggtitle(paste0('Monitor ', monitorID))
+print(monitor_plot)
+```
+
+# Model Monitor Comparison
+
+```{r, echo=FALSE}
+bs <- raster_load(model, modelRun)
+raster_coordinateTrace(bs, longitude, latitude)
+```
+
+## 4-adjacent Coordinate Model Cells
+
+```{r, echo=FALSE}
+gg <- list() 
+for ( i in names(bs) ) {
+  gg[[i]] <- raster_spaghetti(bs[[i]], longitude, latitude, n = 4, title = i)
+}
+cowplot::plot_grid(plotlist = gg, ncol = 2)
+```
+

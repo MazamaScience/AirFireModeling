@@ -1,0 +1,165 @@
+---
+title: "AirFireModeling"
+author: "Hans Martin"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AirFireModeling}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(fig.width=7, fig.height=7) 
+```
+
+# Background
+The USFS Pacific Wildland Fire Sciences Lab AirFire team works to model wildland fire emissions and has created the BlueSky Modeling Framework. This system integrates a wide collection of models along the smoke modeling chain (fire information, fuel loadings, consumption modeling, emissions modeling, time rate of emissions modeling, plume height estimations, and smoke trajectory and dispersion modeling). The resulting model output has been integrated into many different smoke prediction systems and scientific modeling efforts.
+
+The AirFireModeling R package is being developed to help modelers and scientists better understand how the smoke predictions in their model output compare with smoke measurements made at monitoring sites.
+
+The package includes functionality to make it easier to:
+
+* download and work with gridded BlueSky model output
+* download and work with non-gridded monitoring data
+* convert between gridded and non-gridded representations of the data
+* create maps and timeseries plots of gridded and non-gridded data
+* subset data based on spatial polygons (e.g. HUCs)
+
+# Purpose
+The _AirFireModeling_ package is intended to simplify the comparison of on-ground air-quality monitor data with generated air-quality forecast models provided via the BlueSky Modeling Framework. Comparing output models is an important step to improve the accuracy and _AirFireModeling_ includes general capabilities and a standardized data model for defining various model preformance metrics.
+Fundamentally, the _AirFireModeling_ package provides functions for 
+_spatial grid_ to _location time series_ conversion, and vice-versa. The package 
+should be particularly useful when using very large datasets that can not be 
+loaded into the computer's memory. Functions will work correctly, because they 
+they process large files in chunks, i.e., they read, compute, and write blocks 
+of data, without loading all values into memory at once. 
+
+# Introduction
+### Overview 
+The BlueSky Model data exists as a gridded spatial timeseries. Every grid cell is a projected coordinate location with a value (or many) associated with each at a particular time. Each slice of time is called a _raster_ and is layered in a time-ordered sequence. Data from each layer is easily accessible and can be manipulated individually or as a stack. This allows users to easily explore both spatiotemporal and location temporal data. Below we will explore a few of the features of the _AirFireModeling_ package. 
+
+### Two data models collide
+There are two main data models to recognize in this package: _Raster* _ and _ws_monitor_ objects. Each object has its own properties and scope. Generally, BlueSky _Raster* _ objects are compatible with the **raster** package and _ws_monitor_ objects are compatible with monitor functionality from packages such as **PWFSLSmoke**.  
+
+#### Rasters
+The **raster** package provides classes and functions to manipulate geographic (spatial) data in "raster" format.  Raster data divides space into cells (rectangles; pixels) of equal size (in units of the coordinate reference system).  Such continuous spatial data are also referred to as ’grid’ data, and be contrasted with discrete (object based) spatial data (points, lines, polygons).
+```{r}
+# Load the library
+library(AirFireModeling)
+
+# Set the data download directory 
+setModelDataDir('~/Data/Bluesky')
+
+# Load a single model run
+bs <- bluesky_load(modelRun = 20191115, model = 'CANSAC-4km', cleanup = FALSE)
+
+bs 
+```
+It's helpful to deconstruct this output. 
+
+* Class: This is the class of the _Raster* _ object downloaded. A single layer of the _RasterBrick_ would be a _RasterLayer_, hence a stack of this is called a _RasterStack_ or _RasterBrick_.
+
+* Dimensions: This is a RasterBrick of a _CANSAC-4km_ model on an hourly time axis axis. Our raster grid dimensions are 321x381 (`nrow` x `ncol`) cells. The hourly time axis is indicated by `nlayers`, were each of the 71 layers indicates a different hour. There are 122301 grid cells (`ncell`). All of these parameters define the dimensionality of this BlueSky model.
+
+* Resolution: The resolution of the Raster* defines the size the of each grid cell. By default a raster typically has an appropriate resolution set. The resolution can be increased or decreased and will change the Raster* dimensionality.
+
+* Extent: The extent of a Raster* defines the extent, or boundaries, of the coordinates in the Raster*, or `xmin`, `xmax`, `ymin`, `ymax` respective to it's projection.
+
+* CRS: The coordinate reference system (CRS) of a Raster* object. 
+
+* Source: The netCDF or other file source used to load data from the Raster*. 
+
+* Names: The names field in the _AirFireModeling_ package is the numeric representation of a given datetime, each corresponding to its respective layer. 
+
+* Z-Value: The Z-value is the time axis, showing the numeric time domain (`min`,`max`)
+
+* Varname: If available in the NetCDF, the `varname` is the variable Ratser* variable (grid value) name used for identification. 
+
+* Level: Levels is used to define a Raster* object categorically, similar to an R Factor. 
+
+We can utilize various properties of the BlueSky Raster data model. For example, we can access various layers (think hours) of our `bs` model. Below is an example of mapping the 12th hour of the forecast atmospheric data. 
+```{r}
+# Access the 12th hour raster layer
+twelve_hr <- bs[[24]]
+
+# Add custom color breaks for visualization 
+cols <- c(-Inf, 0, 2, 5, 10, 25, 50, 100, 200, Inf)
+
+raster_map(twelve_hr, breaks = cols, direction = -1, palette = 'Spectral')
+```
+##### Interactive Maps
+
+```{r}
+raster_leaflet(bs[[55]])
+```
+
+
+Furthermore, we can observe temporal specific spatial locations and regions using various subset method functions. Below is an example of observing a the data produced by the `bs` model in a Sacramento region. Specifically, we are observing the coordinates (`lat`,`lon`) and its `n=1` adjacent cells. 
+```{r}
+# Sacramento Coordinates
+lat <- 38.55
+lon <- -121.46
+raster_spaghettiPlot(bs, lon, lat, radius = 50, count = 10) 
+```
+
+There are many more functions available in the _AirFireModeling_ package and used properly in conjunction with the _raster_ package, powerful spatiotemporal air quality analytics can be achieved. To begin observing and comparing more specific locations and regions, we will need to employ our second data model, _ws_monitor_'s.
+
+
+#### Monitors
+Mazama Science has a long standing and proven data model for air quality analytics. Technically speaking, the data model is _ws_monitor_ objects, but we commonly refer to them simply as _Monitor_ objects. The monitor data model relies on standardized coordinate specific hourly data. A significant portion of functionality of the _AirFireModeling_ package (and many others!) relies on various properties of this data model. _AirFireModeling_ provides easy conversions to and from _raster_ data models. 
+
+```{r}
+# Create a monitor from bs raster and Sacramento coordinates
+sc_mon <- raster_toMonitor(bs, lon, lat, monitorID = 'Sacramento')
+
+str(sc_mon)
+```
+Our monitor data is a list of two separate data, `meta` which stores various location and other metadata, and `data` which stores the timeseries data. 
+
+With our `sc_mon` monitor object, we can begin to integrate with other packages and expand on the data models functionality. Below is acouple of quick examples using a couple of different packages that are compatible with our `sc_mon` data.
+
+```{r}
+# Load the PWFSLSmoke library
+library(PWFSLSmoke)
+# Create an interactive map of our monitors location
+monitor_leaflet(sc_mon)
+```
+```{r}
+# Load the AirMonitorPlots library
+library(AirMonitorPlots)
+# Plot a ggplot2 timeseries of sc_mon
+ggplot_pm25Timeseries(sc_mon) + geom_pm25Points()
+# PWFSLSmoke::monitorPlot_timeseries(sc_mon)
+```
+
+### Exploring Raster & Monitor data
+Together Raster and Monitor allow us to explore BlueSky modeling data from various perspectives. We can start by downloading our data. 
+
+To gather BlueSky data from multiple model runs, we can use `bluesky_aggregate()`. This function is ideal for multi-day-model runs. Because BlueSky model runs are often produced bi-daily, we wish to use the first 12 hours of each model run for our time period and combine these together to produce a full duration model run. 
+```{r}
+ca_bs <- bluesky_aggregate(start = 20191115, end = 20191120, model = 'CANSAC-4km', cleanup = FALSE) 
+ca_bs
+```
+
+We will also explore our monitor data at a spatiotemporal level. First, we download our monitor data for a similar time period and restrict our monitors to California borders. Using `monitor_toRaster()` we can convert all our monitors location and timeseries data to a _RasterBrick_ object, with similar properties to our `ca_bs` raster by using the `projectTo` parameter. We can also choose to increase (decrease?) the resolution of or `ca_mons` in order to better interpolate our comparison and to more easily visualize sparse monitor locations. 
+```{r}
+# Load CA state monitor location data
+ca_mons <- monitor_load(startdate = 20191115, enddate = 20191120) %>% 
+  monitor_subset(stateCodes = 'CA')
+
+# Convert CA state monitor location data into a raster of the same extent, resolution, properties as our bs raster
+ca_mons_raster <- monitor_toRaster(ca_mons, res = 0.2, projectTo = ca_bs)
+ca_mons_raster
+```
+We can easily find the correlation between `ca_bs` and `ca_mons_raster` shared locations for simple model performance analysis. 
+```{r}
+# check the correlation the two models at the tenth hour. 
+raster_correlation(ca_bs[[10]], ca_mons_raster[[10]])
+```
+
+### Conclusion 
+The _AirFireModeling_ package is intended to simplify downloading, analyzing, and comparing spatiotemporal BlueSky Model and monitor data. The package focuses on memory efficient exploration and analysis while providing a simple and consistent syntax. This overview is meant to provide a brief introduction of utilizing _rasters_ and _monitors_ in conjunction. _AirFireModeling_ is still under heavy development and user feedback is very important. 
+
+**_Mazama Science_**
+

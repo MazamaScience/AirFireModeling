@@ -1,0 +1,78 @@
+---
+title: "Batch Model Operations"
+author: "Mazama Science"
+date: "3/19/2020"
+output: html_document
+---
+```{r}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+library(AirFireModeling)
+setModelDataDir('~/MS/Data/BlueSky/')
+```
+
+## Batch Mode 
+Following the 0.25 "batch" update, the `AirFireModeling` package now supports batch multi-threaded operations for model rasters. This means a user can download models, create plots and visualizations, and preform complex calculations quickly and efficiently. 
+
+#### Memory 
+Execution has only a small memory footprint because of the underlying `raster` package integration, which is used to process the model in chunks, i.e., they read, compute, and write blocks of data, without loading all values into memory at once. 
+
+#### Examples
+Batch operations download and operate on a `list()` of `Raster*` (typically `RasterBrick`) objects, which can be loaded via `raster_load()` when we provide either multiple dates, models, or paths to models.    
+
+Below are a few demonstrated "batch operations" that are currently supported. 
+
+We begin by batch loading our data. Here we intend to load two models, of date runs. 
+
+```{r}
+dates <- c(20200315, 20200316, 20200317)
+
+pnw_4km <- raster_load(model = 'PNW-4km', run = dates )
+pnw_1.33km <- raster_load(model = 'PNW-1.33km', run = dates)
+```
+
+Alternatively, if we have already downloaded the models we can locate and load them easily. 
+
+```{r}
+# Use regex for file pattern matching
+pnw_1.33km_path <- bluesky_downloaded(pattern = 'PNW-1.33km.+_V2.nc', full = TRUE)
+pnw_1.3km <- raster_load(local = pnw_1.33km_path)
+```
+
+Most plotting functionality has been updated to support plot grids when plotted using batch mode. 
+
+For example, below we can quickly compare our different loaded models at their twelfth hour using a familiar function and syntax. 
+```{r}
+maps_at_noon <- raster_map(pnw_1.33km, index = 12, palette = 'Spectral')
+print(maps_at_noon)
+```
+
+Similarly, we can batch convert the models to monitors at a location, and combine them into a valid `ws_monitor` object. 
+
+```{r}
+pnw_4km_monitor <- raster_toMonitor(pnw_4km, longitude = -120, latitude = 45)
+```
+
+As such we can do proceed as we normally would using any function that accepts a `ws_monitor` object.
+
+```{r}
+pnw_4km_monitor %>%  
+  AirMonitorPlots::monitor_ggTimeseries()
+```
+
+Furthermore, we can plot coordinate traces of a location to compare with a regulatory monitor using batch mode.
+
+```{r}
+traces <- raster_coordinateTrace(pnw_4km, longitude = -120, latitude = 45)
+print(traces)
+```
+
+There are many other functions that can be extended to include batch mode. Below are a couple of more examples. 
+```{r}
+pnw_4km_subbed <- raster_subset(pnw_4km, n = 200, longitude = -120, latitude = 45)
+subbed_map <- raster_map(pnw_4km_subbed, index = 12, palette = 'Spectral')
+print(subbed_map)
+```
+
+```{r}
+calculated <- raster_calculate(pnw_4km, FUN = function(x) { x * 10 })
+```
