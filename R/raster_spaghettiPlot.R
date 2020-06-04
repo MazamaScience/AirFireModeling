@@ -123,8 +123,6 @@ raster_spaghettiPlot <- function(
     ))
   }
 
-
-
   # Defaults
   if ( !is.logical(verbose) ) verbose <- TRUE
 
@@ -134,7 +132,7 @@ raster_spaghettiPlot <- function(
     raster,
     longitude = longitude,
     latitude = latitude,
-    radius = radius,
+    radius = 10,
     count = count,
     rasterName = rasterName,
     verbose = verbose
@@ -142,113 +140,89 @@ raster_spaghettiPlot <- function(
 
   # ----- Prepare default plot arguments ---------------------------------------
 
-  argsList <- list(...)
+  # Internal Function
+  .meltTargetMonitor <- function(monitorList) {
+    # Melt the data
+    moltenTargetDist <-
+      monitorList$meta %>%
+      dplyr::select(.data$monitorID, .data$targetDistance) %>%
+      reshape2::melt(id.vars = 'monitorID') %>%
+      dplyr::mutate(variable = .data$monitorID, 'monitorID' = NULL) %>%
+      dplyr::mutate(model = stringr::str_remove(.data$variable, '_.+_.+'))
 
-  if ( !('type' %in% names(argsList)) )
-    argsList$type <- 'l'
+    moltenData <-
+      monitorList$data %>%
+      reshape2::melt(measure.vars = monitorList$meta$monitorID)
 
-  if ( !('lwd' %in% names(argsList)) )
-    argsList$lwd <- 2
+    # Merge to data.frame and group by datetime
+    df <- merge(moltenData, moltenTargetDist, by = 'variable') %>%
+      dplyr::group_by(.data$datetime)
 
-  if ( !('localTime' %in% names(argsList)) )
-    argsList$localTime <- TRUE
+    names(df) <- c('monitorID', 'datetime', 'pm25', 'dist', 'model')
 
-  if ( !('shadedNight' %in% names(argsList)) )
-    argsList$shadedNight <- TRUE
-
-  if ( !('ylab' %in% names(argsList)) )
-    argsList$ylab <- "PM2.5"
-
-  if ( !('main' %in% names(argsList)) )
-    argsList$main <- "PM2.5"
-
-  if ( !('add' %in% names(argsList)) )
-    argsList$add <- FALSE
-
-  # Always use UTC to avoid multiple-timezone issues
-  if ( !('add' %in% names(argsList)) )
-    argsList$localTime <- FALSE
-
-  # Awkward chain to get min and max datetimes from monitorList
-  tlim <-
-    lapply(monitorList, function(x) { return(range(x$data$datetime)) }) %>%
-    unlist() %>%
-    as.numeric() %>%
-    range() %>%
-    as.POSIXct(tz = "UTC", origin = lubridate::origin)
-
-  # NOTE:  Because of a bug in monitor_timeseriesPlot(), we need to specify
-  # NOTE:  tlim in the local timezone if we want to display
-
-  # TODO:  Improve decision on choosing a timezone
-  if ( argsList$localTime ) {
-    timezone <- monitorList[[1]]$meta$timezone[1]
-    tlim <- lubridate::with_tz(tlim, tzone = timezone)
+    return(df)
   }
 
-  # Get ylim from the range of data values
-  if ( is.null(ylim) ) {
-    ymax <-
-      sapply(monitorList, function(x) { return(max(x$data[,-1], na.rm = TRUE)) }) %>%
-      max(na.rm = TRUE)
-
-    ylim <- c(0, ymax)
-  }
-
-  # ----- Create the plot ------------------------------------------------------
-
-  if ( 'col' %in% names(argsList) ) {
-    colors <- rep(argsList$col, times = length(monitorList))
+  # Create ggplot dataframes
+  if ( stringr::str_detect(class(monitorList), 'Raster*') ) {
+    df <- .meltTargetMonitor(monitorList)
   } else {
-    colors <- RColorBrewer::brewer.pal(12, "Paired")
-  }
-
-  # Create a blank plot first to get the x and y limits
-  if ( !argsList$add ) {
-
-    graphics::plot(
-      x = tlim[1],
-      y = 0,
-      col = 'transparent',
-      ylab = argsList$ylab,
-      main = argsList$main,
-      xlim = tlim,
-      ylim = ylim,
-      las = 1
-    )
+    df <- lapply(monitorList, .meltTargetMonitor) %>%
+      dplyr::bind_rows()
 
   }
 
-  # NOTE:  Having created a blank plot we have to add our own shaded night
-  # NOTE:  with code borrowed from PWFSLSmoke::monitor_timeseriesPlot().
+  # ----- ggplot ---------------------------------------------------------------
 
-  if ( argsList$shadedNight ) {
-    times <- seq(tlim[1], tlim[2], by = "hour")
-    lat <- mean(monitorList[[1]]$meta$latitude)
-    lon <- mean(monitorList[[1]]$meta$longitude)
-    timeInfo <- PWFSLSmoke::timeInfo(times, lon, lat, timezone)
-    PWFSLSmoke::addShadedNight(timeInfo)
+  gg <-
+    ggplot2::ggplot(
+      data = df,
+      ggplot2::aes(
+        x = .data$datetime,
+        y = .data$pm25,
+        group = .data$monitorID,
+        alpha = -(.data$dist),
+        model = .data$model
+      )
+    ) +
+    ggplot2::geom_line(color = 'firebrick2') +
+    ggplot2::geom_point(color = 'firebrick2', shape = 15 ) +
+    ggplot2::facet_grid(rows = ggplot2::vars(.data$model)) +
+    ggplot2::labs(
+      title = paste0(latitude, ' \U00B0 N ',longitude, ' \U00B0 W ', rasterName),
+      subtitle = ifelse(
+        !is.null(radius),
+        paste0('Cells within ', radius, ' km'),
+        paste0(count, ' Adjacent cells')
+      ),
+      x = 'Date',
+      y = 'PM2.5'
+    ) +
+    ggplot2::theme(legend.position = 'none')
+
+  return(gg)
+
+  # == DEBUG ==
+  if (FALSE) {
+    setModelDataDir('~/Data/BlueSky/')
+
+
+    longitude = -119
+    latitude = 35
+    radius = 5
+    count = NULL
+    rasterName = NULL
+    verbose = TRUE
+    ylim = c(34,37)
+    xlim = c(-118, -120)
+
+    bs1 <- bluesky_load(model = c('CANSAC-4km'), modelRun = 2020040100, ylim = ylim,xlim = xlim)
+   # bs2 <- bluesky_load(model = c('CANSAC-1.33km'), modelRun = 2020040100)
+
+    raster_spaghettiPlot(bs1, longitude, latitude)
+
   }
 
-  # All subsequent plots are added
-  argsList$add <- TRUE
-
-  for ( i in seq_along(monitorList) ) {
-
-    argsList$ws_monitor <- monitorList[[i]]
-    argsList$col <- colors[i]
-
-    # Plot
-    do.call(PWFSLSmoke::monitor_timeseriesPlot, argsList)
-
-  }
-
-  graphics::legend(
-    "topright",
-    legend = names(monitorList),
-    col = colors[1:length(monitorList)],
-    lwd = argsList$lwd
-  )
 
 }
 
