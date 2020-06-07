@@ -2,12 +2,14 @@
 #' @title Find latest BlueSky model run from AirFire
 #'
 #' @param model Model identifier.
+#' @param count Number of recent \code{modelRun} strings to return.
 #' @param baseUrl Base URL for BlueSky output.
 #' @param verbose If \code{FALSE}, suppress status messages (if any), and the
 #' progress bar.
 #'
 #' @description Scans the directory of BluSky model output and returns the
-#' most recent \code{modelRun} string.
+#' most recent \code{modelRun} string(s). If \code{count > 1}, the most recent
+#' \code{count} will be returned in low-hi order.
 #'
 #' #' On 2019-10-11, available model identifiers include the following:
 #' \itemize{
@@ -52,7 +54,8 @@
 #' }
 
 bluesky_latestModelRun <- function(
-  model = 'PNW-4km',
+  model = NULL,
+  count = 1,
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
   verbose = TRUE
 ) {
@@ -97,9 +100,11 @@ bluesky_latestModelRun <- function(
 
   modelRun <-
     links %>%
-    stringr::str_subset("[0-9]{10}") %>%
-    utils::tail(1) %>%
-    stringr::str_replace("/","")
+    stringr::str_replace("/","") %>%
+    stringr::str_subset("^[0-9]{10}$") %>%
+    utils::tail(count) %>%
+    unique() %>%
+    sort()
 
   # TODO:  Validate that modelRun ends up with an appropriate timestamp.
   # TODO:  Otherwise return NA or stop with a "No timestamps found" error.
@@ -117,6 +122,5 @@ if ( FALSE ) {
   model = 'PNW-4km'
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard'
   verbose = TRUE
-
 
 }

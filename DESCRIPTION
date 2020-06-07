@@ -45,9 +45,11 @@ Imports:
     rasterVis,
     RColorBrewer,
     RCurl,
+    reshape2,
     rlang,
     sp,
-    stringr
+    stringr,
+    xml2
 Suggests:
     knitr,
     markdown,

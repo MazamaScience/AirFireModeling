@@ -202,27 +202,30 @@ raster_spaghettiPlot <- function(
 
   return(gg)
 
-  # == DEBUG ==
-  if (FALSE) {
-    setModelDataDir('~/Data/BlueSky/')
+}
 
 
-    longitude = -119
-    latitude = 35
-    radius = 5
-    count = NULL
-    rasterName = NULL
-    verbose = TRUE
-    ylim = c(34,37)
-    xlim = c(-118, -120)
+# ===== DEBUGING ===============================================================
 
-    bs1 <- bluesky_load(model = c('CANSAC-4km'), modelRun = 2020040100, ylim = ylim,xlim = xlim)
-   # bs2 <- bluesky_load(model = c('CANSAC-1.33km'), modelRun = 2020040100)
+if ( FALSE ) {
 
-    raster_spaghettiPlot(bs1, longitude, latitude)
+  setModelDataDir('~/Data/BlueSky/')
 
-  }
 
+  longitude = -119
+  latitude = 35
+  radius = 5
+  count = NULL
+  rasterName = NULL
+  verbose = TRUE
+  ylim = c(34,37)
+  xlim = c(-118, -120)
+
+  bs1 <- bluesky_load(model = c('CANSAC-4km'), modelRun = 2020040100, ylim = ylim,xlim = xlim)
+  # bs2 <- bluesky_load(model = c('CANSAC-1.33km'), modelRun = 2020040100)
+
+  raster_spaghettiPlot(bs1, longitude, latitude)
 
 }
+
 

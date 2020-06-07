@@ -1,3 +1,8 @@
+# AirFireModeling 0.2.16
+
+* Completely refactored `raster_spaghettiPlot()` now returns a ggplot object.
+* New `bluesky_latestModelRun()` function returns available model runs.
+
 # AirFireModeling 0.2.15
 
 * Removed need to specify `modelDataDir` when using `bluesky_load()` with the
@@ -26,7 +31,7 @@ a *ggplot2* plot object.
 
 # AirFireModeling 0.2.11
 
-* Improvements to `raster_spaghetti()`.
+* Improvements to `raster_spaghettiPlot()`.
 
 # AirFireModeling 0.2.10
 
