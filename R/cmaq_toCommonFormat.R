@@ -1,15 +1,15 @@
 #' @export
-#' @title Convert BlueSky NetCDF output to modernized NetCDF
+#' @title Convert CMAQ NetCDF output to modernized NetCDF
 #'
 #' @param filePath Absolute path of file to be converted.
 #' @param clean Logical specifying whether to remove the original netcdf file.
 #'
-#' @description Converts BlueSky model output from its original format to a more
+#' @description Converts CMAQ model output from its original format to a more
 #' modernized NetCDF format with dimension axes for longitude, latitude,
 #' elevation and time. With default settings, output files renamed to
 #' ~base~_v2.nc.
 #'
-#' @note Users will typically call \code{bluesky_load()} which in turn calls
+#' @note Users will typically call \code{cmaq_load()} which in turn calls
 #' this function.
 #'
 #' @return Absolute path of the converted NetCDF file.
@@ -20,11 +20,11 @@
 #' setModelDataDir('~/Data/BlueSky')
 #'
 #' filePath <- bluesky_download(model = "PNW-4km", modelRun = 2019100900)
-#' bluesky_toCommonFormat(filePath)
+#' cmaq_toCommonFormat(filePath)
 #' bluesky_downloaded()
 #' }
 
-bluesky_toCommonFormat <- function(
+cmaq_toCommonFormat <- function(
   filePath = NULL,
   clean = TRUE
 ) {
@@ -52,8 +52,8 @@ bluesky_toCommonFormat <- function(
   # ----- Create latitude and longitude axes -----------------------------------
 
   # Current (index) values
-  row <- raw_nc$dim$ROW$vals
-  col <- raw_nc$dim$COL$vals
+  row <- raw_nc$dim$LAT$vals
+  col <- raw_nc$dim$LON$vals
   lay <- raw_nc$dim$LAY$vals # LAYERS (height)
 
   # Useful information is found in the global attributes
@@ -83,6 +83,10 @@ bluesky_toCommonFormat <- function(
   lat <- seq(s, n, length.out = length(row))
   lon <- seq(w, e, length.out = length(col))
   lvl <- ZLVLS[1:length(lay)]
+
+  # NOTE:  We could have just grabbed lat and lon from raw_nc$dim$LAT$vals, ...
+  # NOTE:  at the top of this section. But everything agrees and we keep it this
+  # NOTE:  way so that it more closely matches the code in bluesky_toCommonFormat().
 
   # ----- Create time axis -----------------------------------------------------
 

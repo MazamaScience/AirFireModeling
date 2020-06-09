@@ -1,3 +1,7 @@
+# AirFireModeling 0.2.17
+
+* Added `cmaq_toCommonFormat()` to process CMAQ model runs.
+
 # AirFireModeling 0.2.16
 
 * Completely refactored `raster_spaghettiPlot()` now returns a ggplot object.
