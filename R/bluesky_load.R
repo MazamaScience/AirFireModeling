@@ -185,3 +185,36 @@ bluesky_load <- function(
   }
 
 }
+
+# ===== DEBUG ==================================================================
+
+if ( FALSE ) {
+
+  library(AirFireModeling)
+  setModelDataDir("~/Data/BlueSky")
+
+  model = "CANSAC-4km"
+  modelRun = 2020062200
+  modelType = 'forecast'
+  baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard'
+  localPath = NULL
+  xlim = NULL
+  ylim = NULL
+  clean = TRUE
+  verbose = TRUE
+
+
+  modelBrick <- bluesky_load(
+    model = model,
+    modelRun = modelRun,
+    modelType = modelType,
+    baseUrl = baseUrl,
+    localPath = localPath,
+    xlim = xlim,
+    ylim = ylim,
+    clean = clean,
+    verbose = verbose
+  )
+
+
+}

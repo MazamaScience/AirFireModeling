@@ -1,6 +1,6 @@
 # AirFireModeling 0.2.18
 
-* Added `cmaq_toCommonFormat()` to process CMAQ model runs.
+* Fixed bug in `raster_createLayerNameTimes()`.
 
 # AirFireModeling 0.2.17
 

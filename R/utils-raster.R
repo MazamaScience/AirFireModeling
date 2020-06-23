@@ -31,7 +31,20 @@ raster_createLayerNameTimes <- function(
   layerName
 ) {
 
-  epochSecs <- as.numeric(stringr::str_remove(layerName, 'X'))
+  # NOTE:  Saw this once for modelRun 2020062200:
+  # note:
+  # NOTE:  …, 1592992800, 1592996400, 1593000000, 1593003600, 1593007200, …
+  # NOTE:  Get's converted into layer names
+  # NOTE:  …, 1592992800, 1592996400, 1.593e.9, 1593003600, 1593007200, …
+
+  # Fix "1.593e.9" style problems
+  epochSecsStrings <-
+    stringr::str_remove(layerName, 'X') %>%
+    stringr::str_replace("e\\.", "e+")
+
+  # Convert to seconds
+  epochSecs <- as.numeric(epochSecsStrings)
+  # Convert to POSIXct
   layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
 
   return(layerTime)
