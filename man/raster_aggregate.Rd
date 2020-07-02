@@ -78,7 +78,7 @@ setting \code{chunk = 2} may produce better results.
 }
 
 \examples{
-\dontrun{
+\donttest{
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 

@@ -42,14 +42,14 @@ A \pkg{raster} package \emph{RasterBrick} object.
 \description{
 This function encapsulates the process of downloading, and formatting
 necessary for BlueSky model outputs. Additionally, it checks already existing
-models and loads those if avaliable.
+models and loads those if available.
 
 Loads BlueSky model output as a raster brick. The directory
 previously set with \code{setModelDataDir()} is searched for "v2" formatted
 model output. If data are not found locally, data are downloaded from
 \code{baseUrl} and converted.
 
-The reurned \code{dataBrick} object is of class \code{raster::RasterBrick} and
+The returned \code{dataBrick} object is of class \code{raster::RasterBrick} and
 can be manipulated with appropriate functions from the \pkg{raster} package
 or any of the \code{raster_~()} functions provided by \pkg{AirFireModeling}.
 
@@ -78,7 +78,7 @@ If \code{localPath} is used, \code{clean = FALSE} is automatically set.
 The package will never remove original model output that it has not downloaded.
 }
 \examples{
-\dontrun{
+\donttest{
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 

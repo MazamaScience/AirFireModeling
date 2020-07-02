@@ -32,7 +32,7 @@ cutter. All cells (up to \code{count}) within \code{radius} km of
 the target location are returned.
 }
 \examples{
-\dontrun{
+\donttest{
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 

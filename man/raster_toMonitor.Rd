@@ -43,7 +43,7 @@ with each location is generated with:
 }
 }
 \examples{
-\dontrun{
+\donttest{
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 

@@ -83,6 +83,7 @@
 #'   opacity = 0.3
 #'   )
 #' }
+
 raster_leaflet <- function(
   raster,
   index = 1,

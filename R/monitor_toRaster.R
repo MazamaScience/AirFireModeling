@@ -9,10 +9,9 @@
 #' @return A \code{RasterBrick} object.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
-#'
 #'
 #' # Load model data
 #' rasterList <- raster_load(

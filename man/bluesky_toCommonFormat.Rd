@@ -25,7 +25,7 @@ Users will typically call \code{bluesky_load()} which in turn calls
 this function.
 }
 \examples{
-\dontrun{
+\donttest{
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 

@@ -8,7 +8,7 @@
 #' @return A list of downloaded models
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
 #'

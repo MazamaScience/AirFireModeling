@@ -45,7 +45,7 @@ timeseries are then collapsed into a single timeseries by applying the
 \code{quantile()} using the user specified probability \code{prob}.
 }
 \examples{
-\dontrun{
+\donttest{
 library(PWFSLSmoke)
 initializeMazamaSpatialUtils()
 
@@ -57,12 +57,12 @@ San_Pablo <-
   monitor_subset(monitorIDs = '060131004_01')
 
 models <- bluesky_findModels(
-  yosemite_village$meta$longitude,
-  yosemite_village$meta$latitude
+  San_Pablo$meta$longitude,
+  San_Pablo$meta$latitude
 )
 
 monitor_forecastPlot(
-  San_Pabo,
+  San_Pablo,
   model = models
 )
 

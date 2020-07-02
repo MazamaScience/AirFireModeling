@@ -27,7 +27,7 @@ A list of downloaded models
 List downloaded models
 }
 \examples{
-\dontrun{
+\donttest{
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 

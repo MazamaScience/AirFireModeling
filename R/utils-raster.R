@@ -9,6 +9,22 @@
 #'
 #' @return \code{TRUE} if \code{raster} is a Raster\* object, \code{FALSE} otherwise.
 #'
+#' @examples
+#' \donttest{
+#' library(AirFireModeling)
+#' setModelDataDir('~/Data/BlueSky')
+#'
+#' # Load model data
+#' rasterList <- raster_load(
+#'   model = c("PNW-4km"),
+#'   modelRun = c(2019100900),
+#'   xlim = c(-125, -115),
+#'   ylim = c(42, 50)
+#' )
+#'
+#' raster_isRaster(rasterList[[1]])
+#' }
+#'
 
 raster_isRaster <- function(raster) {
 
@@ -26,6 +42,22 @@ raster_isRaster <- function(raster) {
 #' @param layerName Vector of raster layer names.
 #'
 #' @return \code{POSIXct} time.
+#'
+#' @examples
+#' \donttest{
+#' library(AirFireModeling)
+#' setModelDataDir('~/Data/BlueSky')
+#'
+#' # Load model data
+#' rasterList <- raster_load(
+#'   model = c("PNW-4km"),
+#'   modelRun = c(2019100900),
+#'   xlim = c(-125, -115),
+#'   ylim = c(42, 50)
+#' )
+#'
+#' layerNames <- names(rasterList[[1]])
+#' raster_createLayerNameTimes(layerNames)
 
 raster_createLayerNameTimes <- function(
   layerName
@@ -59,6 +91,21 @@ raster_createLayerNameTimes <- function(
 #' @param raster A RasterBrick.
 #'
 #' @return \code{POSIXct} time.
+#'
+#' @examples
+#' \donttest{
+#' library(AirFireModeling)
+#' setModelDataDir('~/Data/BlueSky')
+#'
+#' # Load model data
+#' rasterList <- raster_load(
+#'   model = c("PNW-4km"),
+#'   modelRun = c(2019100900),
+#'   xlim = c(-125, -115),
+#'   ylim = c(42, 50)
+#' )
+#'
+#' raster_createTimes(rasterList[[1]])
 
 raster_createTimes <- function(
   raster = NULL
@@ -79,6 +126,21 @@ raster_createTimes <- function(
 #' @param prefix String prepended to the time.
 #'
 #' @return Time string formatted for \code{timezone}.
+#'
+#' @examples
+#' \donttest{
+#' library(AirFireModeling)
+#' setModelDataDir('~/Data/BlueSky')
+#'
+#' # Load model data
+#' rasterList <- raster_load(
+#'   model = c("PNW-4km"),
+#'   modelRun = c(2019100900),
+#'   xlim = c(-125, -115),
+#'   ylim = c(42, 50)
+#' )
+#'
+#' raster_createTimeStrings(raster = rasterList[[1]], timezone = "America/Los_Angeles", prefix = "time: ")
 
 raster_createTimeStrings <- function(
   raster = NULL,

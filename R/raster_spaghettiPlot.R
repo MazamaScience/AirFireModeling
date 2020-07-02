@@ -25,7 +25,7 @@
 #' @return A ggplot object.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
 #'

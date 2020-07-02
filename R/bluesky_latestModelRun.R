@@ -43,7 +43,7 @@
 #' @return Timestamp of the latest model run.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
 #'

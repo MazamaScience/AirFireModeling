@@ -47,7 +47,7 @@ into individual \pkg{PWFSLSMoke} \emph{ws_monitor} objects using
 \code{raster_toMonitor()} and then plotted.
 }
 \examples{
-\dontrun{
+\donttest{
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 

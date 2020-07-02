@@ -26,7 +26,7 @@
 #' @return A ggplot object.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
 #'
@@ -89,7 +89,7 @@ raster_ggmap <- function(
 
 }
 
-# ===== Method Disptach ========================================================
+# ===== Method Dispatch ========================================================
 
 # NOTE:  For an explanation of S3 method dispatch, see:
 # NOTE:    http://adv-r.had.co.nz/OO-essentials.html#s3

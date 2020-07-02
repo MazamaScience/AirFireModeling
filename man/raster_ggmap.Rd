@@ -90,7 +90,7 @@ e.g \code{index = 1} is the first hour of a model.
 }}
 
 \examples{
-\dontrun{
+\donttest{
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 

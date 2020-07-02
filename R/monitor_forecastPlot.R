@@ -24,7 +24,7 @@
 #' \code{PWFSLSmoke::monitor_timeseriesPlot()}.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(PWFSLSmoke)
 #' initializeMazamaSpatialUtils()
 #'
@@ -36,12 +36,12 @@
 #'   monitor_subset(monitorIDs = '060131004_01')
 #'
 #' models <- bluesky_findModels(
-#'   yosemite_village$meta$longitude,
-#'   yosemite_village$meta$latitude
+#'   San_Pablo$meta$longitude,
+#'   San_Pablo$meta$latitude
 #' )
 #'
 #' monitor_forecastPlot(
-#'   San_Pabo,
+#'   San_Pablo,
 #'   model = models
 #' )
 #'

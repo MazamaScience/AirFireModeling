@@ -15,4 +15,21 @@ raster_isRaster(raster)
 \description{
 Test for Raster\* class
 }
+\examples{
+\donttest{
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
+
+# Load model data
+rasterList <- raster_load(
+  model = c("PNW-4km"),
+  modelRun = c(2019100900),
+  xlim = c(-125, -115),
+  ylim = c(42, 50)
+)
+
+raster_isRaster(rasterList[[1]])
+}
+
+}
 \keyword{hidden}

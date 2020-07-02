@@ -60,7 +60,7 @@ structure: \code{<baseUrl>/<model>/<modelRun>/<modelType>/data/...}
 }
 }
 \examples{
-\dontrun{
+\donttest{
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 

@@ -15,7 +15,7 @@
 #' @return Absolute path of the converted NetCDF file.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
 #'

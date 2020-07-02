@@ -220,7 +220,7 @@ domain.
 Portland_monitors <-
   monitor_load(
     startdate = 2019100900,
-    enddate = 2019101123
+    enddate = 2019101023
   ) %>%
   monitor_subsetByDistance(
     longitude = -122.68,
@@ -232,7 +232,7 @@ Portland_monitors <-
 # Create a Portland area RasterBrick
 rasterList <- raster_load(
   model = "PNW-4km",
-  modelRun = 2019100900,
+  modelRun = 2019101000,
   xlim = c(-123.08, -122.28),
   ylim = c(45.22, 45.92)
 )

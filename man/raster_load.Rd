@@ -48,7 +48,7 @@ format to a spatio-temporal Raster\* object.
 datasets can be loaded at once.
 }
 \examples{
-\dontrun{
+\donttest{
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 
