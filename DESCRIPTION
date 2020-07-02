@@ -1,9 +1,10 @@
 Type: Package
 Package: AirFireModeling
-Version: 0.2.18
+Version: 0.2.19
 Title: Utilities for Working with Monitoring Data and Smoke Model Output
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")), 
+    person("Tate", "Brasel", email="tatebrasel@gmail.com", role=c("aut")),
     person("Hans", "Martin", email="hans@mazamascience.com", role=c("aut")),
     person("Rohan", "Aras", email="rohana@uw.edu", role=c("aut")),
     person("Zach", "Dingels", email="dingelsz@uw.edu", role=c("aut")),
@@ -12,6 +13,7 @@ Authors@R: c(
     person("Rex", "Thompson", email="rexs.thompson@gmail.com", role=c("aut"))
     )
 Author: Jonathan Callahan [aut, cre],
+    Tate Brasel [aut],
     Hans Martin [aut],
     Rohan Aras [aut],
     Zach Dingels [aut],

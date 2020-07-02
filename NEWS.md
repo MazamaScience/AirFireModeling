@@ -1,3 +1,7 @@
+# AirFireModeling 0.2.19
+
+* Improved/consistent examples for all functions.
+
 # AirFireModeling 0.2.18
 
 * Fixed bug in `raster_createLayerNameTimes()`.
