@@ -6,8 +6,8 @@
 \usage{
 monitor_forecastPlot(
   ws_monitor,
-  model = NULL,
-  modelType = "forecast",
+  modelName = NULL,
+  modelMode = "forecast",
   baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
   radius = 20,
   count = 9,
@@ -19,9 +19,9 @@ monitor_forecastPlot(
 \arguments{
 \item{ws_monitor}{ws_monitor object.}
 
-\item{model}{Model identifier(s).}
+\item{modelName}{Model identifier(s).}
 
-\item{modelType}{Subdirectory path containing BlueSky output, i.e. 'forcast'.}
+\item{modelMode}{Subdirectory path containing BlueSky output, i.e. 'forcast'.}
 
 \item{baseUrl}{Base URL for BlueSky output.}
 
@@ -63,8 +63,7 @@ models <- bluesky_findModels(
 
 monitor_forecastPlot(
   San_Pablo,
-  model = models
+  modelName = models
 )
-
 }
 }

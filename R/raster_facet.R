@@ -29,7 +29,7 @@
 #'
 #' # Load model data
 #' rasterList <- raster_load(
-#'   model = "PNW-4km",
+#'   modelName = "PNW-4km",
 #'   modelRun = c(2019100900),
 #'   xlim = c(-125, -117),
 #'   ylim = c(42, 47)
@@ -52,7 +52,7 @@
 #'
 #' # Kincade fire
 #' rasterList <- raster_load(
-#'   model = "CANSAC-4km",
+#'   modelName = "CANSAC-4km",
 #'   modelRun = c(2019102700),
 #'   xlim = c(-124, -121.5),
 #'   ylim = c(37.5, 39)

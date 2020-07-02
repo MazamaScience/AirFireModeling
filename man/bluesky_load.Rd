@@ -5,9 +5,9 @@
 \title{Load data for a single BlueSky model}
 \usage{
 bluesky_load(
-  model = NULL,
+  modelName = NULL,
   modelRun = NULL,
-  modelType = "forecast",
+  modelMode = "forecast",
   baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
   localPath = NULL,
   xlim = NULL,
@@ -17,11 +17,11 @@ bluesky_load(
 )
 }
 \arguments{
-\item{model}{Model identifier.}
+\item{modelName}{Model identifier.}
 
 \item{modelRun}{Model initialization datestamp as "YYYYMMDDHH".}
 
-\item{modelType}{Subdirectory path containing BlueSky output, i.e. 'forcast'.}
+\item{modelMode}{Subdirectory path containing BlueSky output, i.e. 'forcast'.}
 
 \item{baseUrl}{Base URL for BlueSky output.}
 
@@ -84,7 +84,7 @@ setModelDataDir('~/Data/BlueSky')
 
 # Load model data
 raster <- bluesky_load(
-  model = "PNW-4km",
+  modelName = "PNW-4km",
   modelRun = 2019100900,
   xlim = c(-125, -115),
   ylim = c(42, 50)

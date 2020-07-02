@@ -88,7 +88,7 @@ Below is an example of loading a model using the two functions:
 ```{r raster_load}
 # Single model and modelRun
 raster <- raster_load(
-  model = 'PNW-1.33km', 
+  modelName = 'PNW-1.33km', 
   modelRun = 20200325,
   xlim = c(-125, -115),
   ylim = c(42, 50)
@@ -96,7 +96,7 @@ raster <- raster_load(
 
 # Multiple models at once
 rasterList <- raster_load(
-  model = c('PNW-1.33km', 'PNW-4km'), 
+  modelName = c('PNW-1.33km', 'PNW-4km'), 
   modelRun = 20200325,
   xlim = c(-125, -115),
   ylim = c(42, 50)
@@ -195,7 +195,7 @@ model_Portland <- raster_toMonitor(
 
 PWFSLSmoke::monitor_timeseriesPlot(
   model_Portland[[1]],
- type = 'l', col = 'salmon'
+  type = 'l', col = 'salmon'
 )
 title("15 Grid cells near Portland")
 ```
@@ -228,10 +228,9 @@ Portland_monitors <-
     radius = 20
   )
 
-
 # Create a Portland area RasterBrick
 rasterList <- raster_load(
-  model = "PNW-4km",
+  modelName = "PNW-4km",
   modelRun = 2019101000,
   xlim = c(-123.08, -122.28),
   ylim = c(45.22, 45.92)
@@ -262,7 +261,7 @@ raster_leaflet(
 
 The *AirFireModeling* package is intended to simplify downloading, analyzing, 
 and comparing spatio-temporal BlueSky Model and monitor data. The package focuses 
-on harnessingn the *raster* package for memory efficient exploration and 
+on harnessing the *raster* package for memory efficient exploration and 
 analysis while providing a simple and consistent syntax.  
 
 **_Mazama Science_**

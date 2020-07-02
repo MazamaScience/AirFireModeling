@@ -5,14 +5,14 @@
 \title{Find latest BlueSky model run from AirFire}
 \usage{
 bluesky_latestModelRun(
-  model = NULL,
+  modelName = NULL,
   count = 1,
   baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
   verbose = TRUE
 )
 }
 \arguments{
-\item{model}{Model identifier.}
+\item{modelName}{Model identifier.}
 
 \item{count}{Number of recent \code{modelRun} strings to return.}
 
@@ -50,7 +50,7 @@ Users wanting the latest data will typically call this function first,
 followed by bluesky_load().
 
 BlueSky output files are found in directories with the following
-structure: \code{<baseUrl>/<model>/<modelRun>/<modelType>/data/...}
+structure: \code{<baseUrl>/<model>/<modelRun>/<modelMode>/data/...}
 
 \preformatted{
 <baseUrl>/NAM84-0.08deg/2016050600/carryover/data/...
@@ -63,8 +63,8 @@ structure: \code{<baseUrl>/<model>/<modelRun>/<modelType>/data/...}
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 
-modelRun <- bluesky_latestModelRun(model = "PNW-4km")
-filePath <- bluesky_download(model = "PNW-4km", modelRun = modelRun)
+modelRun <- bluesky_latestModelRun(modelName = "PNW-4km")
+filePath <- bluesky_download(modelName = "PNW-4km", modelRun = modelRun)
 bluesky_toCommonFormat(filePath)
 bluesky_downloaded()
 }

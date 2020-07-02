@@ -25,7 +25,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
   list(
 
     "NAM84-0.15deg" = list(
-      model = "NAM84-0.15deg",
+      modelName = "NAM84-0.15deg",
       CENTER_LATITUDE   =  38.5,
       CENTER_LONGITUDE  = -95.0,
       WIDTH_LONGITUDE   =  70.0,
@@ -40,7 +40,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
     ),
 
     "GFS-0.15deg-CanadaUSA-p25deg-68N" = list(
-      model = "GFS-0.15deg-CanadaUSA-p25deg-68N",
+      modelName = "GFS-0.15deg-CanadaUSA-p25deg-68N",
       CENTER_LATITUDE   =  47,
       CENTER_LONGITUDE  = -110,
       WIDTH_LONGITUDE   =  120.0,
@@ -54,7 +54,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
     ),
 
     "AK-12km" = list(
-      model = "AK-12km",
+      modelName = "AK-12km",
       CENTER_LATITUDE   =  62.5,
       CENTER_LONGITUDE  = -155.0,
       WIDTH_LONGITUDE   =  39.0,
@@ -68,7 +68,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
     ),
 
     "NAM-3km" = list(
-      model = "NAM-3km",
+      modelName = "NAM-3km",
       CENTER_LATITUDE   =  37.5,
       CENTER_LONGITUDE  = -95.0,
       WIDTH_LONGITUDE   =  70.0,
@@ -82,7 +82,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
     ),
 
     "CANSAC-4km" = list(
-      model = "CANSAC-4km",
+      modelName = "CANSAC-4km",
       CENTER_LATITUDE   =  38.8,
       CENTER_LONGITUDE  = -119.0,
       WIDTH_LONGITUDE   =  19.0,
@@ -96,7 +96,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
     ),
 
     "CANSAC-1.33km" = list(
-      model = "CANSAC-1.33km",
+      modelName = "CANSAC-1.33km",
       CENTER_LATITUDE   =  37.25,
       CENTER_LONGITUDE  = -119.00,
       WIDTH_LONGITUDE   =  10.00,
@@ -110,7 +110,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
     ),
 
     "PNW-4km" = list(
-      model = "PNW-4km",
+      modelName = "PNW-4km",
       CENTER_LATITUDE   =  45.00,
       CENTER_LONGITUDE  = -118.30,
       WIDTH_LONGITUDE   =  20.5,
@@ -124,7 +124,7 @@ bluesky_modelInfo <- dplyr::bind_rows(
     ),
 
     "PNW-1.33km" = list(
-      model = "PNW-1.33km",
+      modelName = "PNW-1.33km",
       CENTER_LATITUDE   =  45.55,
       CENTER_LONGITUDE  = -120.25,
       WIDTH_LONGITUDE   =  12.15,

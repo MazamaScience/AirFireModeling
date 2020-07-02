@@ -47,7 +47,7 @@
 #'
 #' # Load model data
 #' rasterList <- raster_load(
-#'   model = c("PNW-1.33km", "PNW-4km"),
+#'   modelName = c("PNW-1.33km", "PNW-4km"),
 #'   modelRun = 2019100900,
 #'   xlim = c(-125, -115),
 #'   ylim = c(42, 50)
@@ -59,8 +59,8 @@
 #'   latitude = latitude,
 #'   radius = 10 # km
 #' )
-#'
 #' }
+
 raster_spaghettiPlot <- function(
   raster = NULL,
   longitude = NULL,
@@ -148,7 +148,7 @@ raster_spaghettiPlot <- function(
       dplyr::select(.data$monitorID, .data$targetDistance) %>%
       reshape2::melt(id.vars = 'monitorID') %>%
       dplyr::mutate(variable = .data$monitorID, 'monitorID' = NULL) %>%
-      dplyr::mutate(model = stringr::str_remove(.data$variable, '_.+_.+'))
+      dplyr::mutate(modelName = stringr::str_remove(.data$variable, '_.+_.+'))
 
     moltenData <-
       monitorList$data %>%
@@ -182,7 +182,7 @@ raster_spaghettiPlot <- function(
         y = .data$pm25,
         group = .data$monitorID,
         alpha = -(.data$dist),
-        model = .data$model
+        modelName = .data$model
       )
     ) +
     ggplot2::geom_line(color = 'firebrick2') +
@@ -221,8 +221,8 @@ if ( FALSE ) {
   ylim = c(34,37)
   xlim = c(-118, -120)
 
-  bs1 <- bluesky_load(model = c('CANSAC-4km'), modelRun = 2020040100, ylim = ylim,xlim = xlim)
-  # bs2 <- bluesky_load(model = c('CANSAC-1.33km'), modelRun = 2020040100)
+  bs1 <- bluesky_load(modelName = c('CANSAC-4km'), modelRun = 2020040100, ylim = ylim, xlim = xlim)
+  # bs2 <- bluesky_load(modelName = c('CANSAC-1.33km'), modelRun = 2020040100)
 
   raster_spaghettiPlot(bs1, longitude, latitude)
 

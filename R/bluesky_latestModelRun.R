@@ -1,7 +1,7 @@
 #' @export
 #' @title Find latest BlueSky model run from AirFire
 #'
-#' @param model Model identifier.
+#' @param modelName Model identifier.
 #' @param count Number of recent \code{modelRun} strings to return.
 #' @param baseUrl Base URL for BlueSky output.
 #' @param verbose If \code{FALSE}, suppress status messages (if any), and the
@@ -32,7 +32,7 @@
 #' followed by bluesky_load().
 #'
 #' BlueSky output files are found in directories with the following
-#' structure: \code{<baseUrl>/<model>/<modelRun>/<modelType>/data/...}
+#' structure: \code{<baseUrl>/<model>/<modelRun>/<modelMode>/data/...}
 #'
 #' \preformatted{
 #' <baseUrl>/NAM84-0.08deg/2016050600/carryover/data/...
@@ -47,14 +47,14 @@
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
 #'
-#' modelRun <- bluesky_latestModelRun(model = "PNW-4km")
-#' filePath <- bluesky_download(model = "PNW-4km", modelRun = modelRun)
+#' modelRun <- bluesky_latestModelRun(modelName = "PNW-4km")
+#' filePath <- bluesky_download(modelName = "PNW-4km", modelRun = modelRun)
 #' bluesky_toCommonFormat(filePath)
 #' bluesky_downloaded()
 #' }
 
 bluesky_latestModelRun <- function(
-  model = NULL,
+  modelName = NULL,
   count = 1,
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
   verbose = TRUE
@@ -62,16 +62,16 @@ bluesky_latestModelRun <- function(
 
   # ----- Validate parameters --------------------------------------------------
 
-  MazamaCoreUtils::stopIfNull(model)
+  MazamaCoreUtils::stopIfNull(modelName)
   MazamaCoreUtils::stopIfNull(baseUrl)
 
   # Just in case
-  if ( length(model) > 1 ) {
+  if ( length(modelName) > 1 ) {
     warning(paste0(
-      "'model' has multiple values -- ",
+      "'modelName' has multiple values -- ",
       "first value being used."
     ))
-    model <- model[1]
+    modelName <- modelName[1]
   }
 
   # TODO:  Should we validate the model name against bluesky_modelInfo?
@@ -85,7 +85,7 @@ bluesky_latestModelRun <- function(
   # Create directory URL
   dataDirUrl <- paste0(
     baseUrl, "/",
-    model
+    modelName
   )
 
   # TODO:  Put this internet-dependent chunk in a try block and handle errors
@@ -119,7 +119,7 @@ bluesky_latestModelRun <- function(
 
 if ( FALSE ) {
 
-  model = 'PNW-4km'
+  modelName = 'PNW-4km'
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard'
   verbose = TRUE
 

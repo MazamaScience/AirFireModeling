@@ -1,10 +1,10 @@
 #' @export
 #' @title Aggregate multiple BlueSky model runs into a single RasterBrick object
 #'
-#' @param model Model identifier(s).
+#' @param modelName Model identifier(s).
 #' @param firstModelRun Initialization datestamp of first model run as "YYYYmmddHH".
 #' @param lastModelRun Initialization datestamp of last model run as "YYYYmmddHH".
-#' @param modelType Subdirectory path containing BlueSky output, i.e. 'forcast'.
+#' @param modelMode Subdirectory path containing BlueSky output, i.e. 'forcast'.
 #' @param baseUrl Base URL for BlueSky output.
 #' @param xlim A vector of coordinate longitude bounds.
 #' @param ylim A vector of coordinate latitude bounds.
@@ -52,7 +52,7 @@
 #'
 #' # Kincade fire
 #' rasterBrick <- raster_aggregate(
-#'   model = "CANSAC-4km",
+#'   modelName = "CANSAC-4km",
 #'   firstModelRun = 2019102700,
 #'   lastModelRun = 2019103100,
 #'   xlim = c(-124, -121.5),
@@ -69,12 +69,12 @@
 #'   breaks = c(-Inf, 0, 12, 35, 55, 150, 250, 350, Inf)
 #' )
 #' }
-#'
+
 raster_aggregate <- function(
-  model = NULL,
+  modelName = NULL,
   firstModelRun = NULL,
   lastModelRun = NULL,
-  modelType = 'forecast',
+  modelMode = 'forecast',
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
   xlim = NULL,
   ylim = NULL,
@@ -86,10 +86,10 @@ raster_aggregate <- function(
 
   # ----- Validate parameters --------------------------------------------------
 
-  MazamaCoreUtils::stopIfNull(model)
+  MazamaCoreUtils::stopIfNull(modelName)
   MazamaCoreUtils::stopIfNull(firstModelRun)
   MazamaCoreUtils::stopIfNull(lastModelRun)
-  MazamaCoreUtils::stopIfNull(modelType)
+  MazamaCoreUtils::stopIfNull(modelMode)
   MazamaCoreUtils::stopIfNull(baseUrl)
 
   # Verify YYYYmmddHH
@@ -101,8 +101,8 @@ raster_aggregate <- function(
   if ( !stringr::str_detect(lastModelRun, '[0-9]{10}') )
     stop(sprintf("Parameter 'lastModelRun' must have 10 digits"))
 
-  if ( length(modelType) > 1 )
-    stop("Only a single 'modelType' can be used in each call to raster_aggregate().")
+  if ( length(modelMode) > 1 )
+    stop("Only a single 'modelMode' can be used in each call to raster_aggregate().")
 
   # Defaults
   if ( !is.logical(clean) ) clean <- FALSE
@@ -115,7 +115,7 @@ raster_aggregate <- function(
   # Available modelRuns
   #  * view all model subdirectories
   #  * extract 10-digit modelRuns
-  url <- paste(baseUrl, model, sep = "/")
+  url <- paste(baseUrl, modelName, sep = "/")
   availableModelRuns <-
     readLines(url) %>%
     stringr::str_extract_all('[0-9]{10}(?=/)') %>%
@@ -172,9 +172,9 @@ raster_aggregate <- function(
   # ----- Load data ------------------------------------------------------------
 
   rasterList <- raster_load(
-    model = model,
+    modelName = modelName,
     modelRun = modelRuns,
-    modelType = modelType,
+    modelMode = modelMode,
     baseUrl = baseUrl,
     xlim = xlim,
     ylim = ylim,
@@ -204,10 +204,10 @@ raster_aggregate <- function(
 
 if ( FALSE ) {
 
-  model = "PNW-4km"
+  modelName = "PNW-4km"
   firstModelRun = 2019100800
   lastModelRun = 2019101100
-  modelType = 'forecast'
+  modelMode = 'forecast'
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard'
   xlim = NULL
   ylim = NULL

@@ -13,8 +13,8 @@
 #' \code{quantile()} using the user specified probability \code{prob}.
 #'
 #' @param ws_monitor ws_monitor object.
-#' @param model Model identifier(s).
-#' @param modelType Subdirectory path containing BlueSky output, i.e. 'forcast'.
+#' @param modelName Model identifier(s).
+#' @param modelMode Subdirectory path containing BlueSky output, i.e. 'forcast'.
 #' @param baseUrl Base URL for BlueSky output.
 #' @param radius Distance (km) of radius from target location.
 #' @param count Number of grid cells within radius to return.
@@ -42,14 +42,14 @@
 #'
 #' monitor_forecastPlot(
 #'   San_Pablo,
-#'   model = models
+#'   modelName = models
 #' )
-#'
 #' }
+
 monitor_forecastPlot <-  function(
   ws_monitor,
-  model = NULL,
-  modelType = "forecast",
+  modelName = NULL,
+  modelMode = "forecast",
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
   radius = 20,
   count = 9,
@@ -80,9 +80,9 @@ monitor_forecastPlot <-  function(
   latitude <- ws_monitor$meta$latitude
 
   availableModels <- bluesky_findModels(longitude, latitude)
-  modelIsValid <- model %in% availableModels
+  modelIsValid <- modelName %in% availableModels
   if ( any(!modelIsValid) ) {
-    missingModels <- model[!modelIsValid]
+    missingModels <- modelName[!modelIsValid]
     stop(paste0(
       "These models do not cover this location: ",
       paste0(missingModels, collapse = ", ")
@@ -107,16 +107,16 @@ monitor_forecastPlot <-  function(
   # Create a list of "fake" monitors derived from model data
 
   fakeMonitorList <- list()
-  for ( modelName in model ) {
+  for ( modelName in modelName ) {
 
     result <- try({
 
       fakeMonitorList[[modelName]] <-
         # Load each model
         bluesky_load(
-          model = modelName,
+          modelName = modelName,
           modelRun = modelRun,
-          modelType = modelType,
+          modelMode = modelMode,
           xlim = xlim,
           ylim = ylim
         ) %>%
@@ -139,7 +139,7 @@ monitor_forecastPlot <-  function(
     }, silent = TRUE)
 
     if ( "try-error" %in% result ) {
-      warning(sprintf("Unable to load %s %s for %s", model, modelType, modelRun))
+      warning(sprintf("Unable to load %s %s for %s", modelName, modelMode, modelRun))
     }
 
   }
@@ -210,8 +210,8 @@ if (FALSE) {
     PWFSLSmoke::monitor_subset(monitorIDs = "lon_.120.591_lat_38.714_arb2.1008")
 
   ws_monitor
-  model = c('CANSAC-1.33km', 'CANSAC-4km')
-  modelType = "forecast"
+  modelName = c('CANSAC-1.33km', 'CANSAC-4km')
+  modelMode = "forecast"
   radius = 20
   count = 9
   prob = 0.5
@@ -219,8 +219,8 @@ if (FALSE) {
 
   monitor_forecastPlot(
     ws_monitor,
-    model = c('CANSAC-1.33km', 'CANSAC-4km'),
-    modelType = "forecast",
+    modelName = c('CANSAC-1.33km', 'CANSAC-4km'),
+    modelMode = "forecast",
     radius = 20,
     count = 9,
     prob = 0.5,
@@ -232,9 +232,9 @@ if (FALSE) {
     PWFSLSmoke::monitor_load(20191015, 20191026) %>%
     PWFSLSmoke::monitor_subset(monitorIDs = "060131004_01")
 
-  model <- c('CANSAC-1.33km', 'CANSAC-4km')
+  modelName <- c('CANSAC-1.33km', 'CANSAC-4km')
 
-  monitor_forecastPlot(ws_monitor, model = model)
+  monitor_forecastPlot(ws_monitor, modelName = modelName)
 
 }
 

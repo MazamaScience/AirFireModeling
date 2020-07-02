@@ -1,8 +1,8 @@
 #' @title Load BlueSky model data
 #'
-#' @param model Model identifier.
+#' @param modelName Model identifier.
 #' @param modelRun Model initialization datestamp as "YYYYMMDDHH".
-#' @param modelType Subdirectory path containing BlueSky output, i.e. 'forcast'.
+#' @param modelMode Subdirectory path containing BlueSky output, i.e. 'forcast'.
 #' @param baseUrl Base URL for BlueSky output.
 #' @param localPath Vector of absolute paths to NetCDF files not found in `modelDataDir`.
 #' @param xlim Vector of coordinate longitude bounds.
@@ -27,7 +27,7 @@
 #'
 #' # Load model data
 #' rasterList <- raster_load(
-#'   model = "PNW-4km",
+#'   modelName = "PNW-4km",
 #'   modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),
 #'   xlim = c(-125, -115),
 #'   ylim = c(42, 50)
@@ -36,9 +36,9 @@
 #' raster_ggmap(rasterList, index = 3)
 #' }
 raster_load <- function(
-  model = NULL,
+  modelName = NULL,
   modelRun = NULL,
-  modelType = 'forecast',
+  modelMode = 'forecast',
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
   localPath = NULL,
   xlim = NULL,
@@ -51,8 +51,8 @@ raster_load <- function(
 
   if ( is.null(localPath) ) {
 
-    MazamaCoreUtils::stopIfNull(model)
-    MazamaCoreUtils::stopIfNull(modelType)
+    MazamaCoreUtils::stopIfNull(modelName)
+    MazamaCoreUtils::stopIfNull(modelMode)
     MazamaCoreUtils::stopIfNull(baseUrl)
 
     if ( is.null(modelRun) ) {
@@ -74,8 +74,8 @@ raster_load <- function(
         stop(sprintf("'modelRun' parameter '%s' must have 10 digits"))
     }
 
-    if ( length(modelType) > 1 )
-      stop("Only a single 'modelType' can be used in each call to raster_load().")
+    if ( length(modelMode) > 1 )
+      stop("Only a single 'modelMode' can be used in each call to raster_load().")
 
     # Defaults
     if ( !is.logical(clean) ) clean <- FALSE
@@ -105,9 +105,9 @@ raster_load <- function(
       # Try to load model data
       result <- try({
         dataList[[name]] <- bluesky_load(
-          model = NULL,
+          modelName = NULL,
           modelRun = NULL,
-          modelType = 'forecast',
+          modelMode = 'forecast',
           baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
           localPath = filePath,
           xlim = xlim,
@@ -125,13 +125,13 @@ raster_load <- function(
     # NOTE:  downloading. The expand.grid() function does just that.
 
     # Create combinations
-    allModelsDF <- expand.grid(model = model, modelRun = modelRun)
+    allModelsDF <- expand.grid(modelName = modelName, modelRun = modelRun)
 
     for ( i in seq_len(nrow(allModelsDF)) ) {
 
-      singleModel <- allModelsDF$model[i]
+      singleModelName <- allModelsDF$modelName[i]
       singleModelRun <- allModelsDF$modelRun[i]
-      name <- sprintf("%s_%s", singleModel, singleModelRun)
+      name <- sprintf("%s_%s", singleModelName, singleModelRun)
 
       if ( verbose )
         message(sprintf("Loading %s ...", name))
@@ -139,9 +139,9 @@ raster_load <- function(
       # Try to load model data
       result <- try({
         dataList[[name]] <- bluesky_load(
-          model = singleModel,
+          modelName = singleModelName,
           modelRun = singleModelRun,
-          modelType = modelType,
+          modelMode = modelMode,
           baseUrl = baseUrl,
           localPath = NULL,
           xlim = xlim,

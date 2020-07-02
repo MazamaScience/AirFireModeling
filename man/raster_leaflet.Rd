@@ -75,7 +75,7 @@ setModelDataDir('~/Data/BlueSky')
 
 # Load consecutive model runs
 rasterList <- raster_load(
-  model = "PNW-4km",
+  modelName = "PNW-4km",
   modelRun = c(2019100900, 2019101000),
   xlim = c(-125, -117),
   ylim = c(42, 47)
@@ -100,7 +100,7 @@ raster_leaflet(
 
 # Load consecutive model runs
 rasterList <- raster_load(
-  model = c("PNW-4km", "PNW-1.33km"),
+  modelName = c("PNW-4km", "PNW-1.33km"),
   modelRun = 2019100900,
   xlim = c(-125, -117),
   ylim = c(42, 47)

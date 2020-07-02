@@ -37,9 +37,9 @@
 #' @note If \code{localPath} is used, \code{clean = FALSE} is automatically set.
 #' The package will never remove original model output that it has not downloaded.
 #'
-#' @param model Model identifier.
+#' @param modelName Model identifier.
 #' @param modelRun Model initialization datestamp as "YYYYMMDDHH".
-#' @param modelType Subdirectory path containing BlueSky output, i.e. 'forcast'.
+#' @param modelMode Subdirectory path containing BlueSky output, i.e. 'forcast'.
 #' @param baseUrl Base URL for BlueSky output.
 #' @param localPath Absolute path to a NetCDF file not found in `modelDataDir`.
 #' @param xlim A vector of coordinate longitude bounds.
@@ -57,7 +57,7 @@
 #'
 #' # Load model data
 #' raster <- bluesky_load(
-#'   model = "PNW-4km",
+#'   modelName = "PNW-4km",
 #'   modelRun = 2019100900,
 #'   xlim = c(-125, -115),
 #'   ylim = c(42, 50)
@@ -67,9 +67,9 @@
 #' }
 #'
 bluesky_load <- function(
-  model = NULL,
+  modelName = NULL,
   modelRun = NULL,
-  modelType = 'forecast',
+  modelMode = 'forecast',
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
   localPath = NULL,
   xlim = NULL,
@@ -84,9 +84,9 @@ bluesky_load <- function(
 
   if ( is.null(localPath) ) {
 
-    MazamaCoreUtils::stopIfNull(model)
+    MazamaCoreUtils::stopIfNull(modelName)
     MazamaCoreUtils::stopIfNull(modelRun)
-    MazamaCoreUtils::stopIfNull(modelType)
+    MazamaCoreUtils::stopIfNull(modelMode)
 
   } else {
 
@@ -104,14 +104,14 @@ bluesky_load <- function(
 
   if ( is.null(localPath) ) { # No localPath
 
-    v2FileName <- paste0(model, "_", modelRun, "_v2.nc")
+    v2FileName <- paste0(modelName, "_", modelRun, "_v2.nc")
     v2FilePath <- file.path(getModelDataDir(), v2FileName)
 
     if ( !file.exists(v2FilePath) ) {
       rawFilePath <- bluesky_download(
-        model = model,
+        modelName = modelName,
         modelRun = modelRun,
-        modelType = modelType,
+        modelMode = modelMode,
         baseUrl = baseUrl,
         verbose = verbose
       )
@@ -193,9 +193,9 @@ if ( FALSE ) {
   library(AirFireModeling)
   setModelDataDir("~/Data/BlueSky")
 
-  model = "CANSAC-4km"
+  modelName = "CANSAC-4km"
   modelRun = 2020062200
-  modelType = 'forecast'
+  modelMode = 'forecast'
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard'
   localPath = NULL
   xlim = NULL
@@ -205,9 +205,9 @@ if ( FALSE ) {
 
 
   modelBrick <- bluesky_load(
-    model = model,
+    modelName = modelName,
     modelRun = modelRun,
-    modelType = modelType,
+    modelMode = modelMode,
     baseUrl = baseUrl,
     localPath = localPath,
     xlim = xlim,
@@ -215,6 +215,5 @@ if ( FALSE ) {
     clean = clean,
     verbose = verbose
   )
-
 
 }

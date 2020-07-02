@@ -15,4 +15,21 @@ raster_createLayerNameTimes(layerName)
 \description{
 Create raster layer name times
 }
+\examples{
+\donttest{
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
+
+# Load model data
+rasterList <- raster_load(
+  modelName = c("PNW-4km"),
+  modelRun = c(2019100900),
+  xlim = c(-125, -115),
+  ylim = c(42, 50)
+)
+
+layerNames <- names(rasterList[[1]])
+raster_createLayerNameTimes(layerNames)
+}
+}
 \keyword{internal}

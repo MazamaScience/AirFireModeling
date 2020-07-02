@@ -56,7 +56,7 @@ PNW4km-CMAQ
 
 Users will typically call bluesky_load() which in turn calls this function.
 BlueSky output files are found in directories with the following
-structure: &amp;lt;baseUrl&amp;gt;/&amp;lt;model&amp;gt;/&amp;lt;modelRun&amp;gt;/&amp;lt;modelType&amp;gt;/data/...
+structure: &amp;lt;baseUrl&amp;gt;/&amp;lt;model&amp;gt;/&amp;lt;modelRun&amp;gt;/&amp;lt;modelMode&amp;gt;/data/...
 
 &amp;lt;baseUrl&amp;gt;/NAM84-0.08deg/2016050600/carryover/data/...
 &amp;lt;baseUrl&amp;gt;/NAM84-0.08deg/2016050600/combined/data/...
@@ -173,7 +173,7 @@ package data directory. This file can then be converted into a common format.</p
 
 <p>Users will typically call bluesky_load() which in turn calls this function.</p>
 <p>BlueSky output files are found in directories with the following
-structure: <code>&lt;baseUrl&gt;/&lt;model&gt;/&lt;modelRun&gt;/&lt;modelType&gt;/data/...</code></p>
+structure: <code>&lt;baseUrl&gt;/&lt;model&gt;/&lt;modelRun&gt;/&lt;modelMode&gt;/data/...</code></p>
 <pre>
 &lt;baseUrl&gt;/NAM84-0.08deg/2016050600/carryover/data/...
 &lt;baseUrl&gt;/NAM84-0.08deg/2016050600/combined/data/...
@@ -186,7 +186,7 @@ structure: <code>&lt;baseUrl&gt;/&lt;model&gt;/&lt;modelRun&gt;/&lt;modelType&gt
   <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
   <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://haze.airfire.org/bluesky-daily/output/standard"</span>,
-  <span class='kw'>modelType</span> <span class='kw'>=</span> <span class='st'>"forecast"</span>,
+  <span class='kw'>modelMode</span> <span class='kw'>=</span> <span class='st'>"forecast"</span>,
   <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )</pre>
 
@@ -206,7 +206,7 @@ structure: <code>&lt;baseUrl&gt;/&lt;model&gt;/&lt;modelRun&gt;/&lt;modelType&gt
       <td><p>Base URL for BlueSky output.</p></td>
     </tr>
     <tr>
-      <th>modelType</th>
+      <th>modelMode</th>
       <td><p>Subdirectory path containing BlueSky output, i.e. 'forcast'.</p></td>
     </tr>
     <tr>

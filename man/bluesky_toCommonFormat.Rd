@@ -29,7 +29,7 @@ this function.
 library(AirFireModeling)
 setModelDataDir('~/Data/BlueSky')
 
-filePath <- bluesky_download(model = "PNW-4km", modelRun = 2019100900)
+filePath <- bluesky_download(modelName = "PNW-4km", modelRun = 2019100900)
 bluesky_toCommonFormat(filePath)
 bluesky_downloaded()
 }

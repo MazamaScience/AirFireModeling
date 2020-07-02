@@ -69,7 +69,7 @@ models <- bluesky_findModels(longitude, latitude)
 
 # Load model data
 rasterList <- raster_load(
-  model = c("PNW-1.33km", "PNW-4km"),
+  modelName = c("PNW-1.33km", "PNW-4km"),
   modelRun = 2019100900,
   xlim = c(-125, -115),
   ylim = c(42, 50)
@@ -81,7 +81,6 @@ raster_spaghettiPlot(
   latitude = latitude,
   radius = 10 # km
 )
-
 }
 }
 \seealso{

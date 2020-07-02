@@ -38,7 +38,7 @@ bluesky_findModels <- function(
         latitude >= .data$MIN_LATITUDE &
         latitude <= .data$MAX_LATITUDE
     ) %>%
-    dplyr::pull(.data$model)
+    dplyr::pull(.data$modelName)
 
   return(models)
 

@@ -16,7 +16,7 @@
 #'
 #' # Load model data
 #' rasterList <- raster_load(
-#'   model = c("PNW-4km"),
+#'   modelName = c("PNW-4km"),
 #'   modelRun = c(2019100900),
 #'   xlim = c(-125, -115),
 #'   ylim = c(42, 50)
@@ -24,7 +24,6 @@
 #'
 #' raster_isRaster(rasterList[[1]])
 #' }
-#'
 
 raster_isRaster <- function(raster) {
 
@@ -50,7 +49,7 @@ raster_isRaster <- function(raster) {
 #'
 #' # Load model data
 #' rasterList <- raster_load(
-#'   model = c("PNW-4km"),
+#'   modelName = c("PNW-4km"),
 #'   modelRun = c(2019100900),
 #'   xlim = c(-125, -115),
 #'   ylim = c(42, 50)
@@ -58,6 +57,7 @@ raster_isRaster <- function(raster) {
 #'
 #' layerNames <- names(rasterList[[1]])
 #' raster_createLayerNameTimes(layerNames)
+#' }
 
 raster_createLayerNameTimes <- function(
   layerName
@@ -99,13 +99,14 @@ raster_createLayerNameTimes <- function(
 #'
 #' # Load model data
 #' rasterList <- raster_load(
-#'   model = c("PNW-4km"),
+#'   modelName = c("PNW-4km"),
 #'   modelRun = c(2019100900),
 #'   xlim = c(-125, -115),
 #'   ylim = c(42, 50)
 #' )
 #'
 #' raster_createTimes(rasterList[[1]])
+#' }
 
 raster_createTimes <- function(
   raster = NULL
@@ -134,13 +135,17 @@ raster_createTimes <- function(
 #'
 #' # Load model data
 #' rasterList <- raster_load(
-#'   model = c("PNW-4km"),
+#'   modelName = c("PNW-4km"),
 #'   modelRun = c(2019100900),
 #'   xlim = c(-125, -115),
 #'   ylim = c(42, 50)
 #' )
 #'
-#' raster_createTimeStrings(raster = rasterList[[1]], timezone = "America/Los_Angeles", prefix = "time: ")
+#' raster_createTimeStrings(
+#'   raster = rasterList[[1]],
+#'   timezone = "America/Los_Angeles",
+#'   prefix = "time: ")
+#' }
 
 raster_createTimeStrings <- function(
   raster = NULL,

@@ -5,10 +5,10 @@
 \title{Aggregate multiple BlueSky model runs into a single RasterBrick object}
 \usage{
 raster_aggregate(
-  model = NULL,
+  modelName = NULL,
   firstModelRun = NULL,
   lastModelRun = NULL,
-  modelType = "forecast",
+  modelMode = "forecast",
   baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
   xlim = NULL,
   ylim = NULL,
@@ -19,13 +19,13 @@ raster_aggregate(
 )
 }
 \arguments{
-\item{model}{Model identifier(s).}
+\item{modelName}{Model identifier(s).}
 
 \item{firstModelRun}{Initialization datestamp of first model run as "YYYYmmddHH".}
 
 \item{lastModelRun}{Initialization datestamp of last model run as "YYYYmmddHH".}
 
-\item{modelType}{Subdirectory path containing BlueSky output, i.e. 'forcast'.}
+\item{modelMode}{Subdirectory path containing BlueSky output, i.e. 'forcast'.}
 
 \item{baseUrl}{Base URL for BlueSky output.}
 
@@ -84,7 +84,7 @@ setModelDataDir('~/Data/BlueSky')
 
 # Kincade fire
 rasterBrick <- raster_aggregate(
-  model = "CANSAC-4km",
+  modelName = "CANSAC-4km",
   firstModelRun = 2019102700,
   lastModelRun = 2019103100,
   xlim = c(-124, -121.5),
@@ -101,5 +101,4 @@ raster_facet(
   breaks = c(-Inf, 0, 12, 35, 55, 150, 250, 350, Inf)
 )
 }
-
 }

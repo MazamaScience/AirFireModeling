@@ -16,7 +16,7 @@
 #'
 #' # Load model data
 #' rasterList <- raster_load(
-#'   model = "PNW-4km",
+#'   modelName = "PNW-4km",
 #'   modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),
 #'   xlim = c(-125, -116.5),
 #'   ylim = c(42, 46.2)

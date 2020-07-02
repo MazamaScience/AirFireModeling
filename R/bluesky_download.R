@@ -1,9 +1,9 @@
 #' @export
 #' @title Download BlueSky model data from AirFire
 #'
-#' @param model Model identifier.
+#' @param modelName Model identifier.
 #' @param modelRun Model initialization datestamp as "YYYYMMDDHH".
-#' @param modelType Subdirectory path containing BlueSky output, i.e. 'forcast'.
+#' @param modelMode Subdirectory path containing BlueSky output, i.e. 'forcast'.
 #' @param baseUrl Base URL for BlueSky output.
 #' @param verbose If \code{FALSE}, suppress status messages (if any), and the
 #' progress bar.
@@ -31,7 +31,7 @@
 #' Users will typically call bluesky_load() which in turn calls this function.
 #'
 #' BlueSky output files are found in directories with the following
-#' structure: \code{<baseUrl>/<model>/<modelRun>/<modelType>/data/...}
+#' structure: \code{<baseUrl>/<model>/<modelRun>/<modelMode>/data/...}
 #'
 #' \preformatted{
 #' <baseUrl>/NAM84-0.08deg/2016050600/carryover/data/...
@@ -47,33 +47,33 @@
 #' library(AirFireModeling)
 #' setModelDataDir('~/Data/BlueSky')
 #'
-#' filePath <- bluesky_download(model = "PNW-4km", modelRun = 2019100900)
+#' filePath <- bluesky_download(modelName = "PNW-4km", modelRun = 2019100900)
 #' bluesky_toCommonFormat(filePath)
 #' bluesky_downloaded()
 #' }
 
 bluesky_download <- function(
-  model = 'PNW-4km',
+  modelName = 'PNW-4km',
   modelRun = NULL,
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
-  modelType = 'forecast',
+  modelMode = 'forecast',
   verbose = TRUE
 ) {
 
   # ----- Validate parameters --------------------------------------------------
 
-  MazamaCoreUtils::stopIfNull(model)
+  MazamaCoreUtils::stopIfNull(modelName)
   MazamaCoreUtils::stopIfNull(modelRun)
   MazamaCoreUtils::stopIfNull(baseUrl)
-  MazamaCoreUtils::stopIfNull(modelType)
+  MazamaCoreUtils::stopIfNull(modelMode)
 
   # Just in case
-  if ( length(model) > 1 || length(modelRun) > 1 ) {
+  if ( length(modelName) > 1 || length(modelRun) > 1 ) {
     warning(paste0(
-      "'model' or 'modelRun' has multiple values -- ",
+      "'modelName' or 'modelRun' has multiple values -- ",
       "first value being used."
     ))
-    model <- model[1]
+    modelName <- modelName[1]
     modelRun <- as.character(modelRun[1])
   }
 
@@ -90,12 +90,12 @@ bluesky_download <- function(
   # Create directory URL
   dataDirUrl <- paste0(
     baseUrl, "/",
-    model, "/",
+    modelName, "/",
     modelRun, "/",
-    ifelse(is.null(modelType), NULL, paste0(modelType, "/"))
+    ifelse(is.null(modelMode), NULL, paste0(modelMode, "/"))
   )
 
-  fileName <- paste0(model, "_", modelRun, ".nc")
+  fileName <- paste0(modelName, "_", modelRun, ".nc")
   filePath <- file.path(getModelDataDir(), fileName)
 
   # ----- Download data --------------------------------------------------------
@@ -123,7 +123,7 @@ bluesky_download <- function(
     }
 
     if ( verbose )
-      message(paste0('Auto-detected ', model, ' BlueSky Output Version: ', version))
+      message(paste0('Auto-detected ', modelName, ' BlueSky Output Version: ', version))
 
     # * downlaod .nc file -----
 
@@ -135,7 +135,7 @@ bluesky_download <- function(
           utils::download.file(url = fileUrl, destfile = filePath, quiet = !verbose)
         },
         error = function(e) {
-          stop(paste0("Error downloading: ", model))
+          stop(paste0("Error downloading: ", modelName))
         }
       )
 
@@ -147,7 +147,7 @@ bluesky_download <- function(
           utils::download.file(url = fileUrl, destfile = filePath, quiet = !verbose)
         },
         error = function(e) {
-          stop(paste0("Error downloading: ", model))
+          stop(paste0("Error downloading: ", modelName))
         }
       )
 

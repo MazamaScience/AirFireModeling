@@ -15,4 +15,20 @@ raster_createTimes(raster = NULL)
 \description{
 Create raster layer times
 }
+\examples{
+\donttest{
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
+
+# Load model data
+rasterList <- raster_load(
+  modelName = c("PNW-4km"),
+  modelRun = c(2019100900),
+  xlim = c(-125, -115),
+  ylim = c(42, 50)
+)
+
+raster_createTimes(rasterList[[1]])
+}
+}
 \keyword{internal}

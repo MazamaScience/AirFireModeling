@@ -26,3 +26,22 @@ Time string formatted for \code{timezone}.
 \description{
 Create raster layer time string
 }
+\examples{
+\donttest{
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
+
+# Load model data
+rasterList <- raster_load(
+  modelName = c("PNW-4km"),
+  modelRun = c(2019100900),
+  xlim = c(-125, -115),
+  ylim = c(42, 50)
+)
+
+raster_createTimeStrings(
+  raster = rasterList[[1]],
+  timezone = "America/Los_Angeles",
+  prefix = "time: ")
+}
+}
