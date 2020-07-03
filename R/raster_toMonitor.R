@@ -113,6 +113,7 @@ raster_toMonitor <- function(
 
     names <- names(raster)
     monitorList <- list()
+
     for ( i in seq_along(raster) ) {
       name <- names[i]
       if ( verbose )
@@ -132,7 +133,8 @@ raster_toMonitor <- function(
 
   } else {
 
-    message(sprintf("Converting raster to ws_monitor ..."))
+    if ( verbose )
+      message(sprintf("Converting raster to ws_monitor ..."))
 
     monitor <-
       .toMonitor(
