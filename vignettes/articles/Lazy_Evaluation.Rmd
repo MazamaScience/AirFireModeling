@@ -1,0 +1,52 @@
+---
+title: "Lazy Evaluation"
+author: "Mazama Science"
+date: "2020-07-03"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Lazy Evaluation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 7, 
+  fig.height = 5
+)
+```
+
+This vignette introduces the concept of lazy evaluation and how it is used in 
+NetCDF files. This is particularly important for efficiently working with 
+BlueSky models holding large amounts of spatial and temporal data.
+
+# Lazy Evaluation
+What is it.
+
+# NetCDF
+What is it and why/how does it use lazy evaluation.
+
+## raster
+Lazy evaluation in the context of the raster package.
+
+## example 1
+(Using raster package only functions from the example I pasted into Slack.)
+
+# AirFireModeling
+
+```{r raster_load}
+library(AirFireModeling) # For base package support
+setModelDataDir("~/Data/BlueSky")
+```
+
+## example 2
+(Reduced example similar to above but using bluesky_load() .)
+
+## optimization
+Discussion of the importance of using xlim and ylim parameters to bluesky_load().
+
+## example 2
+Perhaps use the example in raster_toMonitor() with shadedNight = TRUE and better labeling.
