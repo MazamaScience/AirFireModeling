@@ -198,10 +198,10 @@ raster_toMonitor <- function(
   meta$monitorType <- "MODEL_DATA"
   rownames(meta) <- meta$monitorID
 
-  # Extract model and modelRun from, e.g. "PNW-4km_2019100900"
+  # Extract modelName and modelRun from, e.g. "PNW-4km_2019100900"
   # Returns NA if a custom rasterName is passed in.
   parts <- stringr::str_match(rasterName, "(.*)_([0-9]+)")
-  meta$model <- parts[1,2]
+  meta$modelName <- parts[1,2]
   meta$modelRun <- parts[1,3]
 
   # Add distance from target (km)

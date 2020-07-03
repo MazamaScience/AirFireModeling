@@ -1,3 +1,10 @@
+# AirFireModeling 0.3.0
+
+More regularization througout the code base:
+
+* Changed `model` to `modelName`.
+* Changed `modelType` to `modelMode`.
+
 # AirFireModeling 0.2.19
 
 * Improved/consistent examples for all functions.

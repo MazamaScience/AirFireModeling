@@ -121,7 +121,7 @@ raster_load <- function(
 
   } else {
 
-    # NOTE:  We need to create all combinations of model and modelRun for
+    # NOTE:  We need to create all combinations of modelName and modelRun for
     # NOTE:  downloading. The expand.grid() function does just that.
 
     # Create combinations

@@ -82,7 +82,7 @@ library(AirFireModeling) # For base package support
 setModelDataDir("~/Data/BlueSky")
 
 WA_PNW_4km <- 
-  bluesky_load(model = 'PNW-4km', modelRun = 2018110900) %>%
+  bluesky_load(modelName = 'PNW-4km', modelRun = 2018110900) %>%
   raster::crop(WA) %>%
   raster_subsetByPolygon(WA)
 

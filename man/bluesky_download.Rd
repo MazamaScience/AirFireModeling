@@ -51,7 +51,7 @@ package data directory. This file can then be converted into a common format.
 Users will typically call bluesky_load() which in turn calls this function.
 
 BlueSky output files are found in directories with the following
-structure: \code{<baseUrl>/<model>/<modelRun>/<modelMode>/data/...}
+structure: \code{<baseUrl>/<modelName>/<modelRun>/<modelMode>/data/...}
 
 \preformatted{
 <baseUrl>/NAM84-0.08deg/2016050600/carryover/data/...
