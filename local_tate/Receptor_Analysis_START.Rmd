@@ -1,0 +1,358 @@
+---
+title: "Receptor Analysis"
+output:
+  html_document:
+    df_print: paged
+    css: report_styles.css
+params:
+  infoList: !r list()
+  dataList: !r list()
+  textList: !r list()
+  radius: 10
+  count: 20
+---
+
+<!-- ===== Header ========================================================== -->
+
+```{r setup, include = FALSE}
+logger.trace("Rmd -- Render receptor-analysis.Rmd -----")
+
+knitr::opts_chunk$set(echo = TRUE)
+
+# Extract Required parameters from request
+infoList <- params$infoList
+dataList <- params$dataList
+textList <- params$textList
+
+# Easy access
+longitude <- round(as.numeric(infoList$longitude), 1)
+latitude <- round(as.numeric(infoList$latitude), 1)
+monitorID <- infoList$monitorid
+startdate <- infoList$startdate
+enddate <- infoList$enddate
+ws_monitor <- dataList$ws_monitor
+
+# NOTE:  HARDCODED
+
+radius <- 10   # km
+count <- 20    # max grid cells to include
+
+# NOTE:  modelDataDir is set in monitor-location-report-app.R
+```
+
+Processed on `r paste(lubridate::now(),format(lubridate::now(), "%Z"))` 
+using **PWFSLSmoke** `r utils::packageVersion("PWFSLSmoke")` 
+and **AirFireModeling** `r utils::packageVersion("AirFireModeling")` 
+
+<!-- ===== Map ============================================================= -->
+
+## `r paste0(longitude, " E, ", latitude, " N")`
+
+```{r map, echo = FALSE}
+logger.trace("Rmd -- leaflet map ...")
+
+leaflet::leaflet() %>%
+  leaflet::addTiles() %>%  # Add default OpenStreetMap map tiles
+  leaflet::addMarkers(lng = longitude, lat = latitude) %>%
+  leaflet::setView(longitude, latitude, zoom = 8)
+```
+
+<!-- ===== Monitoring data ================================================= -->
+
+## `r if ( !is.null(monitorID) ) sprintf("Monitor -- %s", monitorID)`
+
+```{r monitoring_data, echo = FALSE}
+
+if ( !is.null(monitorID) ) {
+  
+  result <- try({
+    gg <- monitor_ggTimeseries(
+      ws_monitor,
+      monitorIDs = monitorID
+    )
+  }, silent = TRUE)
+  
+  if ( "try-error" %in% class(result) ) {
+    # do nothing
+  } else {
+    print(gg)
+  }
+  
+}
+
+```
+
+<!-- ===== Find models ===================================================== -->
+
+## Latest Available Models
+
+```{r find_models, echo = FALSE}
+logger.trace("Rmd -- available models ...")
+
+# Available models
+allowedModels <- c(
+  "PNW-4km", "PNW-1.33km",
+  "CANSAC-4km", "CANSAC-1.33km"
+)
+
+availableModels <- AirFireModeling::bluesky_findModels(
+  longitude = as.numeric(longitude),
+  latitude = as.numeric(latitude)
+)
+
+modelNames <- intersect(availableModels, allowedModels)
+
+# Latest model runs
+latestModelRunList <- list()
+for ( model in modelNames ) {
+  latestModelRunList[[model]] <- bluesky_latestModelRun(model, 2)
+}
+
+# TODO: Is there a more expressive way to create this dataframe?
+
+# Old school creation of a dataframe
+modelNameList <- list()
+modelRunList <- list()
+i <- 1
+for ( name in modelNames ) {
+  for ( run in latestModelRunList[[name]] ) {
+    modelNameList[[i]] <- name
+    modelRunList[[i]] <- run
+    i <- i + 1
+  }
+}
+
+modelName <- as.character(unlist(modelNameList))
+modelRun <- as.character(unlist(modelRunList))
+modelRunTime <- MazamaCoreUtils::parseDatetime(modelRun, timezone = "UTC")
+modelRunTimeString <- strftime(modelRunTime, "%a, %B %e at %H:00 UTC", tz = "UTC")
+webskyUrl <- paste0("https://tools.airfire.org/websky/v1/run/standard/", modelName, "/", modelRun)
+modelNameUrl <- paste0("[", modelName, "](", webskyUrl, ")")
+
+# Create a dataframe for later use
+modelDF <- data.frame(
+  modelName = modelName,
+  modelRun = modelRun,
+  modelRunTime = modelRunTime,
+  stringsAsFactors = FALSE
+)
+
+# Create an HTML table
+knitr::kable(
+  data.frame(
+    modelNameUrl = modelNameUrl,
+    modelRun = modelRun,
+    modelRunTime = modelRunTimeString
+    ),
+  col.names = c("Model", "Run", "UTC Time")
+)
+```
+
+<!-- ===== Load model data ================================================= -->
+
+```{r load_model_data, echo = FALSE}
+logger.trace("Rmd -- load model data ...")
+
+# Limit data load
+# 111320 m per deg at the equator 
+halfWidth <- radius / 111.320
+xlim <- c(longitude - 2*halfWidth, longitude + 2*halfWidth)
+ylim <- c(latitude - 2*halfWidth, latitude + 2*halfWidth)
+
+# Loop over models and modelRuns to create gridList and fakeMonitorList
+gridList <- list()
+fakeMonitorList <- list()
+fakeAverageList <- list()
+
+for ( i in seq_len(nrow(modelDF)) ) {
+  
+  modelName <- modelDF$modelName[i]
+  modelRun <- modelDF$modelRun[i]
+  
+  # Load model data
+  name <- paste0(modelName, "_", modelRun)
+  logger.trace("Rmd -- loading %s", name)
+  
+  result <- try({
+    gridList[[name]] <-
+      AirFireModeling::bluesky_load(
+        model = modelName,
+        modelRun = modelRun,
+        modelType = 'forecast',
+        xlim = xlim,
+        ylim = ylim,
+        verbose = FALSE
+      )
+  }, silent = TRUE)
+  
+  if ( "try-error" %in% class(result) ) {
+    
+    # bluesky_load() failed -- insert NULL
+    
+    logger.warn("Unable to load %s", name)
+    logger.trace(toString(result))
+    
+    gridList[[name]] <- NULL
+    fakeMonitorList[[name]] <- NULL
+    fakeAverageList[[name]] <- NULL
+    
+  } else {
+    
+    # bluesky_load() succeeded -- create monitor objects
+    
+    result <- try({
+      # Create a ws_monitor object with 'count' timeseries
+      fakeMonitorList[[name]] <-
+        AirFireModeling::raster_toMonitor(
+          gridList[[name]],
+          longitude = longitude,
+          latitude = latitude,
+          radius = radius,
+          count = count,
+          rasterName = name,
+          verbose = FALSE
+        )
+      
+      # Add modelName and modelRun to metadata
+      fakeMonitorList[[name]]$meta$model <-
+        ifelse(stringr::str_count(modelName) > 15,
+               paste0(stringr::str_sub(modelName,1,15), "..."),
+               modelName)
+      fakeMonitorList[[name]]$meta$modelRun <- modelRun
+      
+      fakeAverageList[[name]] <- 
+        monitor_collapse(
+          fakeMonitorList[[name]],
+          monitorID = name
+        )
+    })
+    
+    if ( "try-error" %in% class(result) ) {
+      fakeMonitorList[[name]] <- NULL
+      fakeAverageList[[name]] <- NULL
+    }
+    
+  }
+  
+} # END of modelDF loop
+
+# Create a single ws_monitor object
+fakeMonitors <- monitor_combine(fakeMonitorList)
+
+fakeAverages <- monitor_combine(fakeAverageList)
+```
+
+<!-- ===== Model timeseries by model ======================================= -->
+
+## Model Timeseries
+
+For each model, the most recent two runs are plotted.
+
+All model grid cells within `r radius`km of the selected location are plotted.
+
+Plot features include:
+
+ * faint points = per-grid cell hourly values (ug/m3)
+ * faint lines = per-grid cell NowCast values
+ * bold lines = average of multi-grid cell hourly values (ug/m3)
+ * black dots = (if present) hourly values (ug/m3) for monitor `r monitorID`
+
+```{r timeseries_by_model, echo = FALSE, warning = FALSE, fig.height = 8}
+logger.trace("Rmd -- timeseris_by_model ...")
+
+tlim <- c(startdate, enddate)
+
+monitor_subset <- monitor_subset(fakeMonitors, tlim = tlim)
+
+gg <-
+  ggplot_pm25Timeseries(
+    monitor_subset,
+    ylim = c(0, max(monitor_subset$data[,-1], na.rm = TRUE)),
+    includeFullEnddate = TRUE
+  ) +
+  geom_pm25Points(aes(color = modelRun), size = .5, alpha = 0.3) +
+  stat_nowcast(aes(color = modelRun), alpha = 0.3) +
+  stat_meanByHour(aes(color = modelRun), geom = "line", size = 1.5) +
+  facet_grid(rows = vars(model)) +
+  theme(legend.position = "right") +
+  theme(legend.position = "bottom") +
+  ggtitle("By Model (colored by model run)")
+
+# NOTE:  monitor data overlay is disabled for now as per Sim's request
+
+# if ( !is.null(ws_monitor) ) {
+#   
+#   data <- ws_monitor$data[,1:2]
+#   names(data) <- c("datetime", "pm25")
+#   
+#   gg <- gg +
+#     geom_point(
+#       data = data,
+#       shape = 19,
+#       color = 'black',
+#       size = 1.2
+#     )
+#     
+# }
+
+print(gg)
+```
+
+<!-- ===== Model timeseries by run ========================================= -->
+
+```{r timeseries_by_run, echo = FALSE, warning = FALSE, fig.height = 8}
+logger.trace("Rmd -- timeseris_by_run ...")
+
+tlim <- c(startdate, enddate)
+
+monitor_subset <- monitor_subset(fakeMonitors, tlim = tlim)
+
+gg <-
+  ggplot_pm25Timeseries(
+    monitor_subset,
+    ylim = c(0, max(monitor_subset$data[,-1], na.rm = TRUE)),
+    includeFullEnddate = TRUE
+  ) +
+  geom_pm25Points(aes(color = model), size = .5, alpha = 0.3) +
+  stat_nowcast(aes(color = model), alpha = 0.3) +
+  stat_meanByHour(aes(color = model), geom = "line", size = 1.5) +
+  facet_grid(rows = vars(modelRun)) +
+  theme(legend.position = "right") +
+  theme(legend.position = "bottom") +
+  ggtitle("By Model Run (colored by model)")
+
+# NOTE:  monitor data overlay is disabled for now as per Sim's request
+
+# if ( !is.null(ws_monitor) ) {
+#   
+#   data <- ws_monitor$data[,1:2]
+#   names(data) <- c("datetime", "pm25")
+#   
+#   gg <- gg +
+#     geom_point(
+#       data = data,
+#       shape = 19,
+#       color = 'black',
+#       size = 1.2
+#     )
+#     
+# }
+
+print(gg)
+```
+
+
+<!-- ===== Cleanup ========================================================= -->
+
+```{r cleanup, echo = FALSE}
+
+# Remove every declared variable in each chunk
+rm(list = c(
+  "allowedModels", "availableModels", "modelNames", "modelNameList", "modelRunList",
+  "modelName", "modelRun", "modelRunTime", "modelRunTimeString", 
+  "webskyUrl", "modelNameUrl", "modelDF",
+  "halfwidth", "xlim", "ylim", "gridList", 
+  "fakeMonitorList", "fakeAverageList", "fakeMonitors", "fakeAverages",
+  "tlim", "monitor_subset", "gg"
+))
+```
