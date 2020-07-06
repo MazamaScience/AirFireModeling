@@ -19,34 +19,68 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette introduces the concept of lazy evaluation and how it is used in 
-NetCDF files. This is particularly important for efficiently working with 
-BlueSky models holding large amounts of spatial and temporal data.
+This vignette will introduce the concept of lazy evaluation and how it is useful
+for working with the large data sets handled by the AirFireModeling package.
 
-# Lazy Evaluation
-What is it.
+## Lazy Evaluation
+'Lazy evaluation' is an evaluation strategy in programming that is centered on 
+procrastination. When an expression is encountered in a program using this 
+strategy, the calculation of that expression is postponed until its value is 
+required elsewhere (which might never happen). Lazy evaluation is typically 
+found in functional programming languages such as Haskell and R, and contrasts 
+the 'eager evaluation' strategy common to most imperative languages like C++, 
+Java, and Python.
 
-# NetCDF
+To demonstrate the difference, consider the following code:
+```
+1   x <- 1 + 2
+2   print(x)
+```
+An 'eager' approach:
+
+1. Calculate `1 + 2` to get 3 and assign 3 to `x`.
+2. Retrieve the value of `x` and print it out.
+
+A 'lazy' approach:
+
+1. Remember the expression `1 + 2` assigned to `x`. DON'T CALCULATE IT!
+2. The value of `x` is needed here! Now calculate its expression, assign the 
+result to `x`, and then print te value of `x`.
+
+While the difference is negligible in this example, the benefits of lazy 
+evaluation can become apparent when expressions become large and complex. The
+lazy strategy can greatly improve performance and reduce a program's memory
+footprint by creating values only when they are actually needed. However, this 
+can come at the cost of increased overhead and loss of control.
+
+[Wikipedia](https://en.wikipedia.org/wiki/Lazy_evaluation)
+
+[About Lazy Evaluation](https://www.r-bloggers.com/about-lazy-evaluation/)
+
+[Lazy Evaluation in a Strict Language](https://medium.com/javascript-in-plain-english/lazy-evaluation-in-a-strict-language-a8f938870a7a)
+
+## NetCDF
 What is it and why/how does it use lazy evaluation.
+Lazy evaluation is very useful when working with NetCDF. A NetCDF file is
 
-## raster
+### raster
 Lazy evaluation in the context of the raster package.
 
-## example 1
+### example 1
 (Using raster package only functions from the example I pasted into Slack.)
 
-# AirFireModeling
+## AirFireModeling
 
 ```{r raster_load}
 library(AirFireModeling) # For base package support
 setModelDataDir("~/Data/BlueSky")
 ```
 
-## example 2
+### example 2
 (Reduced example similar to above but using bluesky_load() .)
 
-## optimization
+### optimization
 Discussion of the importance of using xlim and ylim parameters to bluesky_load().
 
-## example 2
+### example 2
 Perhaps use the example in raster_toMonitor() with shadedNight = TRUE and better labeling.
