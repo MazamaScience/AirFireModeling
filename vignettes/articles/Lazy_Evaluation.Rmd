@@ -43,9 +43,9 @@ An 'eager' approach:
 
 A 'lazy' approach:
 
-1. Remember the expression `1 + 2` assigned to `x`. DON'T CALCULATE IT!
+1. Remember the expression `1 + 2` assigned to `x`.
 2. The value of `x` is needed here! Now calculate its expression, assign the 
-result to `x`, and then print te value of `x`.
+result to `x`, and then print the value of `x`.
 
 While the difference is negligible in this example, the benefits of lazy 
 evaluation can become apparent when expressions become large and complex. The
@@ -60,27 +60,122 @@ can come at the cost of increased overhead and loss of control.
 [Lazy Evaluation in a Strict Language](https://medium.com/javascript-in-plain-english/lazy-evaluation-in-a-strict-language-a8f938870a7a)
 
 ## NetCDF
-What is it and why/how does it use lazy evaluation.
-Lazy evaluation is very useful when working with NetCDF. A NetCDF file is
+Lazy evaluation is useful when it comes to working with netCDF data. NetCDF
+(network Common Data Format) is a file format designed around the creation, 
+access, and sharing of large array-based data sets. It is commonly used in 
+geospatial applications like meteorology, climatology, and oceanography, but is
+also useful in many other fields.
 
-### raster
-Lazy evaluation in the context of the raster package.
+NetCDF data is:
 
-### example 1
+* Self-describing, meaning that it includes information about the data it 
+contains such as its grid layout and the names and units of its variables.
+
+* Portable, so that a netCDF file created on one operating system can be 
+transferred and readable to a machine running a different operating system.
+
+* Scalable, such that a small subset of a large netCDF file can be accessed 
+efficiently without reading the entire contents of the file.
+
+Efficiency is a primary concern when working with netCDF files since they often 
+contain enormous amounts of information and can therefore take time to load and 
+large portions of RAM to store. It is important then to read/write *only* what 
+is necessary *only* when required. The `ncdf4` package in R achieves this 
+efficiency by providing an interface for a netCDF file which loads as little 
+data as possible until queried for specific variables.
+
+To illustrate this, `ncdf4` supplies the `nc_open` function which "opens" a
+netCDF file for reading/writing. Its output is an object which contains just the
+file metadata, therefore describing its contents without loading its actual 
+readings. These can be accessed after opening the file through a call to 
+`ncvar_get` requesting a desired variable.
+
+[ncdf4 package](https://cran.r-project.org/web/packages/ncdf4/ncdf4.pdf)
+
+## Raster
+Rasters are often used to represent the gridded information stored in netCDF 
+files. Multiple raster objects can be layered on top one another to   
+
+[raster package](https://cran.r-project.org/web/packages/raster/raster.pdf)
+
+### Lazy Evaluation in Rasters
 (Using raster package only functions from the example I pasted into Slack.)
+
+```{r raster_example}
+v2FilePath <- "~/Data/BlueSky/PNW-4km_2019100900_v2.nc"
+rasterBrick <- raster::brick(v2FilePath)
+
+rasterSize <- pryr::object_size(rasterBrick)
+fileBytes <- file.info(v2FilePath)$size
+fileSize <- utils:::format.object_size(fileBytes, "auto")
+
+print(paste("File size:", fileSize, "\nRaster size:", rasterSize))
+```
 
 ## AirFireModeling
 
-```{r raster_load}
+The `AirFireModeling` package can turn the netCDF files output by BlueSky model 
+runs into RasterBricks for visualization. These model run files typically range 
+from a few dozen megabytes to several hundred, so it is important for us to 
+consider how lazy evaluation factors into working with this data efficiently.
+
+### Lazy Evaluation in AirFireModeling
+The `bluesky_load` function provides an easy way to load in a specified Bluesky
+model run. It returns a RasterBrick as output, so from then on the same lazy 
+evaluation occurs as it does for a Raster object like we have just seen.
+
+```{r afm_example}
 library(AirFireModeling) # For base package support
 setModelDataDir("~/Data/BlueSky")
+
+originalRaster <- bluesky_load("PNW-4km", 2019100900)
+
+editedRaster <- originalRaster * 1
+dim(originalRaster@data@values)
+dim(editedRaster@data@values)
+
+print(pryr::object_size(originalRaster))
+originalRaster@data@inmemory
+originalRaster@data@fromdisk
+
+pryr::object_size(editedRaster)
+editedRaster@data@inmemory
+editedRaster@data@fromdisk
 ```
 
-### example 2
-(Reduced example similar to above but using bluesky_load() .)
-
-### optimization
+### Optimization
 Discussion of the importance of using xlim and ylim parameters to bluesky_load().
 
-### example 2
+### Example 2
 Perhaps use the example in raster_toMonitor() with shadedNight = TRUE and better labeling.
+
+```{r optimization_example}
+# Load model data
+rasterList <- raster_load(
+  modelName = c("PNW-1.33km", "PNW-4km"),
+  modelRun = c(2019100900),
+  xlim = c(-125, -115),
+  ylim = c(42, 50)
+)
+
+# MazamaSpatialUtils are needed to determine timezone and state
+library(MazamaSpatialUtils)
+PWFSLSmoke::initializeMazamaSpatialUtils()
+
+model_Portland <- raster_toMonitor(
+  rasterList,
+  longitude = -122.68,
+  latitude = 45.52,
+  radius = 5
+)
+
+PWFSLSmoke::monitor_timeseriesPlot(
+  model_Portland[[1]],
+  type = 'l', col = 'salmon'
+)
+
+PWFSLSmoke::monitor_timeseriesPlot(
+  model_Portland[[2]],
+  type = 'l', col = 'dodgerblue', add = TRUE
+)
+```
