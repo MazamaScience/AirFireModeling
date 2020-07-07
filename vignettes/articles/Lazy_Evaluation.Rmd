@@ -27,8 +27,8 @@ for working with the large data sets handled by the AirFireModeling package.
 procrastination. When an expression is encountered in a program using this 
 strategy, the calculation of that expression is postponed until its value is 
 required elsewhere (which might never happen). Lazy evaluation is typically 
-found in functional programming languages such as Haskell and R, and contrasts 
-the 'eager evaluation' strategy common to most imperative languages like C++, 
+found in functional programming languages like Haskell and R, and contrasts 
+the 'eager evaluation' strategy common to imperative languages such as C++, 
 Java, and Python.
 
 To demonstrate the difference, consider the following code:
@@ -51,7 +51,7 @@ While the difference is negligible in this example, the benefits of lazy
 evaluation can become apparent when expressions become large and complex. The
 lazy strategy can greatly improve performance and reduce a program's memory
 footprint by creating values only when they are actually needed. However, this 
-can come at the cost of increased overhead and loss of control.
+can come at the cost of increased overhead and the loss of control.
 
 [Wikipedia](https://en.wikipedia.org/wiki/Lazy_evaluation)
 
@@ -64,7 +64,7 @@ Lazy evaluation is useful when it comes to working with netCDF data. NetCDF
 (network Common Data Format) is a file format designed around the creation, 
 access, and sharing of large array-based data sets. It is commonly used in 
 geospatial applications like meteorology, climatology, and oceanography, but is
-also useful in many other fields.
+also useful in many other fields of science.
 
 NetCDF data is:
 
@@ -93,74 +93,112 @@ readings. These can be accessed after opening the file through a call to
 [ncdf4 package](https://cran.r-project.org/web/packages/ncdf4/ncdf4.pdf)
 
 ## Raster
-Rasters are often used to represent the gridded information stored in netCDF 
-files. Multiple raster objects can be layered on top one another to   
+Raster objects can be used to represent the gridded information stored in netCDF 
+files. They provide many useful functions for sampling, visualizing, and
+generally managing spatial data either as a single instantaneous RasterLayer or 
+over time by combining many RasterLayers into a RasterBrick.
 
 [raster package](https://cran.r-project.org/web/packages/raster/raster.pdf)
 
 ### Lazy Evaluation in Rasters
-(Using raster package only functions from the example I pasted into Slack.)
+Rasters also follow the lazy evaluation strategy--putting off loading the actual
+cell values until specifically requested, as explained in the `raster` package 
+documentation:
+
+> In many cases, e.g. when a RasterLayer is created from a file, it does 
+> (initially) not contain any cell (pixel) values in (RAM) memory, it only has 
+> the parameters that describe the RasterLayer. You can access cell-values with 
+> getValues, extract and related functions.
 
 ```{r raster_example}
-v2FilePath <- "~/Data/BlueSky/PNW-4km_2019100900_v2.nc"
-rasterBrick <- raster::brick(v2FilePath)
-
-rasterSize <- pryr::object_size(rasterBrick)
-fileBytes <- file.info(v2FilePath)$size
-fileSize <- utils:::format.object_size(fileBytes, "auto")
-
-print(paste("File size:", fileSize, "\nRaster size:", rasterSize))
+# Example?
 ```
 
 ## AirFireModeling
 
-The `AirFireModeling` package can turn the netCDF files output by BlueSky model 
-runs into RasterBricks for visualization. These model run files typically range 
-from a few dozen megabytes to several hundred, so it is important for us to 
-consider how lazy evaluation factors into working with this data efficiently.
+The `AirFireModeling` package can turn the netCDF files produced by the BlueSky 
+model runs into RasterBricks for reading and visualization. These model run 
+files typically range from a few dozen megabytes to several hundred, so it is 
+important to consider how lazy evaluation factors into working with this data 
+efficiently.
 
 ### Lazy Evaluation in AirFireModeling
-The `bluesky_load` function provides an easy way to load in a specified Bluesky
-model run. It returns a RasterBrick as output, so from then on the same lazy 
-evaluation occurs as it does for a Raster object like we have just seen.
+The `bluesky_load` function provides an easy way to load in a specified BlueSky
+model run. Since its output is a RasterBrick, the lazy evaluation that applies 
+to rasters is applicable here too. Only until the actual variable readings are
+required will they be loaded in:
 
-```{r afm_example}
-library(AirFireModeling) # For base package support
+```{r afm_dim_example}
+library(AirFireModeling)
 setModelDataDir("~/Data/BlueSky")
 
-originalRaster <- bluesky_load("PNW-4km", 2019100900)
+original <- bluesky_load("PNW-4km", 2019100900)
+originalDim <- dim(original@data@values)
+requested <- original * 1 # The cell values must be loaded now
+requestedDim <-dim(requested@data@values)
 
-editedRaster <- originalRaster * 1
-dim(originalRaster@data@values)
-dim(editedRaster@data@values)
+print(originalDim)
+print(requestedDim)
+```
 
-print(pryr::object_size(originalRaster))
-originalRaster@data@inmemory
-originalRaster@data@fromdisk
+As you can see, the actual dimensions of the data value matrix is 0x0 until the
+values are used. You can also see this when comparing the memory usage of a 
+RasterBrick holding just metadata and a RasterBrick after its values are loaded: 
 
-pryr::object_size(editedRaster)
-editedRaster@data@inmemory
-editedRaster@data@fromdisk
+```{r afm_memory_example}
+pryr::object_size(original)
+pryr::object_size(requested)
 ```
 
 ### Optimization
-Discussion of the importance of using xlim and ylim parameters to bluesky_load().
+Whenever possible, it is best to restrict the area of a requested model in order
+to avoid loading lots of unnecessary data. The `bluesky_load` function 
+allows you to perform this optimization by setting the latitude and longitude 
+extents of your request through the `xlim` and `ylim` parameters. 
 
-### Example 2
-Perhaps use the example in raster_toMonitor() with shadedNight = TRUE and better labeling.
+Let's compare an area-optimized raster with an unoptimized one:
 
-```{r optimization_example}
-# Load model data
-rasterList <- raster_load(
-  modelName = c("PNW-1.33km", "PNW-4km"),
-  modelRun = c(2019100900),
-  xlim = c(-125, -115),
-  ylim = c(42, 50)
-)
+```{r optimization_initial_comparison}
+unoptimized <- bluesky_load("PNW-4km", 2019100900)
+optimized   <- bluesky_load("PNW-4km", 2019100900,
+                            xlim = c(-125, -115),
+                            ylim = c(42, 50))
 
+pryr::object_size(unoptimized)
+pryr::object_size(optimized)
+```
+
+We can see that there is a big difference when initially loading optimized and 
+unoptimized rasters. The unoptimized one is lazy evaluated so that its initial
+memory usage is very small, but the optimized version immediately loads 
+everything. However, once they are put in use it is clear that the optimized 
+raster is quite a bit smaller overall:
+
+```{r optimizatin_overall_comparison}
+a <- unoptimized * 1
+b <- optimized * 1
+
+pryr::object_size(a)
+pryr::object_size(b)
+```
+
+### Optimization Example
+Let's see this optimization in action by plotting the PM 2.5 levels around 
+Portland, Oregon. We can request the data in just this area by defining a 
+rectangular boundary around it with longitudes and latitudes:
+
+```{r portland_optimization_example}
 # MazamaSpatialUtils are needed to determine timezone and state
 library(MazamaSpatialUtils)
 PWFSLSmoke::initializeMazamaSpatialUtils()
+
+# Load model data
+rasterList <- raster_load(
+  modelName = c("PNW-1.33km"),
+  modelRun = c(2019100900,
+  xlim = c(-125, -115),
+  ylim = c(42, 50))
+)
 
 model_Portland <- raster_toMonitor(
   rasterList,
@@ -171,11 +209,11 @@ model_Portland <- raster_toMonitor(
 
 PWFSLSmoke::monitor_timeseriesPlot(
   model_Portland[[1]],
-  type = 'l', col = 'salmon'
+  type = 'l',
+  col = 'salmon',
+  hourInterval = 3,
+  shadedNight = TRUE, 
 )
-
-PWFSLSmoke::monitor_timeseriesPlot(
-  model_Portland[[2]],
-  type = 'l', col = 'dodgerblue', add = TRUE
-)
+title("Portland PM2.5 values, BlueSky Run: 2019100900")
 ```
+
