@@ -1,0 +1,84 @@
+---
+title: "Receptor Analysis"
+author: "Mazama Science"
+date: "2020-07-08"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Receptor_Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 7, 
+  fig.height = 5
+)
+```
+
+This vignette will explain how "receptor analysis" reports are generated. These
+reports gather and visualize PM 2.5 readings for a given location using
+BlueSky model output.
+
+## Report Parameters
+To begin with, a report must know the details about the analysis being 
+requested. These are provided in the `infoList`, `dataList`, and `textList`
+parameters, which hold useful information like the coordinates of the location 
+of interest, start/end times, and the search radius around the location.
+
+## Header
+The report header displays the time the report was requested as well as the 
+versions of the two packages it uses: `PWFSLSmoke` and `AirFireModeling`. This
+information is gathered using `lubridate::now()` and `utils::packageVersion()`.
+
+For example:
+
+* `lubridate::now()`: `r lubridate::now()`
+
+* `utils::packageVersion("AirFireModeling")`: `r utils::packageVersion("AirFireModeling")`
+
+## Map
+Next, the location of interest is displayed on a Leaflet map with a marker. The
+location coordinates are specified in the report parameters and is shown above
+the map.
+
+## Latest Available Models
+Now the PM 2.5 readings around those coordinates will be gathered. The first 
+step towards this is determining which BlueSky models have a domain covering 
+that particular location. The `AirFireModeling` package provides an easy way to
+do this with the `bluesky_findModels()`, which takes in longitude and latitude
+coordinates and returns a list of models that cover them:
+
+```{r finding_models}
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
+
+# Models covering Portland, Oregon
+bluesky_findModels(longitude = -122.68, latitude = 45.52)
+```
+
+Reports are further limited to only using a small subset of these models:
+
+* PNW-4km
+* PNW-1.33km
+* CANSAC-4km
+* CANSAC-1.33km
+
+With the proper models now identified for the location, the latest two runs for 
+each model are loaded using `bluesky_latestModelRun()` like so:
+
+```{r}
+# Load the latest two runs for the PNW-4km BlueSky model
+bluesky_latestModelRun(modelName = "PNW-4km", count = 2)
+```
+
+Lastly, each of these chosen model runs are listed in a table in the analysis 
+report.
+
+## Model Timeseries
+
+
+
