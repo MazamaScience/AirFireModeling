@@ -101,53 +101,75 @@ over time by combining many RasterLayers into a RasterBrick.
 [raster package](https://cran.r-project.org/web/packages/raster/raster.pdf)
 
 ### Lazy Evaluation in Rasters
-Rasters also follow the lazy evaluation strategy--putting off loading the actual
-cell values until specifically requested, as explained in the `raster` package 
-documentation:
+Rasters also follow the lazy evaluation strategy--putting off loading their
+actual cell values until specifically requested, as explained in the `raster` 
+package documentation:
 
 > In many cases, e.g. when a RasterLayer is created from a file, it does 
 > (initially) not contain any cell (pixel) values in (RAM) memory, it only has 
 > the parameters that describe the RasterLayer. You can access cell-values with 
 > getValues, extract and related functions.
 
+Let's demonstrate this by using the `AirFireModeling` package to check out the
+RasterBrick produced by a BlueSky model run:
+
 ```{r raster_example}
-# Example?
-```
-
-## AirFireModeling
-
-The `AirFireModeling` package can turn the netCDF files produced by the BlueSky 
-model runs into RasterBricks for reading and visualization. These model run 
-files typically range from a few dozen megabytes to several hundred, so it is 
-important to consider how lazy evaluation factors into working with this data 
-efficiently.
-
-### Lazy Evaluation in AirFireModeling
-The `bluesky_load` function provides an easy way to load in a specified BlueSky
-model run. Since its output is a RasterBrick, the lazy evaluation that applies 
-to rasters is applicable here too. Only until the actual variable readings are
-required will they be loaded in:
-
-```{r afm_dim_example}
 library(AirFireModeling)
 setModelDataDir("~/Data/BlueSky")
 
-original <- bluesky_load("PNW-4km", 2019100900)
-originalDim <- dim(original@data@values)
-requested <- original * 1 # The cell values must be loaded now
-requestedDim <-dim(requested@data@values)
-
-print(originalDim)
-print(requestedDim)
+# Load the BlueSky model run file for October 9th, 2019
+modelRun <- bluesky_load("PNW-4km", 2019100900)
+modelRun
 ```
 
-As you can see, the actual dimensions of the data value matrix is 0x0 until the
-values are used. You can also see this when comparing the memory usage of a 
-RasterBrick holding just metadata and a RasterBrick after its values are loaded: 
+`modelRun` is an S4 object of class `RasterBrick`. We can access the individual 
+RasterLayers of the RasterBrick by referencing layer names:
+
+```{r}
+modelRun$X1570582800
+```
+
+Let's inspect the memory used by these RasterLayers before and after they are 
+used in expressions. 
+
+```{r}
+raster <- modelRun$X1570582800
+editedRaster <- modelRun$X1570582800 * 1 # Cell values must be loaded now
+
+pryr::object_size(raster)
+pryr::object_size(editedRaster)
+```
+
+Even though these two RasterLayers describe the same data, the edited raster is
+much larger because it needs to load in the cell readings while the original 
+raster still only needs to hold its metadata. Lazy evaluation is working to do
+the bare minimum!
+
+## AirFireModeling
+
+The `AirFireModeling` package uses the RasterBricks produced by BlueSky model 
+runs for reading and visualizing PM 2.5 data These model run files typically 
+range from a few dozen megabytes to several hundred, so it is important to 
+consider how lazy evaluation factors into working with this data efficiently.
+
+### Lazy Evaluation in AirFireModeling
+Like we have seen for the individual RasterLayers, model run objects also use
+lazy evaluation to load in readings only when absolutely necessary:
+
+```{r afm_dim_example}
+editedModelRun <- modelRun * 1 # Cell values must be loaded now
+
+dim(modelRun@data@values)
+dim(editedModelRun@data@values)
+```
+
+The actual dimensions of the data value matrix is 0x0 until the values are used.
+You can also see this lazy evaluation when comparing the memory usage of a 
+model run holding just metadata and a model run after its values are loaded: 
 
 ```{r afm_memory_example}
-pryr::object_size(original)
-pryr::object_size(requested)
+pryr::object_size(modelRun)
+pryr::object_size(editedModelRun)
 ```
 
 ### Optimization
@@ -159,13 +181,13 @@ extents of your request through the `xlim` and `ylim` parameters.
 Let's compare an area-optimized raster with an unoptimized one:
 
 ```{r optimization_initial_comparison}
-unoptimized <- bluesky_load("PNW-4km", 2019100900)
-optimized   <- bluesky_load("PNW-4km", 2019100900,
+unoptimizedModelRun <- bluesky_load("PNW-4km", 2019100900)
+optimizedModelRun   <- bluesky_load("PNW-4km", 2019100900,
                             xlim = c(-125, -115),
                             ylim = c(42, 50))
 
-pryr::object_size(unoptimized)
-pryr::object_size(optimized)
+pryr::object_size(unoptimizedModelRun)
+pryr::object_size(optimizedModelRun)
 ```
 
 We can see that there is a big difference when initially loading optimized and 
@@ -174,9 +196,9 @@ memory usage is very small, but the optimized version immediately loads
 everything. However, once they are put in use it is clear that the optimized 
 raster is quite a bit smaller overall:
 
-```{r optimizatin_overall_comparison}
-a <- unoptimized * 1
-b <- optimized * 1
+```{r optimization_overall_comparison}
+a <- unoptimizedModelRun * 1
+b <- optimizedModelRun * 1
 
 pryr::object_size(a)
 pryr::object_size(b)
@@ -194,10 +216,10 @@ PWFSLSmoke::initializeMazamaSpatialUtils()
 
 # Load model data
 rasterList <- raster_load(
-  modelName = c("PNW-1.33km"),
-  modelRun = c(2019100900,
+  modelName = "PNW-1.33km",
+  modelRun = 2019100900,
   xlim = c(-125, -115),
-  ylim = c(42, 50))
+  ylim = c(42, 50)
 )
 
 model_Portland <- raster_toMonitor(
@@ -216,4 +238,3 @@ PWFSLSmoke::monitor_timeseriesPlot(
 )
 title("Portland PM2.5 values, BlueSky Run: 2019100900")
 ```
-
