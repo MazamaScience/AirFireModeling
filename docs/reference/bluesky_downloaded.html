@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.15</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -96,6 +96,12 @@
     </li>
     <li>
       <a href="../articles/articles/Aggregation_by_Polygon.html">Aggregation by Polygon</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Lazy_Evaluation.html">Lazy Evaluation</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Receptor_Analysis.html">Receptor Analysis</a>
     </li>
     <li>
       <a href="../articles/articles/Smoke_by_County.html">Smoke by County</a>
@@ -163,14 +169,43 @@
     <p>A list of downloaded models</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
 <span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky'</span>)
 
-<span class='no'>filePath</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='bluesky_download.html'>bluesky_download</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>, <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019100900</span>)
-<span class='fu'><a href='bluesky_toCommonFormat.html'>bluesky_toCommonFormat</a></span>(<span class='no'>filePath</span>)
-<span class='fu'>bluesky_downloaded</span>()
-}</div></pre>
+<span class='no'>filePath</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='bluesky_download.html'>bluesky_download</a></span>(<span class='kw'>modelName</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>, <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019100900</span>)</div><div class='output co'>#&gt; <span class='message'>Auto-detected PNW-4km BlueSky Output Version: 1.0.0</span></div><div class='input'><span class='fu'><a href='bluesky_toCommonFormat.html'>bluesky_toCommonFormat</a></span>(<span class='no'>filePath</span>)</div><div class='output co'>#&gt; [1] "/Users/jonathan/Data/BlueSky/PNW-4km_2019100900_v2.nc"</div><div class='input'><span class='fu'>bluesky_downloaded</span>()</div><div class='output co'>#&gt;  [1] "CANSAC-1.33km_2019102900_v2.nc"                   
+#&gt;  [2] "CANSAC-4km_2019102700_v2.nc"                      
+#&gt;  [3] "CANSAC-4km_2019102712_v2.nc"                      
+#&gt;  [4] "CANSAC-4km_2019102800_v2.nc"                      
+#&gt;  [5] "CANSAC-4km_2019102812_v2.nc"                      
+#&gt;  [6] "CANSAC-4km_2019102900_v2.nc"                      
+#&gt;  [7] "CANSAC-4km_2019102912_v2.nc"                      
+#&gt;  [8] "CANSAC-4km_2019103000_v2.nc"                      
+#&gt;  [9] "CANSAC-4km_2019103012_v2.nc"                      
+#&gt; [10] "CANSAC-4km_2019103100_v2.nc"                      
+#&gt; [11] "CANSAC-4km_2020060300_v2.nc"                      
+#&gt; [12] "CANSAC-4km_2020062200_v2.nc"                      
+#&gt; [13] "GFS-0.15deg-CanadaUSA-p25deg-68N_2019102900_v2.nc"
+#&gt; [14] "NAM-3km_2019102900_v2.nc"                         
+#&gt; [15] "NAM-3km_2020060300_v2.nc"                         
+#&gt; [16] "NAM84-0.15deg_2019102900_v2.nc"                   
+#&gt; [17] "NAM84-0.15deg_2020060900.nc"                      
+#&gt; [18] "PNW-1.33km_2019100900_v2.nc"                      
+#&gt; [19] "PNW-1.33km_2020032500_v2.nc"                      
+#&gt; [20] "PNW-1.33km_2020063000.nc"                         
+#&gt; [21] "PNW-4km_2018110900_v2.nc"                         
+#&gt; [22] "PNW-4km_2019100800_v2.nc"                         
+#&gt; [23] "PNW-4km_2019100900_v2.nc"                         
+#&gt; [24] "PNW-4km_2019101000_v2.nc"                         
+#&gt; [25] "PNW-4km_2019101100_v2.nc"                         
+#&gt; [26] "PNW-4km_2019101500_v2.nc"                         
+#&gt; [27] "PNW-4km_2020032500_v2.nc"                         
+#&gt; [28] "PNW-4km_2020060300_v2.nc"                         
+#&gt; [29] "PNW-4km_2020070200_v2.nc"                         
+#&gt; [30] "PNW-4km_2020070300_v2.nc"                         
+#&gt; [31] "PNW-4km_2020070700_v2.nc"                         </div><div class='input'># }
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -186,7 +221,7 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Jonathan Callahan, Hans Martin, Rohan Aras, Zach Dingels, Jimin Kim, Jon Hagg, Rex Thompson.</p>
+  <p>Developed by Jonathan Callahan, Tate Brasel, Hans Martin, Rohan Aras, Zach Dingels, Jimin Kim, Jon Hagg, Rex Thompson.</p>
 </div>
 
 <div class="pkgdown">

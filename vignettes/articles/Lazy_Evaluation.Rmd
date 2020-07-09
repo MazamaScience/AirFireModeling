@@ -1,7 +1,7 @@
 ---
 title: "Lazy Evaluation"
 author: "Mazama Science"
-date: "2020-07-03"
+date: "2020-07-09"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Lazy Evaluation}
@@ -19,10 +19,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette will introduce the concept of lazy evaluation and how it is useful
+This vignette will introduce the concept of 'lazy evaluation' and how it is useful
 for working with the large data sets handled by the AirFireModeling package.
 
 ## Lazy Evaluation
+
 'Lazy evaluation' is an evaluation strategy in programming that is centered on 
 procrastination. When an expression is encountered in a program using this 
 strategy, the calculation of that expression is postponed until its value is 
@@ -55,11 +56,12 @@ can come at the cost of increased overhead and the loss of control.
 
 [Wikipedia](https://en.wikipedia.org/wiki/Lazy_evaluation)
 
-[About Lazy Evaluation](https://www.r-bloggers.com/about-lazy-evaluation/)
+[About Lazy Evaluation](https://colinfay.me/lazyeval/)
 
 [Lazy Evaluation in a Strict Language](https://medium.com/javascript-in-plain-english/lazy-evaluation-in-a-strict-language-a8f938870a7a)
 
 ## NetCDF
+
 Lazy evaluation is useful when it comes to working with netCDF data. NetCDF
 (network Common Data Format) is a file format designed around the creation, 
 access, and sharing of large array-based data sets. It is commonly used in 
@@ -86,32 +88,35 @@ data as possible until queried for specific variables.
 
 To illustrate this, `ncdf4` supplies the `nc_open` function which "opens" a
 netCDF file for reading/writing. Its output is an object which contains just the
-file metadata, therefore describing its contents without loading its actual 
+file metadata, describing its contents without loading its actual 
 readings. These can be accessed after opening the file through a call to 
 `ncvar_get` requesting a desired variable.
 
-[ncdf4 package](https://cran.r-project.org/web/packages/ncdf4/ncdf4.pdf)
+[ncdf4 package](https://cran.r-project.org/web/packages/ncdf4)
 
 ## Raster
-Raster objects can be used to represent the gridded information stored in netCDF 
-files. They provide many useful functions for sampling, visualizing, and
-generally managing spatial data either as a single instantaneous RasterLayer or 
-over time by combining many RasterLayers into a RasterBrick.
 
-[raster package](https://cran.r-project.org/web/packages/raster/raster.pdf)
+The **raster** package provides _Raster_ objects which can be used to represent 
+the gridded information stored in netCDF files. Many useful functions are
+provided for sampling, visualizing, and generally managing spatial data either 
+as a single instantaneous _RasterLayer_ or over time by combining many layers 
+into a _RasterBrick_.
+
+[raster package](https://cran.r-project.org/web/packages/raster)
 
 ### Lazy Evaluation in Rasters
-Rasters also follow the lazy evaluation strategy--putting off loading their
-actual cell values until specifically requested, as explained in the `raster` 
+
+Rasters also follow the lazy evaluation strategy -- putting off loading their
+actual cell values until specifically requested, as explained in the **raster** 
 package documentation:
 
-> In many cases, e.g. when a RasterLayer is created from a file, it does 
-> (initially) not contain any cell (pixel) values in (RAM) memory, it only has 
+> In many cases, _e.g._ when a RasterLayer is created from a file, it does 
+> (initially) not contain any cell (pixel) values in memory (RAM), it only has 
 > the parameters that describe the RasterLayer. You can access cell-values with 
-> getValues, extract and related functions.
+> getValues(), extract() and related functions.
 
-Let's demonstrate this by using the `AirFireModeling` package to check out the
-RasterBrick produced by a BlueSky model run:
+Let's demonstrate this by using the **AirFireModeling** package to check out the
+_RasterBrick_ produced by a BlueSky model run:
 
 ```{r raster_example}
 library(AirFireModeling)
@@ -123,41 +128,42 @@ modelRun
 ```
 
 `modelRun` is an S4 object of class `RasterBrick`. We can access the individual 
-RasterLayers of the RasterBrick by referencing layer names:
+_RasterLayers_ of the _RasterBrick_ by referencing layer names:
 
 ```{r}
-modelRun$X1570582800
+print(modelRun$X1570582800)
 ```
 
-Let's inspect the memory used by these RasterLayers before and after they are 
+Let's inspect the memory used by these _RasterLayers_ before and after they are 
 used in expressions. 
 
 ```{r}
 raster <- modelRun$X1570582800
-editedRaster <- modelRun$X1570582800 * 1 # Cell values must be loaded now
+editedRaster <- modelRun$X1570582800 + 0 # Cell values must be loaded now
 
 pryr::object_size(raster)
 pryr::object_size(editedRaster)
 ```
 
-Even though these two RasterLayers describe the same data, the edited raster is
+Even though these two _RasterLayers_ describe the same data, the edited raster is
 much larger because it needs to load in the cell readings while the original 
 raster still only needs to hold its metadata. Lazy evaluation is working to do
 the bare minimum!
 
 ## AirFireModeling
 
-The `AirFireModeling` package uses the RasterBricks produced by BlueSky model 
-runs for reading and visualizing PM 2.5 data These model run files typically 
+The **AirFireModeling** package uses the _RasterBricks_ produced by BlueSky model 
+runs for reading and visualizing PM 2.5 data. These model run files typically 
 range from a few dozen megabytes to several hundred, so it is important to 
 consider how lazy evaluation factors into working with this data efficiently.
 
 ### Lazy Evaluation in AirFireModeling
-Like we have seen for the individual RasterLayers, model run objects also use
+
+Like we have seen for the individual _RasterLayers_, model run objects also use
 lazy evaluation to load in readings only when absolutely necessary:
 
 ```{r afm_dim_example}
-editedModelRun <- modelRun * 1 # Cell values must be loaded now
+editedModelRun <- modelRun + 0 # Cell values must be loaded now
 
 dim(modelRun@data@values)
 dim(editedModelRun@data@values)
@@ -173,8 +179,9 @@ pryr::object_size(editedModelRun)
 ```
 
 ### Optimization
+
 Whenever possible, it is best to restrict the area of a requested model in order
-to avoid loading lots of unnecessary data. The `bluesky_load` function 
+to avoid loading lots of unnecessary data. The `bluesky_load()` function 
 allows you to perform this optimization by setting the latitude and longitude 
 extents of your request through the `xlim` and `ylim` parameters. 
 
@@ -183,8 +190,8 @@ Let's compare an area-optimized raster with an unoptimized one:
 ```{r optimization_initial_comparison}
 unoptimizedModelRun <- bluesky_load("PNW-4km", 2019100900)
 optimizedModelRun   <- bluesky_load("PNW-4km", 2019100900,
-                            xlim = c(-125, -115),
-                            ylim = c(42, 50))
+                                    xlim = c(-123, -122),
+                                    ylim = c(45, 46))
 
 pryr::object_size(unoptimizedModelRun)
 pryr::object_size(optimizedModelRun)
@@ -205,6 +212,7 @@ pryr::object_size(b)
 ```
 
 ### Optimization Example
+
 Let's see this optimization in action by plotting the PM 2.5 levels around 
 Portland, Oregon. We can request the data in just this area by defining a 
 rectangular boundary around it with longitudes and latitudes:
@@ -218,8 +226,8 @@ PWFSLSmoke::initializeMazamaSpatialUtils()
 rasterList <- raster_load(
   modelName = "PNW-1.33km",
   modelRun = 2019100900,
-  xlim = c(-125, -115),
-  ylim = c(42, 50)
+  xlim = c(-123, -122),
+  ylim = c(45, 46)
 )
 
 model_Portland <- raster_toMonitor(

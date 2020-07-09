@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.15</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -96,6 +96,12 @@
     </li>
     <li>
       <a href="../articles/articles/Aggregation_by_Polygon.html">Aggregation by Polygon</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Lazy_Evaluation.html">Lazy Evaluation</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Receptor_Analysis.html">Receptor Analysis</a>
     </li>
     <li>
       <a href="../articles/articles/Smoke_by_County.html">Smoke by County</a>
@@ -145,12 +151,63 @@
 
     <p><code>POSIXct</code> time.</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
+<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky'</span>)
+
+<span class='co'># Load model data</span>
+<span class='no'>rasterList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_load.html'>raster_load</a></span>(
+  <span class='kw'>modelName</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"PNW-4km"</span>),
+  <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2019100900</span>),
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>115</span>),
+  <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>42</span>, <span class='fl'>50</span>)
+)</div><div class='output co'>#&gt; <span class='message'>Loading PNW-4km_2019100900 ...</span></div><div class='input'>
+<span class='no'>layerNames</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>rasterList</span><span class='kw'>[[</span><span class='fl'>1</span>]])
+<span class='fu'>raster_createLayerNameTimes</span>(<span class='no'>layerNames</span>)</div><div class='output co'>#&gt;  [1] "2019-10-09 01:00:00 UTC" "2019-10-09 02:00:00 UTC"
+#&gt;  [3] "2019-10-09 03:00:00 UTC" "2019-10-09 04:00:00 UTC"
+#&gt;  [5] "2019-10-09 05:00:00 UTC" "2019-10-09 06:00:00 UTC"
+#&gt;  [7] "2019-10-09 07:00:00 UTC" "2019-10-09 08:00:00 UTC"
+#&gt;  [9] "2019-10-09 09:00:00 UTC" "2019-10-09 10:00:00 UTC"
+#&gt; [11] "2019-10-09 11:00:00 UTC" "2019-10-09 12:00:00 UTC"
+#&gt; [13] "2019-10-09 13:00:00 UTC" "2019-10-09 14:00:00 UTC"
+#&gt; [15] "2019-10-09 15:00:00 UTC" "2019-10-09 16:00:00 UTC"
+#&gt; [17] "2019-10-09 17:00:00 UTC" "2019-10-09 18:00:00 UTC"
+#&gt; [19] "2019-10-09 19:00:00 UTC" "2019-10-09 20:00:00 UTC"
+#&gt; [21] "2019-10-09 21:00:00 UTC" "2019-10-09 22:00:00 UTC"
+#&gt; [23] "2019-10-09 23:00:00 UTC" "2019-10-10 00:00:00 UTC"
+#&gt; [25] "2019-10-10 01:00:00 UTC" "2019-10-10 02:00:00 UTC"
+#&gt; [27] "2019-10-10 03:00:00 UTC" "2019-10-10 04:00:00 UTC"
+#&gt; [29] "2019-10-10 05:00:00 UTC" "2019-10-10 06:00:00 UTC"
+#&gt; [31] "2019-10-10 07:00:00 UTC" "2019-10-10 08:00:00 UTC"
+#&gt; [33] "2019-10-10 09:00:00 UTC" "2019-10-10 10:00:00 UTC"
+#&gt; [35] "2019-10-10 11:00:00 UTC" "2019-10-10 12:00:00 UTC"
+#&gt; [37] "2019-10-10 13:00:00 UTC" "2019-10-10 14:00:00 UTC"
+#&gt; [39] "2019-10-10 15:00:00 UTC" "2019-10-10 16:00:00 UTC"
+#&gt; [41] "2019-10-10 17:00:00 UTC" "2019-10-10 18:00:00 UTC"
+#&gt; [43] "2019-10-10 19:00:00 UTC" "2019-10-10 20:00:00 UTC"
+#&gt; [45] "2019-10-10 21:00:00 UTC" "2019-10-10 22:00:00 UTC"
+#&gt; [47] "2019-10-10 23:00:00 UTC" "2019-10-11 00:00:00 UTC"
+#&gt; [49] "2019-10-11 01:00:00 UTC" "2019-10-11 02:00:00 UTC"
+#&gt; [51] "2019-10-11 03:00:00 UTC" "2019-10-11 04:00:00 UTC"
+#&gt; [53] "2019-10-11 05:00:00 UTC" "2019-10-11 06:00:00 UTC"
+#&gt; [55] "2019-10-11 07:00:00 UTC" "2019-10-11 08:00:00 UTC"
+#&gt; [57] "2019-10-11 09:00:00 UTC" "2019-10-11 10:00:00 UTC"
+#&gt; [59] "2019-10-11 11:00:00 UTC" "2019-10-11 12:00:00 UTC"
+#&gt; [61] "2019-10-11 13:00:00 UTC" "2019-10-11 14:00:00 UTC"
+#&gt; [63] "2019-10-11 15:00:00 UTC" "2019-10-11 16:00:00 UTC"
+#&gt; [65] "2019-10-11 17:00:00 UTC" "2019-10-11 18:00:00 UTC"
+#&gt; [67] "2019-10-11 19:00:00 UTC" "2019-10-11 20:00:00 UTC"
+#&gt; [69] "2019-10-11 21:00:00 UTC" "2019-10-11 22:00:00 UTC"
+#&gt; [71] "2019-10-11 23:00:00 UTC"</div><div class='input'># }
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>
@@ -159,7 +216,7 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Jonathan Callahan, Hans Martin, Rohan Aras, Zach Dingels, Jimin Kim, Jon Hagg, Rex Thompson.</p>
+  <p>Developed by Jonathan Callahan, Tate Brasel, Hans Martin, Rohan Aras, Zach Dingels, Jimin Kim, Jon Hagg, Rex Thompson.</p>
 </div>
 
 <div class="pkgdown">

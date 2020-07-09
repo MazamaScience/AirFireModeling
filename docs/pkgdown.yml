@@ -4,5 +4,7 @@ pkgdown_sha: ~
 articles:
   AirFireModeling_Introduction: AirFireModeling_Introduction.html
   Aggregation_by_Polygon: articles/Aggregation_by_Polygon.html
+  Lazy_Evaluation: articles/Lazy_Evaluation.html
+  Receptor_Analysis: articles/Receptor_Analysis.html
   Smoke_by_County: articles/Smoke_by_County.html
 

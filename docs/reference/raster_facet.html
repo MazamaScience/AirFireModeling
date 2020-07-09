@@ -72,7 +72,7 @@ subset the hours." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.15</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -99,6 +99,12 @@ subset the hours." />
     </li>
     <li>
       <a href="../articles/articles/Aggregation_by_Polygon.html">Aggregation by Polygon</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Lazy_Evaluation.html">Lazy Evaluation</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Receptor_Analysis.html">Receptor Analysis</a>
     </li>
     <li>
       <a href="../articles/articles/Smoke_by_County.html">Smoke by County</a>
@@ -208,7 +214,7 @@ subset the hours.</p>
 
 <span class='co'># Load model data</span>
 <span class='no'>rasterList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_load.html'>raster_load</a></span>(
-  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
+  <span class='kw'>modelName</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>,
   <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2019100900</span>),
   <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>117</span>),
   <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>42</span>, <span class='fl'>47</span>)
@@ -231,7 +237,7 @@ subset the hours.</p>
 
 <span class='co'># Kincade fire</span>
 <span class='no'>rasterList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_load.html'>raster_load</a></span>(
-  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"CANSAC-4km"</span>,
+  <span class='kw'>modelName</span> <span class='kw'>=</span> <span class='st'>"CANSAC-4km"</span>,
   <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2019102700</span>),
   <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124</span>, -<span class='fl'>121.5</span>),
   <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>37.5</span>, <span class='fl'>39</span>)
@@ -259,7 +265,7 @@ subset the hours.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Jonathan Callahan, Hans Martin, Rohan Aras, Zach Dingels, Jimin Kim, Jon Hagg, Rex Thompson.</p>
+  <p>Developed by Jonathan Callahan, Tate Brasel, Hans Martin, Rohan Aras, Zach Dingels, Jimin Kim, Jon Hagg, Rex Thompson.</p>
 </div>
 
 <div class="pkgdown">

@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.15</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -58,6 +58,12 @@
     </li>
     <li>
       <a href="../articles/articles/Aggregation_by_Polygon.html">Aggregation by Polygon</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Lazy_Evaluation.html">Lazy Evaluation</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Receptor_Analysis.html">Receptor Analysis</a>
     </li>
     <li>
       <a href="../articles/articles/Smoke_by_County.html">Smoke by County</a>
@@ -131,7 +137,7 @@
 <p>Below is an example of loading a model using the two functions:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Single model and modelRun</span></a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">raster &lt;-<span class="st"> </span><span class="kw"><a href="../reference/raster_load.html">raster_load</a></span>(</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">  <span class="dt">model =</span> <span class="st">'PNW-1.33km'</span>, </a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">  <span class="dt">modelName =</span> <span class="st">'PNW-1.33km'</span>, </a>
 <a class="sourceLine" id="cb2-4" data-line-number="4">  <span class="dt">modelRun =</span> <span class="dv">20200325</span>,</a>
 <a class="sourceLine" id="cb2-5" data-line-number="5">  <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="op">-</span><span class="dv">125</span>, <span class="dv">-115</span>),</a>
 <a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="dt">ylim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">42</span>, <span class="dv">50</span>)</a>
@@ -139,7 +145,7 @@
 <a class="sourceLine" id="cb2-8" data-line-number="8"></a>
 <a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># Multiple models at once</span></a>
 <a class="sourceLine" id="cb2-10" data-line-number="10">rasterList &lt;-<span class="st"> </span><span class="kw"><a href="../reference/raster_load.html">raster_load</a></span>(</a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">  <span class="dt">model =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'PNW-1.33km'</span>, <span class="st">'PNW-4km'</span>), </a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">  <span class="dt">modelName =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'PNW-1.33km'</span>, <span class="st">'PNW-4km'</span>), </a>
 <a class="sourceLine" id="cb2-12" data-line-number="12">  <span class="dt">modelRun =</span> <span class="dv">20200325</span>,</a>
 <a class="sourceLine" id="cb2-13" data-line-number="13">  <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="op">-</span><span class="dv">125</span>, <span class="dv">-115</span>),</a>
 <a class="sourceLine" id="cb2-14" data-line-number="14">  <span class="dt">ylim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">42</span>, <span class="dv">50</span>)</a>
@@ -210,7 +216,7 @@
 <a class="sourceLine" id="cb6-7" data-line-number="7"></a>
 <a class="sourceLine" id="cb6-8" data-line-number="8">PWFSLSmoke<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/PWFSLSmoke/man/monitor_timeseriesPlot.html">monitor_timeseriesPlot</a></span>(</a>
 <a class="sourceLine" id="cb6-9" data-line-number="9">  model_Portland[[<span class="dv">1</span>]],</a>
-<a class="sourceLine" id="cb6-10" data-line-number="10"> <span class="dt">type =</span> <span class="st">'l'</span>, <span class="dt">col =</span> <span class="st">'salmon'</span></a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">  <span class="dt">type =</span> <span class="st">'l'</span>, <span class="dt">col =</span> <span class="st">'salmon'</span></a>
 <a class="sourceLine" id="cb6-11" data-line-number="11">)</a>
 <a class="sourceLine" id="cb6-12" data-line-number="12"><span class="kw"><a href="https://rdrr.io/r/graphics/title.html">title</a></span>(<span class="st">"15 Grid cells near Portland"</span>)</a></code></pre></div>
 <p><img src="AirFireModeling_Introduction_files/figure-html/raster_toMonitor-1.png" width="672"></p>
@@ -225,7 +231,7 @@
 <a class="sourceLine" id="cb7-2" data-line-number="2">Portland_monitors &lt;-</a>
 <a class="sourceLine" id="cb7-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/PWFSLSmoke/man/monitor_load.html">monitor_load</a></span>(</a>
 <a class="sourceLine" id="cb7-4" data-line-number="4">    <span class="dt">startdate =</span> <span class="dv">2019100900</span>,</a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">    <span class="dt">enddate =</span> <span class="dv">2019101123</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">    <span class="dt">enddate =</span> <span class="dv">2019101023</span></a>
 <a class="sourceLine" id="cb7-6" data-line-number="6">  ) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb7-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/PWFSLSmoke/man/monitor_subsetByDistance.html">monitor_subsetByDistance</a></span>(</a>
 <a class="sourceLine" id="cb7-8" data-line-number="8">    <span class="dt">longitude =</span> <span class="fl">-122.68</span>,</a>
@@ -233,42 +239,41 @@
 <a class="sourceLine" id="cb7-10" data-line-number="10">    <span class="dt">radius =</span> <span class="dv">20</span></a>
 <a class="sourceLine" id="cb7-11" data-line-number="11">  )</a>
 <a class="sourceLine" id="cb7-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb7-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb7-14" data-line-number="14"><span class="co"># Create a Portland area RasterBrick</span></a>
-<a class="sourceLine" id="cb7-15" data-line-number="15">rasterList &lt;-<span class="st"> </span><span class="kw"><a href="../reference/raster_load.html">raster_load</a></span>(</a>
-<a class="sourceLine" id="cb7-16" data-line-number="16">  <span class="dt">model =</span> <span class="st">"PNW-4km"</span>,</a>
-<a class="sourceLine" id="cb7-17" data-line-number="17">  <span class="dt">modelRun =</span> <span class="dv">2019100900</span>,</a>
-<a class="sourceLine" id="cb7-18" data-line-number="18">  <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="op">-</span><span class="fl">123.08</span>, <span class="fl">-122.28</span>),</a>
-<a class="sourceLine" id="cb7-19" data-line-number="19">  <span class="dt">ylim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">45.22</span>, <span class="fl">45.92</span>)</a>
-<a class="sourceLine" id="cb7-20" data-line-number="20">)</a>
-<a class="sourceLine" id="cb7-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb7-22" data-line-number="22"><span class="co"># Put monitor data on raster grid</span></a>
-<a class="sourceLine" id="cb7-23" data-line-number="23">Portland_rasterBrick &lt;-</a>
-<a class="sourceLine" id="cb7-24" data-line-number="24"><span class="st">  </span><span class="kw"><a href="../reference/monitor_toRaster.html">monitor_toRaster</a></span>(</a>
-<a class="sourceLine" id="cb7-25" data-line-number="25">    Portland_monitors,</a>
-<a class="sourceLine" id="cb7-26" data-line-number="26">    rasterList[[<span class="dv">1</span>]]</a>
-<a class="sourceLine" id="cb7-27" data-line-number="27">  )</a>
-<a class="sourceLine" id="cb7-28" data-line-number="28"></a>
-<a class="sourceLine" id="cb7-29" data-line-number="29"><span class="co"># Leaflet map of monitors</span></a>
-<a class="sourceLine" id="cb7-30" data-line-number="30">PWFSLSmoke<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/PWFSLSmoke/man/monitor_leaflet.html">monitor_leaflet</a></span>(</a>
-<a class="sourceLine" id="cb7-31" data-line-number="31">  <span class="dt">ws_monitor =</span> Portland_monitors</a>
-<a class="sourceLine" id="cb7-32" data-line-number="32">)</a></code></pre></div>
-<div id="htmlwidget-eb0054579651c40293ed" style="width:672px;height:480px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-eb0054579651c40293ed">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"setView":[[45.52126,-122.701635],10,[]],"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addCircleMarkers","args":[[45.39916,45.496641,45.4702,45.64336],[-122.7455,-122.602877,-122.8159,-122.58737],10,null,null,{"interactive":true,"className":"","stroke":false,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":["#FFFF00","#FFFF00","#00E400","#FFFF00"],"fillOpacity":0.7},null,null,["siteName: Portland Near Road<br>monitorID: 410670005_01<br>elevation: NA<br>pm25: 13.8<br>","siteName: Portland - SE Lafayette<br>monitorID: 410510080_01<br>elevation: 75<br>pm25: 17.5<br>","siteName: Beaverton - Highland Park School<br>monitorID: 410670111_01<br>elevation: 58<br>pm25: 8.3<br>","siteName: Vancouver-NE 84th Ave<br>monitorID: 530110024_01<br>elevation: 54<br>pm25: 20<br>"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addLegend","args":[{"colors":["#7E0023","#8F3F97","#FF0000","#FF7E00","#FFFF00","#00E400"],"labels":["Hazardous","Very Unhealthy","Unhealthy","USG","Moderate","Good"],"na_color":null,"na_label":"NA","opacity":1,"position":"bottomright","type":"unknown","title":"AQI Level","extra":null,"layerId":null,"className":"info legend","group":null}]}],"limits":{"lat":[45.39916,45.64336],"lng":[-122.8159,-122.58737]}},"evals":[],"jsHooks":[]}</script><div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co"># Leaflet map of rasterized monitors</span></a>
+<a class="sourceLine" id="cb7-13" data-line-number="13"><span class="co"># Create a Portland area RasterBrick</span></a>
+<a class="sourceLine" id="cb7-14" data-line-number="14">rasterList &lt;-<span class="st"> </span><span class="kw"><a href="../reference/raster_load.html">raster_load</a></span>(</a>
+<a class="sourceLine" id="cb7-15" data-line-number="15">  <span class="dt">modelName =</span> <span class="st">"PNW-4km"</span>,</a>
+<a class="sourceLine" id="cb7-16" data-line-number="16">  <span class="dt">modelRun =</span> <span class="dv">2019101000</span>,</a>
+<a class="sourceLine" id="cb7-17" data-line-number="17">  <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="op">-</span><span class="fl">123.08</span>, <span class="fl">-122.28</span>),</a>
+<a class="sourceLine" id="cb7-18" data-line-number="18">  <span class="dt">ylim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">45.22</span>, <span class="fl">45.92</span>)</a>
+<a class="sourceLine" id="cb7-19" data-line-number="19">)</a>
+<a class="sourceLine" id="cb7-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb7-21" data-line-number="21"><span class="co"># Put monitor data on raster grid</span></a>
+<a class="sourceLine" id="cb7-22" data-line-number="22">Portland_rasterBrick &lt;-</a>
+<a class="sourceLine" id="cb7-23" data-line-number="23"><span class="st">  </span><span class="kw"><a href="../reference/monitor_toRaster.html">monitor_toRaster</a></span>(</a>
+<a class="sourceLine" id="cb7-24" data-line-number="24">    Portland_monitors,</a>
+<a class="sourceLine" id="cb7-25" data-line-number="25">    rasterList[[<span class="dv">1</span>]]</a>
+<a class="sourceLine" id="cb7-26" data-line-number="26">  )</a>
+<a class="sourceLine" id="cb7-27" data-line-number="27"></a>
+<a class="sourceLine" id="cb7-28" data-line-number="28"><span class="co"># Leaflet map of monitors</span></a>
+<a class="sourceLine" id="cb7-29" data-line-number="29">PWFSLSmoke<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/PWFSLSmoke/man/monitor_leaflet.html">monitor_leaflet</a></span>(</a>
+<a class="sourceLine" id="cb7-30" data-line-number="30">  <span class="dt">ws_monitor =</span> Portland_monitors</a>
+<a class="sourceLine" id="cb7-31" data-line-number="31">)</a></code></pre></div>
+<div id="htmlwidget-6ac177c5a7852da75b4e" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6ac177c5a7852da75b4e">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"setView":[[45.52126,-122.701635],10,[]],"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addCircleMarkers","args":[[45.39916,45.496641,45.4702,45.64336],[-122.7455,-122.602877,-122.8159,-122.58737],10,null,null,{"interactive":true,"className":"","stroke":false,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":["#FFFF00","#FFFF00","#00E400","#FFFF00"],"fillOpacity":0.7},null,null,["siteName: Portland Near Road<br>monitorID: 410670005_01<br>elevation: NA<br>pm25: 13.8<br>","siteName: Portland - SE Lafayette<br>monitorID: 410510080_01<br>elevation: 75<br>pm25: 17.5<br>","siteName: Beaverton - Highland Park School<br>monitorID: 410670111_01<br>elevation: 58<br>pm25: 8.3<br>","siteName: Vancouver-NE 84th Ave<br>monitorID: 530110024_01<br>elevation: 54<br>pm25: 20<br>"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addLegend","args":[{"colors":["#7E0023","#8F3F97","#FF0000","#FF7E00","#FFFF00","#00E400"],"labels":["Hazardous","Very Unhealthy","Unhealthy","USG","Moderate","Good"],"na_color":null,"na_label":"NA","opacity":1,"position":"bottomright","type":"unknown","title":"AQI Level","extra":null,"layerId":null,"className":"info legend","group":null}]}],"limits":{"lat":[45.39916,45.64336],"lng":[-122.8159,-122.58737]}},"evals":[],"jsHooks":[]}</script><div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co"># Leaflet map of rasterized monitors</span></a>
 <a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw"><a href="../reference/raster_leaflet.html">raster_leaflet</a></span>(</a>
 <a class="sourceLine" id="cb8-3" data-line-number="3">  <span class="dt">raster =</span> Portland_rasterBrick,</a>
 <a class="sourceLine" id="cb8-4" data-line-number="4">  <span class="dt">index =</span> <span class="dv">32</span>,</a>
 <a class="sourceLine" id="cb8-5" data-line-number="5">  <span class="dt">palette =</span> <span class="st">"aqi"</span>,</a>
 <a class="sourceLine" id="cb8-6" data-line-number="6">  <span class="dt">direction =</span> <span class="dv">1</span></a>
 <a class="sourceLine" id="cb8-7" data-line-number="7">)</a></code></pre></div>
-<div id="htmlwidget-e9b738c296db2bb2cc7e" style="width:672px;height:480px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-e9b738c296db2bb2cc7e">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addRasterImage","args":["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAASCAYAAAC0EpUuAAAAQElEQVQ4jWP8//8/A7UBE9VNHDV0WBvKSDANkmHof0YaGEoYkGwo41MKvI9L839pwt5nHJC8T4x3MfSMllJUBwD3OhLlvx3cFQAAAABJRU5ErkJggg==",[[45.929998027961,-123.090001914933],[45.2099982577132,-122.250001740037]],0.6,null,null,null]},{"method":"addLegend","args":[{"colors":["#00E400","#FFFF00","#FF7E00","#FF0000","#8F3F97","#7E0023"],"labels":["-Inf &ndash; 12.0","12.0 &ndash; 35.5","35.5 &ndash; 55.5","55.5 &ndash; 150.5","150.5 &ndash; 250.5","250.5 &ndash; Inf"],"na_color":null,"na_label":"NA","opacity":0.5,"position":"topright","type":"bin","title":"PM2.5","extra":null,"layerId":null,"className":"info legend","group":null}]}],"limits":{"lat":[45.2099982577132,45.929998027961],"lng":[-123.090001914933,-122.250001740037]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-ddb9422147dfcf840556" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ddb9422147dfcf840556">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addRasterImage","args":["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAASCAYAAAC0EpUuAAAAQElEQVQ4jWP8//8/A7UBE9VNHDV0WBvKSDANkmHof0YaGEoYkGwo41MKvI9L839pwt5nHJC8T4x3MfSMllJUBwD3OhLlvx3cFQAAAABJRU5ErkJggg==",[[45.929998027961,-123.090001914933],[45.2099982577132,-122.250001740037]],0.6,null,null,null]},{"method":"addLegend","args":[{"colors":["#00E400","#FFFF00","#FF7E00","#FF0000","#8F3F97","#7E0023"],"labels":["-Inf &ndash; 12.0","12.0 &ndash; 35.5","35.5 &ndash; 55.5","55.5 &ndash; 150.5","150.5 &ndash; 250.5","250.5 &ndash; Inf"],"na_color":null,"na_label":"NA","opacity":0.5,"position":"topright","type":"bin","title":"PM2.5","extra":null,"layerId":null,"className":"info legend","group":null}]}],"limits":{"lat":[45.2099982577132,45.929998027961],"lng":[-123.090001914933,-122.250001740037]}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div id="conclusion" class="section level2">
 <h2 class="hasAnchor">
 <a href="#conclusion" class="anchor"></a>Conclusion</h2>
-<p>The <em>AirFireModeling</em> package is intended to simplify downloading, analyzing, and comparing spatio-temporal BlueSky Model and monitor data. The package focuses on harnessingn the <em>raster</em> package for memory efficient exploration and analysis while providing a simple and consistent syntax.</p>
+<p>The <em>AirFireModeling</em> package is intended to simplify downloading, analyzing, and comparing spatio-temporal BlueSky Model and monitor data. The package focuses on harnessing the <em>raster</em> package for memory efficient exploration and analysis while providing a simple and consistent syntax.</p>
 <p><strong><em>Mazama Science</em></strong></p>
 </div>
   </div>
@@ -295,7 +300,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Jonathan Callahan, Hans Martin, Rohan Aras, Zach Dingels, Jimin Kim, Jon Hagg, Rex Thompson.</p>
+  <p>Developed by Jonathan Callahan, Tate Brasel, Hans Martin, Rohan Aras, Zach Dingels, Jimin Kim, Jon Hagg, Rex Thompson.</p>
 </div>
 
 <div class="pkgdown">

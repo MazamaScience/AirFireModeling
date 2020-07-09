@@ -72,7 +72,7 @@ model's time axis to be used." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.15</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -99,6 +99,12 @@ model's time axis to be used." />
     </li>
     <li>
       <a href="../articles/articles/Aggregation_by_Polygon.html">Aggregation by Polygon</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Lazy_Evaluation.html">Lazy Evaluation</a>
+    </li>
+    <li>
+      <a href="../articles/articles/Receptor_Analysis.html">Receptor Analysis</a>
     </li>
     <li>
       <a href="../articles/articles/Smoke_by_County.html">Smoke by County</a>
@@ -137,7 +143,7 @@ model's time axis to be used.</p>
     </div>
 
     <pre class="usage"><span class='fu'>raster_aggregate</span>(
-  <span class='kw'>model</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>modelName</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>firstModelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>lastModelRun</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>modelMode</span> <span class='kw'>=</span> <span class='st'>"forecast"</span>,
@@ -154,7 +160,7 @@ model's time axis to be used.</p>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>model</th>
+      <th>modelName</th>
       <td><p>Model identifier(s).</p></td>
     </tr>
     <tr>
@@ -230,19 +236,18 @@ may have already been present at the time of initialization. In this case,
 setting <code>chunk = 2</code> may produce better results.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
 <span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky'</span>)
 
 <span class='co'># Kincade fire</span>
 <span class='no'>rasterBrick</span> <span class='kw'>&lt;-</span> <span class='fu'>raster_aggregate</span>(
-  <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"CANSAC-4km"</span>,
+  <span class='kw'>modelName</span> <span class='kw'>=</span> <span class='st'>"CANSAC-4km"</span>,
   <span class='kw'>firstModelRun</span> <span class='kw'>=</span> <span class='fl'>2019102700</span>,
   <span class='kw'>lastModelRun</span> <span class='kw'>=</span> <span class='fl'>2019103100</span>,
   <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124</span>, -<span class='fl'>121.5</span>),
   <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>37.5</span>, <span class='fl'>39</span>)
-)
-
+)</div><div class='output co'>#&gt; <span class='message'>Loading CANSAC-4km_2019102700 ...</span></div><div class='output co'>#&gt; <span class='message'>Loading CANSAC-4km_2019102712 ...</span></div><div class='output co'>#&gt; <span class='message'>Loading CANSAC-4km_2019102800 ...</span></div><div class='output co'>#&gt; <span class='message'>Loading CANSAC-4km_2019102812 ...</span></div><div class='output co'>#&gt; <span class='message'>Loading CANSAC-4km_2019102900 ...</span></div><div class='output co'>#&gt; <span class='message'>Loading CANSAC-4km_2019102912 ...</span></div><div class='output co'>#&gt; <span class='message'>Loading CANSAC-4km_2019103000 ...</span></div><div class='output co'>#&gt; <span class='message'>Loading CANSAC-4km_2019103012 ...</span></div><div class='output co'>#&gt; <span class='message'>Loading CANSAC-4km_2019103100 ...</span></div><div class='input'>
 <span class='fu'><a href='raster_facet.html'>raster_facet</a></span>(
   <span class='no'>rasterBrick</span>,
   <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"Kincade Fire -- 2019102700 through 2019103100"</span>,
@@ -251,8 +256,8 @@ setting <code>chunk = 2</code> may produce better results.</p>
   <span class='kw'>col_county</span> <span class='kw'>=</span> <span class='st'>'gray95'</span>,
   <span class='kw'>direction</span> <span class='kw'>=</span> -<span class='fl'>1</span>,
   <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>Inf</span>, <span class='fl'>0</span>, <span class='fl'>12</span>, <span class='fl'>35</span>, <span class='fl'>55</span>, <span class='fl'>150</span>, <span class='fl'>250</span>, <span class='fl'>350</span>, <span class='fl'>Inf</span>)
-)
-}</div></pre>
+)</div><div class='img'><img src='raster_aggregate-1.png' alt='' width='700' height='433' /></div><div class='input'># }
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -270,7 +275,7 @@ setting <code>chunk = 2</code> may produce better results.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Jonathan Callahan, Hans Martin, Rohan Aras, Zach Dingels, Jimin Kim, Jon Hagg, Rex Thompson.</p>
+  <p>Developed by Jonathan Callahan, Tate Brasel, Hans Martin, Rohan Aras, Zach Dingels, Jimin Kim, Jon Hagg, Rex Thompson.</p>
 </div>
 
 <div class="pkgdown">

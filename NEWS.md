@@ -4,6 +4,7 @@ More regularization througout the code base:
 
 * Changed `model` to `modelName`.
 * Changed `modelType` to `modelMode`.
+* New "Lazy Evaluation" article.
 
 # AirFireModeling 0.2.19
 
