@@ -3,6 +3,11 @@ title: "Receptor Analysis"
 author: "Mazama Science"
 date: "2020-07-08"
 output: rmarkdown::html_vignette
+params:
+  longitude: -118
+  latitude: 34
+  radius: 10
+  count: 20
 vignette: >
   %\VignetteIndexEntry{Receptor_Analysis}
   %\VignetteEngine{knitr::rmarkdown}
@@ -17,22 +22,33 @@ knitr::opts_chunk$set(
   fig.width = 7, 
   fig.height = 5
 )
+
+longitude <- params$longitude
+latitude <- params$latitude
+radius <- params$radius
+count <- params$count
+today <- lubridate::today(tz = "GMT")
+startdate <- format(today - lubridate::days(2), "%Y%m%d")
+enddate <- format(today + lubridate::days(1), "%Y%m%d")
 ```
 
-This vignette will explain how "receptor analysis" reports are generated. These
+This vignette explains how "receptor analysis" reports are generated. These
 reports gather and visualize PM 2.5 readings for a given location using
 BlueSky model output.
 
 ## Report Parameters
-To begin with, a report must know the details about the analysis being 
-requested. These are provided in the `infoList`, `dataList`, and `textList`
-parameters, which hold useful information like the coordinates of the location 
-of interest, start/end times, and the search radius around the location.
 
-## Header
+Before anything else, a report must gather all the details about the analysis 
+being requested. These are provided in the `infoList`, `dataList`, and 
+`textList` parameters, which hold useful information like the coordinates of the
+target location, start/end dates, and the sample radius around the location.
+
+## Header & Map
+
 The report header displays the time the report was requested as well as the 
-versions of the two packages it uses: `PWFSLSmoke` and `AirFireModeling`. This
-information is gathered using `lubridate::now()` and `utils::packageVersion()`.
+versions of the packages it uses: **PWFSLSmoke** and **AirFireModeling**.
+This information is gathered using `lubridate::now()` and 
+`utils::packageVersion()`.
 
 For example:
 
@@ -40,25 +56,23 @@ For example:
 
 * `utils::packageVersion("AirFireModeling")`: `r utils::packageVersion("AirFireModeling")`
 
-## Map
-Next, the location of interest is displayed on a Leaflet map with a marker. The
-location coordinates are specified in the report parameters and is shown above
-the map.
+A simple Leaflet map is displayed under the header with a marker at the 
+location of interest.
+
+## Monitoring Data
+
+Sometimes a user might provide an existing air monitor ID as a parameter. When 
+this is the case, the timeseries readings for that monitor will be plotted 
+below the Leaflet map.
 
 ## Latest Available Models
-Now the PM 2.5 readings around those coordinates will be gathered. The first 
-step towards this is determining which BlueSky models have a domain covering 
-that particular location. The `AirFireModeling` package provides an easy way to
-do this with the `bluesky_findModels()`, which takes in longitude and latitude
-coordinates and returns a list of models that cover them:
 
-```{r finding_models}
-library(AirFireModeling)
-setModelDataDir('~/Data/BlueSky')
-
-# Models covering Portland, Oregon
-bluesky_findModels(longitude = -122.68, latitude = 45.52)
-```
+Now the PM 2.5 readings around the target location will be gathered. The first 
+step towards this is to determine which BlueSky models have a domain covering 
+that particular location. The **AirFireModeling** package provides an easy way 
+to do this with the `bluesky_findModels()` function, which takes in longitude 
+and latitude coordinates (in this case: `r longitude`, `r latitude`) and returns
+a list of the models that cover them.
 
 Reports are further limited to only using a small subset of these models:
 
@@ -67,18 +81,268 @@ Reports are further limited to only using a small subset of these models:
 * CANSAC-4km
 * CANSAC-1.33km
 
-With the proper models now identified for the location, the latest two runs for 
-each model are loaded using `bluesky_latestModelRun()` like so:
+```{r finding_models}
+library(AirFireModeling)
+setModelDataDir('~/Data/BlueSky')
 
-```{r}
-# Load the latest two runs for the PNW-4km BlueSky model
-bluesky_latestModelRun(modelName = "PNW-4km", count = 2)
+# Available models
+allowedModels <- c(
+  "PNW-4km", "PNW-1.33km",
+  "CANSAC-4km", "CANSAC-1.33km"
+)
+
+availableModels <- AirFireModeling::bluesky_findModels(
+  longitude = as.numeric(longitude),
+  latitude = as.numeric(latitude)
+)
+
+modelNames <- intersect(availableModels, allowedModels)
 ```
 
-Lastly, each of these chosen model runs are listed in a table in the analysis 
-report.
+With the proper models for that location, the latest two runs for each model 
+are loaded using `bluesky_latestModelRun()`:
 
-## Model Timeseries
+```{r latest_model_runs}
+# Load the latest model runs
+latestModelRunList <- list()
+for ( model in modelNames ) {
+  latestModelRunList[[model]] <- bluesky_latestModelRun(model, 2)
+}
+```
 
+Lastly, each of these model runs are arranged in a dataframe storing their model
+name, model run, and model run time.
 
+```{r model_run_dataframe}
+# Old school creation of a dataframe
+modelNameList <- list()
+modelRunList <- list()
+i <- 1
+for ( name in modelNames ) {
+  for ( run in latestModelRunList[[name]] ) {
+    modelNameList[[i]] <- name
+    modelRunList[[i]] <- run
+    i <- i + 1
+  }
+}
+
+modelName <- as.character(unlist(modelNameList))
+modelRun <- as.character(unlist(modelRunList))
+modelRunTime <- MazamaCoreUtils::parseDatetime(modelRun, timezone = "UTC")
+modelRunTimeString <- strftime(modelRunTime, "%a, %B %e at %H:00 UTC", tz = "UTC")
+webskyUrl <- paste0("https://tools.airfire.org/websky/v1/run/standard/", modelName, "/", modelRun)
+modelNameUrl <- paste0("[", modelName, "](", webskyUrl, ")")
+
+# Create a dataframe for later use
+modelDF <- data.frame(
+  modelName = modelName,
+  modelRun = modelRun,
+  modelRunTime = modelRunTime,
+  stringsAsFactors = FALSE
+)
+```
+
+This dataframe is rendered as a table with links to the model run animations on 
+the [BlueSky Daily Run Viewer](https://www.google.com/url?q=https%3A%2F%2Ftools.airfire.org%2Fwebsky%2F&sa=D&sntz=1&usg=AFQjCNGckuTjB3h9DCJBigyWwB49FEkryA).
+
+```{r model_run_table}
+# Create an HTML table
+knitr::kable(
+  data.frame(
+    modelNameUrl = modelNameUrl,
+    modelRun = modelRun,
+    modelRunTime = modelRunTimeString
+    ),
+  col.names = c("Model", "Run", "UTC Time")
+)
+```
+
+## Loading Model Runs
+
+Once the model runs have been identified for the location, the actual data 
+produced by those runs must be loaded.
+
+Each BlueSky model covers a sizable area--from the entire continental U.S. to 
+large portions of individual states. An analysis report, however, is only 
+concerned with a specific location and its close surroundings. To avoid loading 
+more data than necessary and wasting time and memory, a rectangular boundary is 
+calculated around the target location and only the data in that area is 
+gathered. The longitude and latitude limits of this boundary are determined by 
+the sample radius parameter, which in this case is `r radius`km:
+
+```{r calculate_load_boundary}
+# Limit data load
+# 111320 m per deg at the equator 
+halfWidth <- radius / 111.320
+xlim <- c(longitude - 2 * halfWidth, longitude + 2 * halfWidth)
+ylim <- c(latitude - 2 * halfWidth, latitude + 2 * halfWidth)
+```
+
+So our boundary here around (`r longitude`, `r latitude`) is defined by the 
+rectangle:
+
+* Min/max longitude: `r formatC(xlim, digits = 2, format = "f")`
+
+* Min/max latitude: `r formatC(ylim, digits = 2, format = "f")`
+
+The previously selected model runs will be loaded in using `bluesky_load()` 
+with the `xlim` and `ylim` restrictions.
+
+## Conversion to Monitor
+
+Data loaded from a BlueSky model run provides a set of gridded PM 2.5 
+readings in the form of a _RasterBrick_. The goal of a receptor analysis report 
+is to use this data to produce timeseries plots of PM 2.5 readings around a
+target location, so it is necessary to transform RasterBricks into a form
+that is timeseries plottable. This is can be done using the `raster_toMonitor()`
+function, which creates a PWFSLSmoke _ws_monitor_ object from a _Raster_ object.
+This requires the coordinates of the target location as well as the sample 
+radius around it and an upper limit on the number of cells that can be sampled
+for this 'fake monitor'.
+
+The analysis report will loop through the previously built model run dataframe 
+to load the model runs and convert them into monitors. During this process two
+lists will be built:
+
+1. The 'fake monitor list' (these aren't real air monitors, after all), which 
+stores the raw data readings for each monitor object.
+
+2. The 'fake average list', which averages the readings across the monitors.
+
+```{r load_and_convert_runs}
+# MazamaSpatialUtils are needed to determine timezone and state
+library(MazamaSpatialUtils)
+PWFSLSmoke::initializeMazamaSpatialUtils()
+
+# PWFSLSmoke needed to average monitors
+library(PWFSLSmoke)
+
+# Loop over models and modelRuns to create gridList and fakeMonitorList
+gridList <- list()
+fakeMonitorList <- list()
+fakeAverageList <- list()
+for ( i in seq_len(nrow(modelDF)) ) {
+  
+  modelName <- modelDF$modelName[i]
+  modelRun <- modelDF$modelRun[i]
+  
+  # Load model data using the lon/lat restrictions
+  name <- paste0(modelName, "_", modelRun)
+  result <- try({
+    gridList[[name]] <-
+      AirFireModeling::bluesky_load(
+        modelName = modelName,
+        modelRun = modelRun,
+        xlim = xlim,
+        ylim = ylim,
+        verbose = TRUE
+      )
+  }, silent = TRUE)
+  
+  if ( "try-error" %in% class(result) ) {
+    
+    # bluesky_load() failed -- insert NULL
+    
+    gridList[[name]] <- NULL
+    fakeMonitorList[[name]] <- NULL
+    fakeAverageList[[name]] <- NULL
+    
+  } else {
+    
+    # bluesky_load() succeeded -- create monitor objects
+    
+    result <- try({
+      # Create a ws_monitor object with 'count' timeseries
+      fakeMonitorList[[name]] <-
+        AirFireModeling::raster_toMonitor(
+          gridList[[name]],
+          longitude = longitude,
+          latitude = latitude,
+          radius = radius,
+          count = count,
+          rasterName = name,
+          verbose = FALSE
+        )
+      
+      # Add modelName and modelRun to metadata
+      fakeMonitorList[[name]]$meta$model <-
+        ifelse(stringr::str_count(modelName) > 15,
+               paste0(stringr::str_sub(modelName,1,15), "..."),
+               modelName)
+      fakeMonitorList[[name]]$meta$modelRun <- modelRun
+      
+      fakeAverageList[[name]] <- 
+        monitor_collapse(
+          fakeMonitorList[[name]],
+          monitorID = name
+        )
+    })
+    
+    if ( "try-error" %in% class(result) ) {
+      fakeMonitorList[[name]] <- NULL
+      fakeAverageList[[name]] <- NULL
+    }
+    
+  }
+  
+} # END of modelDF loop
+# Create a single ws_monitor object
+fakeMonitors <- monitor_combine(fakeMonitorList)
+fakeAverages <- monitor_combine(fakeAverageList)
+```
+
+## Timeseries Plots
+
+Finally, the timeseries plots for the monitors are generated with the 
+`ggplot_pm25Timeseries()` function from the **AirMonitorPlots** package. Monitor
+PM 2.5 readings are subset by the start/end date parameters, then drawn onto two
+visualizations:
+
+1. The first plots PM 2.5 readings separated by model and colored by model run, and
+
+2. The second plots PM 2.5 readings separated by model run and colored by model:
+
+```{r plot_timeseries}
+library(AirMonitorPlots)
+
+tlim <- c(startdate, enddate)
+
+monitor_subset <- monitor_subset(fakeMonitors, tlim = tlim)
+
+ggByModel <-
+  ggplot_pm25Timeseries(
+    monitor_subset,
+    ylim = c(0, max(monitor_subset$data[,-1], na.rm = TRUE)),
+    includeFullEnddate = TRUE
+  ) +
+  geom_pm25Points(aes(color = modelRun), size = .5, alpha = 0.3) +
+  stat_nowcast(aes(color = modelRun), alpha = 0.3) +
+  stat_meanByHour(aes(color = modelRun), geom = "line", size = 1.5) +
+  facet_grid(rows = vars(model)) +
+  theme(legend.position = "right") +
+  theme(legend.position = "bottom") +
+  ggtitle("By Model (colored by model run)")
+
+print(ggByModel)
+
+tlim <- c(startdate, enddate)
+
+monitor_subset <- monitor_subset(fakeMonitors, tlim = tlim)
+
+ggByRun <-
+  ggplot_pm25Timeseries(
+    monitor_subset,
+    ylim = c(0, max(monitor_subset$data[,-1], na.rm = TRUE)),
+    includeFullEnddate = TRUE
+  ) +
+  geom_pm25Points(aes(color = model), size = .5, alpha = 0.3) +
+  stat_nowcast(aes(color = model), alpha = 0.3) +
+  stat_meanByHour(aes(color = model), geom = "line", size = 1.5) +
+  facet_grid(rows = vars(modelRun)) +
+  theme(legend.position = "right") +
+  theme(legend.position = "bottom") +
+  ggtitle("By Model Run (colored by model)")
+
+print(ggByRun)
+```
 
