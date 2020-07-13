@@ -57,7 +57,8 @@
 #'   rasterList,
 #'   longitude = longitude,
 #'   latitude = latitude,
-#'   radius = 10 # km
+#'   radius = 10, # km
+#'   rasterName = "DUMMY"
 #' )
 #' }
 
@@ -148,7 +149,7 @@ raster_spaghettiPlot <- function(
       dplyr::select(.data$monitorID, .data$targetDistance) %>%
       reshape2::melt(id.vars = 'monitorID') %>%
       dplyr::mutate(variable = .data$monitorID, 'monitorID' = NULL) %>%
-      dplyr::mutate(modelName = stringr::str_remove(.data$variable, '_.+_.+'))
+      dplyr::mutate(modelName = stringr::str_remove(.data$variable, '_.+'))
 
     moltenData <-
       monitorList$data %>%
@@ -164,7 +165,7 @@ raster_spaghettiPlot <- function(
   }
 
   # Create ggplot dataframes
-  if ( stringr::str_detect(class(monitorList), 'Raster*') ) {
+  if ( stringr::str_detect(class(monitorList), 'ws_monitor') ) {
     df <- .meltTargetMonitor(monitorList)
   } else {
     df <- lapply(monitorList, .meltTargetMonitor) %>%
