@@ -194,13 +194,15 @@ raster_leaflet <- function(
         raster,
         colors = pal,
         opacity = opacity,
-        group = raster_createTimeStrings(raster, timezone = timezone, prefix = "A: ")
+        group = raster_createTimeStrings(raster, timezone = timezone, prefix = "A: "),
+        method = "ngb"
       ) %>%
       leaflet::addRasterImage(
         compare,
         colors = pal,
         opacity = opacity,
-        group = raster_createTimeStrings(compare, timezone = timezone, prefix = "B: ")
+        group = raster_createTimeStrings(compare, timezone = timezone, prefix = "B: "),
+        method = "ngb"
       ) %>%
       leaflet::addLegend(
         pal = pal,
@@ -226,7 +228,8 @@ raster_leaflet <- function(
       leaflet::addRasterImage(
         raster,
         colors = pal,
-        opacity = opacity
+        opacity = opacity,
+        method = "ngb"
       ) %>%
       leaflet::addLegend(
         pal = pal,
