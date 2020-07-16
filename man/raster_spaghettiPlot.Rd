@@ -79,7 +79,8 @@ raster_spaghettiPlot(
   rasterList,
   longitude = longitude,
   latitude = latitude,
-  radius = 10 # km
+  radius = 10, # km
+  rasterName = "DUMMY"
 )
 }
 }
