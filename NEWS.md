@@ -1,3 +1,9 @@
+# AirFireModeling 0.3.1
+
+* Fixed error when using `raster_spaghettiPlot()` on a single `rasterBrick` object.
+* Improved `raster_leaflet()` visual consistency by adding rasters using
+"nearest neighbor" interpolation rather than default "bilnear",
+
 # AirFireModeling 0.3.0
 
 More regularization througout the code base:
