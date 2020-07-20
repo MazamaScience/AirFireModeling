@@ -42,6 +42,7 @@
 #' @param modelMode Subdirectory path containing BlueSky output, i.e. 'forcast'.
 #' @param baseUrl Base URL for BlueSky output.
 #' @param localPath Absolute path to a NetCDF file not found in `modelDataDir`.
+#' @param level Elevation level.
 #' @param xlim A vector of coordinate longitude bounds.
 #' @param ylim A vector of coordinate latitude bounds.
 #' @param clean Logical specifying removal of original model data after conversion
@@ -72,6 +73,7 @@ bluesky_load <- function(
   modelMode = 'forecast',
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard',
   localPath = NULL,
+  level = 1,
   xlim = NULL,
   ylim = NULL,
   clean = TRUE,
@@ -141,7 +143,7 @@ bluesky_load <- function(
 
   # NOTE: raster bricks are not loaded into memory, only their reference.
 
-  rasterBrick <- raster::brick(v2FilePath)
+  rasterBrick <- raster::brick(v2FilePath, level = level)
 
   if ( is.null(xlim) && is.null(ylim) ) {
 
@@ -198,6 +200,7 @@ if ( FALSE ) {
   modelMode = 'forecast'
   baseUrl = 'https://haze.airfire.org/bluesky-daily/output/standard'
   localPath = NULL
+  level = 1
   xlim = NULL
   ylim = NULL
   clean = TRUE
@@ -210,6 +213,7 @@ if ( FALSE ) {
     modelMode = modelMode,
     baseUrl = baseUrl,
     localPath = localPath,
+    level = level,
     xlim = xlim,
     ylim = ylim,
     clean = clean,

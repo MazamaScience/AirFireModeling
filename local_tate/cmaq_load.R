@@ -21,7 +21,7 @@
 #' The package will never remove original model output that it has not downloaded.
 #'
 #' @param localPath Absolute path to a NetCDF file not found in `modelDataDir`.
-#' @param level Elevation level
+#' @param level Elevation level.
 #' @param xlim A vector of coordinate longitude bounds.
 #' @param ylim A vector of coordinate latitude bounds.
 #' @param clean Logical specifying removal of original model data after conversion
@@ -115,11 +115,15 @@ if ( FALSE ) {
 
   localPath <- "~/Data/BlueSky/CMAQ_PM25.2020167.DRId02.regrid.nc"
   level <- 1
+  xlim <- c(-115, -110)
+  ylim <- c(35, 40)
   clean <- FALSE
 
   raster <- cmaq_load(
     localPath = localPath,
     level = level,
+    xlim = xlim,
+    ylim = ylim,
     clean = clean
   )
 
