@@ -65,7 +65,7 @@
 #'
 #' raster_ggmap(raster, index = 3)
 #' }
-#'
+
 bluesky_load <- function(
   modelName = NULL,
   modelRun = NULL,

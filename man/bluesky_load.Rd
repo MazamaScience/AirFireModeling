@@ -92,5 +92,4 @@ raster <- bluesky_load(
 
 raster_ggmap(raster, index = 3)
 }
-
 }
