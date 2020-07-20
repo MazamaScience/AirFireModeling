@@ -140,6 +140,27 @@ bluesky_modelInfo <- dplyr::bind_rows(
   ) # END of list()
 ) # EMD of dplyr::bind_rows()
 
+cmaq_modelInfo <- dplyr::bind_rows(
+  list(
+
+    "CMAQ" = list(
+      modelName = "CMAQ",
+      CENTER_LATITUDE   = 36.5,
+      CENTER_LONGITUDE  = -119,
+      WIDTH_LONGITUDE   = 25.05,
+      HEIGHT_LATITUDE   = 17.05,
+      SPACING_LONGITUDE = 0.05,
+      SPACING_LATITUDE  = 0.05,
+      MAX_LATITUDE      = 45.025,
+      MIN_LATITUDE      = 27.975,
+      MAX_LONGITUDE     = -106.475,
+      MIN_LONGITUDE     = -131.525
+      # TODO:  Add more information to all entries as needed
+    )
+
+  )
+)
+
 # ----- Data Directory Configuration -------------------------------------------
 
 #' @docType data
