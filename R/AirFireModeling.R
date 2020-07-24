@@ -152,9 +152,9 @@ cmaq_modelInfo <- dplyr::bind_rows(
       SPACING_LONGITUDE = 0.05,
       SPACING_LATITUDE  = 0.05,
       MAX_LATITUDE      = 45.025,
-      MIN_LATITUDE      = 27.975,
+      MIN_LATITUDE      = 28,
       MAX_LONGITUDE     = -106.475,
-      MIN_LONGITUDE     = -131.525
+      MIN_LONGITUDE     = -131.5
       # TODO:  Add more information to all entries as needed
     )
 

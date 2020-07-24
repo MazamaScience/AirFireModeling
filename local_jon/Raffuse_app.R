@@ -19,7 +19,7 @@ ui <- fluidPage(
     # Application title
     titlePanel("CMAQ View"),
 
-    # Sidebar with a slider input for number of bins 
+    # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
             fluidRow(
@@ -57,19 +57,19 @@ server <- function(input, output) {
     proj_string <- reactiveVal(NULL)
     max_val <- reactiveVal(NULL)
     heights <- reactiveVal(NULL)
-    
+
     get_nc <- reactive({
 
         date_string <- strftime(input$date, format = "%Y%m%d")
         filename <- paste(input$model, "out.combine", date_string, sep = "_")
         fullpath <- path(data_path, filename)
         nc <- nc_open(fullpath)
-        
+
         g <- ncatt_get(nc, 0)
         proj_string <- glue::glue("+proj=lcc +lon_0={g$XCENT} +lat_1={g$P_ALP} ",
                                   "+lat_2={g$P_BET} +lat_0={g$YCENT} +units=m ",
                                   "+a=6370000.0 +b=6370000.0")
-        
+
         # Get height from vertical levels in the global using the barometric formula
         # (https://en.wikipedia.org/wiki/Atmospheric_pressure)
         pressures <- g$VGLVLS
@@ -84,20 +84,20 @@ server <- function(input, output) {
         g(g)
         proj_string(proj_string)
         heights(height_table)
-        
+
         pm <- ncvar_get(nc, "ATOTIJ")
         #pm <- ncvar_get(nc, "AORGCJ")
-        
+
         # Also store the max value for use in color scales
         max_val(max(pm))
-        
+
         # Permutate dimensions so that x and y are correct (will also need to flip after
         # converting to raster)
         pm <- aperm(pm, c(2, 1, 3, 4))
 
     })
-    
-    
+
+
     hourly_brick <- reactive({
 
         pm <- get_nc()
@@ -107,33 +107,33 @@ server <- function(input, output) {
                             ymx = (g()$YORIG + g()$YCELL * g()$NCOLS),
                             crs = CRS(proj_string()))
         pmb <- flip(pmb, "y")
-        
+
     })
-    
+
     map_layer <- reactive({
-        
+
         pmb <- hourly_brick()
         pmr <- pmb[[input$height]]
-        
+
         # Squish and transform values before plotting so the scale looks just like
         # the curtain plot
         pmr[pmr < 1] <- 1
         pmr[pmr > 10000] <- 10000
         pmr <- log10(pmr)
-        
+
     })
-    
+
     integrated_layers <- reactive({
-        
+
         # This is the sum of all the layers - the view from the satellite
         pmb <- hourly_brick()
         pmr <- sum(pmb)
         pmr[pmr < 1] <- 1
         pmr[pmr > 10000] <- 10000
         pmr <- log10(pmr)
-        
+
     })
-    
+
     output$map <- renderLeaflet({
         leaflet() %>%
             addProviderTiles(providers$Stamen.TonerLite,
@@ -144,35 +144,35 @@ server <- function(input, output) {
                            circleMarkerOptions = FALSE,
                            singleFeature = TRUE,
                            polylineOptions = drawPolylineOptions(
-                               shapeOptions = 
+                               shapeOptions =
                                    drawShapeOptions(color = "#000", weight = 2,
                                                     dashArray = "2 4"))) %>%
             setView(-120, 38, zoom = 6)
     })
-    
+
     observe({
         leafletProxy("map") %>%
             clearImages() %>%
             addRasterImage(map_layer(), opacity = 0.8, colors = "viridis")
     })
-    
+
     output$integrated <- renderLeaflet({
         leaflet() %>%
             addProviderTiles(providers$Stamen.TonerLite,
                              providerTileOptions(noWrap = TRUE)) %>%
             setView(-120, 38, zoom = 6)
     })
-    
+
     observe({
         leafletProxy("integrated") %>%
             clearImages() %>%
             addRasterImage(integrated_layers(), opacity = 0.8, colors = "viridis")
     })
-    
+
     curtain_line <- reactiveVal(NULL)
-    
+
     observeEvent(input$map_draw_new_feature, {
-        
+
         # Grab the line and make it spatial
         feature <- input$map_draw_new_feature
         coords <- unlist(feature$geometry$coordinates)
@@ -182,19 +182,19 @@ server <- function(input, output) {
         curtain_line(line)
 
     })
-    
+
     curtain_data <- reactive({
-        
+
         validate(need(!is.null(curtain_line()), "Draw a line"))
 
         # Extract the values from the brick along the line
         ex <- raster::extract(hourly_brick(), curtain_line(), nl = 28, along = TRUE,
                               cellnumbers = TRUE)[[1]]
-        
+
         # Convert to a data frame for plotting as a curtain
         df <- as_tibble(ex)
         df$Order <- seq(1, nrow(df))
-        
+
         df <- df %>%
             pivot_longer(starts_with("layer"), names_to = "Layer", values_to = "PM25") %>%
             separate(Layer, c("label", "y")) %>%
@@ -203,13 +203,13 @@ server <- function(input, output) {
             left_join(heights(), by = "Layer")
 
     })
-    
+
     output$curtain <- renderPlotly({
-        
+
         validate(need(!is.null(curtain_data()), "Draw a line"))
-        
+
         height <- heights()$Height[heights()$Layer == input$height]
-        
+
         gg <- ggplot(curtain_data(), aes(x = Order, y = Height, fill = PM25)) +
             geom_raster() +
             geom_hline(yintercept = height, linetype = "dotted") +
@@ -221,10 +221,10 @@ server <- function(input, output) {
                  y = "Height (m)",
                  caption = "Beginning of drawn line is on the left")
         ggplotly(gg, dynamicTicks = TRUE)
-        
+
     })
-    
+
 }
 
-# Run the application 
+# Run the application
 shinyApp(ui = ui, server = server)
