@@ -10,6 +10,7 @@ bluesky_load(
   modelMode = "forecast",
   baseUrl = "https://haze.airfire.org/bluesky-daily/output/standard",
   localPath = NULL,
+  level = 1,
   xlim = NULL,
   ylim = NULL,
   clean = TRUE,
@@ -26,6 +27,8 @@ bluesky_load(
 \item{baseUrl}{Base URL for BlueSky output.}
 
 \item{localPath}{Absolute path to a NetCDF file not found in `modelDataDir`.}
+
+\item{level}{Elevation level.}
 
 \item{xlim}{A vector of coordinate longitude bounds.}
 

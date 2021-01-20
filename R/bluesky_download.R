@@ -127,7 +127,7 @@ bluesky_download <- function(
 
     # * downlaod .nc file -----
 
-    if ( version == '1.0.0' ) {
+    if ( stringr::str_detect(version, "1\\.") ) {
 
       fileUrl <- paste0(dataDirUrl, 'data/smoke_dispersion.nc')
       tryCatch(
@@ -139,7 +139,7 @@ bluesky_download <- function(
         }
       )
 
-    } else if ( version == '2.0.0' ) {
+    } else if ( stringr::str_detect(version, "2\\.") ) {
 
       fileUrl <- paste0(dataDirUrl, 'hysplit_conc.nc')
       tryCatch(

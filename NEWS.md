@@ -1,3 +1,8 @@
+# AirFireModeling 0.3.2
+
+* 'bluesky_download()' is more tolerant of Bluesky output version matching, now 
+only matching `major` but not `.minor.patch` levels.
+
 # AirFireModeling 0.3.1
 
 * Fixed error when using `raster_spaghettiPlot()` on a single `rasterBrick` object.
