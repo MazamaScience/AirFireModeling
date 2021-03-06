@@ -28,7 +28,7 @@
 #' # Load model data
 #' rasterList <- raster_load(
 #'   modelName = c("PNW-1.33km", "PNW-4km"),
-#'   modelRun = c(2019100900),
+#'   modelRun = c(2021020900),
 #'   xlim = c(-125, -115),
 #'   ylim = c(42, 50)
 #' )
@@ -106,6 +106,11 @@ raster_toMonitor <- function(
 
   # Guarantee rasterName is not mult-valued
   rasterName <- rasterName[1]
+
+  # Check if source-file path is specified in raster object
+  if ( identical(raster@file@name,"") || is.null(raster@file@name) ) {
+    stop("Missing NC path: Check the raster file path.")
+  }
 
   # ----- Subset the Raster(s) -------------------------------------------------
 
