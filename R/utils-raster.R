@@ -36,56 +36,6 @@ raster_isRaster <- function(raster) {
 #' @export
 #' @keywords internal
 #'
-#' @title Create raster layer name times
-#'
-#' @param layerName Vector of raster layer names.
-#'
-#' @return \code{POSIXct} time.
-#'
-#' @examples
-#' \donttest{
-#' library(AirFireModeling)
-#' setModelDataDir('~/Data/BlueSky')
-#'
-#' # Load model data
-#' rasterList <- raster_load(
-#'   modelName = c("PNW-4km"),
-#'   modelRun = c(2019100900),
-#'   xlim = c(-125, -115),
-#'   ylim = c(42, 50)
-#' )
-#'
-#' layerNames <- names(rasterList[[1]])
-#' raster_createLayerNameTimes(layerNames)
-#' }
-
-raster_createLayerNameTimes <- function(
-  layerName
-) {
-
-  # NOTE:  Saw this once for modelRun 2020062200:
-  # note:
-  # NOTE:  …, 1592992800, 1592996400, 1593000000, 1593003600, 1593007200, …
-  # NOTE:  Get's converted into layer names
-  # NOTE:  …, 1592992800, 1592996400, 1.593e.9, 1593003600, 1593007200, …
-
-  # Fix "1.593e.9" style problems
-  epochSecsStrings <-
-    stringr::str_remove(layerName, 'X') %>%
-    stringr::str_replace("e\\.", "e+")
-
-  # Convert to seconds
-  epochSecs <- as.numeric(epochSecsStrings)
-  # Convert to POSIXct
-  layerTime <- as.POSIXct(epochSecs, tz = "UTC", origin = lubridate::origin)
-
-  return(layerTime)
-
-}
-
-#' @export
-#' @keywords internal
-#'
 #' @title Create raster layer times
 #'
 #' @param raster A RasterBrick.
@@ -112,51 +62,25 @@ raster_createTimes <- function(
   raster = NULL
 ) {
 
-  layerTime <- raster_createLayerNameTimes(names(raster))
-
-  return(layerTime)
+  nc <- ncdf4::nc_open(raster@file@name)
+  timeVar <- ncdf4::ncvar_get(nc, "time")
+  ncdf4::nc_close(nc)
+  times <- as.POSIXct(timeVar, tz = "UTC", origin = lubridate::origin)
+  return(times)
 
 }
 
+
 #' @export
-#' @title Create raster layer time string
+#' @keywords internal
+#' @title Inherit File path across Raster objects
 #'
-#' @param raster A RasterBrick.
-#' @param format Format passed on to \code{strftime()}.
-#' @param timezone Olson timezone in which times will be displayed.
-#' @param prefix String prepended to the time.
+#' @param from The raster to copy path from.
+#' @param to the raster to copy path to.
 #'
-#' @return Time string formatted for \code{timezone}.
+#' @return raster
 #'
-#' @examples
-#' \donttest{
-#' library(AirFireModeling)
-#' setModelDataDir('~/Data/BlueSky')
-#'
-#' # Load model data
-#' rasterList <- raster_load(
-#'   modelName = c("PNW-4km"),
-#'   modelRun = c(2019100900),
-#'   xlim = c(-125, -115),
-#'   ylim = c(42, 50)
-#' )
-#'
-#' raster_createTimeStrings(
-#'   raster = rasterList[[1]],
-#'   timezone = "America/Los_Angeles",
-#'   prefix = "time: ")
-#' }
-
-raster_createTimeStrings <- function(
-  raster = NULL,
-  format = "%Y-%m-%d %H:00 %Z",
-  timezone = "UTC",
-  prefix = ""
-) {
-
-  layerTime <- raster_createLayerNameTimes(names(raster))
-  timeString <- paste0(prefix, strftime(layerTime, format = format, tz = timezone))
-
-  return(timeString)
-
+raster_copyfn <- function(from, to, ...) {
+  to@file@name <- from@file@name
+  return(to)
 }
