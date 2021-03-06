@@ -59,7 +59,7 @@
 #' # Load model data
 #' raster <- bluesky_load(
 #'   modelName = "PNW-4km",
-#'   modelRun = 2019100900,
+#'   modelRun = 2021010800,
 #'   xlim = c(-125, -115),
 #'   ylim = c(42, 50)
 #' )
@@ -145,6 +145,10 @@ bluesky_load <- function(
 
   rasterBrick <- raster::brick(v2FilePath, level = level)
 
+  # Convert rasters (automatic?) layer names to the numeric POSIXct time
+  # NOTE: layer name appended with X to look like X16------
+  rasterBrick@data@names <- as.numeric(raster_createTimes(rasterBrick))
+
   if ( is.null(xlim) && is.null(ylim) ) {
 
     # Full grid
@@ -182,7 +186,11 @@ bluesky_load <- function(
     ext <- raster::extentFromCells(rasterBrick, cells)
 
     # Crop to xlim, ylim
-    return(raster::crop(rasterBrick, ext))
+    # NOTE: Cropping rasters crop on memory and may lose attributes (like filename)!
+    cropped <- raster::crop(rasterBrick, ext)
+    # Add v2 nc filepath to new raster
+    cropped@file@name <- rasterBrick@file@name
+    return(cropped)
 
   }
 
