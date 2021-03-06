@@ -33,7 +33,7 @@
 #' # Load model data
 #' rasterList <- raster_load(
 #'   modelName = "PNW-4km",
-#'   modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),
+#'   modelRun = c(2021010800, 2021010900, 2021011000, 2021011100),
 #'   xlim = c(-125, -115),
 #'   ylim = c(42, 50)
 #' )
@@ -185,7 +185,8 @@ raster_ggmap.list <- function(
   xlim <- c(limits@xmin, limits@xmax)
   ylim <- c(limits@ymin, limits@ymax)
 
-  timeString <- raster_createTimeStrings(layer)
+  # Get z (time) or layer
+  timeString <- layer@z
 
   # Get state and counties data for plotting
   states <- ggplot2::map_data('state', xlim = xlim, ylim = ylim)
