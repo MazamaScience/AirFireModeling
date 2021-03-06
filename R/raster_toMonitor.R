@@ -108,9 +108,9 @@ raster_toMonitor <- function(
   rasterName <- rasterName[1]
 
   # Check if source-file path is specified in raster object
-  if ( identical(raster@file@name,"") || is.null(raster@file@name) ) {
-    stop("Missing NC path: Check the raster file path.")
-  }
+  # if ( identical(raster@file@name,"") || is.null(raster@file@name) ) {
+  #   stop("Missing NC path: Check the raster file path.")
+  # }
 
   # ----- Subset the Raster(s) -------------------------------------------------
 
@@ -220,7 +220,7 @@ raster_toMonitor <- function(
   # ----- Prepare data ---------------------------------------------------------
 
   # Create POSIXct times from the Raster layers
-  datetime <- raster_createTimes(localRaster)
+  times <- raster_createTimes(localRaster)
 
   # Extract values from Raster Object at the target spatial point(s)
   localValues <- raster::getValues(localRaster)
@@ -234,7 +234,7 @@ raster_toMonitor <- function(
 
   # Create "data"
   data <- cbind(
-    data.frame(datetime = datetime),
+    data.frame(datetime = times),
     data.frame(localData)
   )
 

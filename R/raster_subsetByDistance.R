@@ -151,6 +151,9 @@ raster_subsetByDistance <- function(
   # Restore original projection information
   raster::crs(rasterBrick) <- raster::crs(raster)
 
+  # Copy the filename of the passed in raster to the new one
+  rasterBrick <- raster_copyfn(raster, rasterBrick)
+
   return(rasterBrick)
 
 }
