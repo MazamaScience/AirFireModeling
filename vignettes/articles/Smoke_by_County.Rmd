@@ -144,14 +144,14 @@ countyMean_SPDF <-
 
 # Replace additional columns with timestamps
 names(countyMean_SPDF) <- c(
-  names(county_SPDF), 
-  raster_createTimeStrings(state_PNW_4km, format = "UTC_%Y-%m-%dT%H")
+  names(county_SPDF),
+  as.character(raster_getTime(state_PNW_4km))
 )
 
 # Simple plot for 2018-11-09 03:00
 tm_shape(countyMean_SPDF) + 
   tm_polygons(
-    col = "UTC_2018-11-09T03",
+    col = "2018-11-09 01:00:00",
     breaks = c(0, 20, 50, 100, 200, 500, Inf),
     border.col = "white"
   )
@@ -164,12 +164,12 @@ formatted static table using `knitr::kable()`:
 
 ```{r tables}
 # Get the model timesteps 
-layerTimes <- raster_createTimes(state_PNW_4km)
+layerTimes <- raster_getTime(state_PNW_4km)
 
 # Get the SPDF names associated with those timesteps
 layerNames <-
   names(countyMean_SPDF) %>%
-  stringr::str_subset("^UTC_")
+  stringr::str_subset("^[0-9]")
   
 # Extract summary data and transpose
 timeByCounty_Matrix <-

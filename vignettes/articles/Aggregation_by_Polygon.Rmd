@@ -121,10 +121,8 @@ the UTC time. These can be extracted with:
 layerNames <-
   names(WA_counties_improved) %>%
   stringr::str_subset("X[0-9]{10}")
-  
-layerTimes <- raster_createLayerNameTimes(layerNames)
 
-print(layerTimes)
+layerTimes <- raster_getTime(WA_PNW_4km)
 ```
 
 ### Summary dataframe
