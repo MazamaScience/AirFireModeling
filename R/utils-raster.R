@@ -1,5 +1,3 @@
-
-
 #' @export
 #' @keywords hidden
 #'
@@ -55,10 +53,9 @@ raster_isRaster <- function(raster) {
 #'   ylim = c(42, 50)
 #' )
 #'
-#' raster_createTimes(rasterList[[1]])
+#' raster_generateTime(rasterList[[1]])
 #' }
-
-raster_createTimes <- function(
+raster_generateTime <- function(
   raster = NULL
 ) {
 
@@ -70,7 +67,6 @@ raster_createTimes <- function(
 
 }
 
-
 #' @export
 #' @keywords internal
 #' @title Inherit File path across Raster objects
@@ -79,8 +75,22 @@ raster_createTimes <- function(
 #' @param to the raster to copy path to.
 #'
 #' @return raster
-#'
 raster_copyfn <- function(from, to, ...) {
+
   to@file@name <- from@file@name
   return(to)
+
+}
+
+#' @export
+#' @title Get the time-stamp(s) of a Raster object
+#'
+#' @param raster A Raster* object.
+#'
+#' @return POSIXct vector
+raster_getTime <- function(raster) {
+
+  time <- as.numeric(gsub("X", "", names(raster)))
+  return(as.POSIXct(time, tz = "UTC", origin = lubridate::origin))
+
 }
