@@ -88,7 +88,7 @@ setModelDataDir('~/Data/BlueSky')
 # Load model data
 raster <- bluesky_load(
   modelName = "PNW-4km",
-  modelRun = 2019100900,
+  modelRun = 2021010800,
   xlim = c(-125, -115),
   ylim = c(42, 50)
 )
