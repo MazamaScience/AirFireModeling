@@ -146,7 +146,7 @@ bluesky_load <- function(
   rasterBrick <- raster::brick(v2FilePath, level = level)
 
   # Generate a time axis from raster
-  times <- raster_createTimes(rasterBrick)
+  times <- raster_generateTime(rasterBrick)
 
   # Force layer names and times to the raster
   # NOTE: layer name appended with X to look like X16------

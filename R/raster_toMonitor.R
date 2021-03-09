@@ -220,7 +220,7 @@ raster_toMonitor <- function(
   # ----- Prepare data ---------------------------------------------------------
 
   # Create POSIXct times from the Raster layers
-  times <- raster_createTimes(localRaster)
+  times <- raster_generateTime(localRaster)
 
   # Extract values from Raster Object at the target spatial point(s)
   localValues <- raster::getValues(localRaster)
