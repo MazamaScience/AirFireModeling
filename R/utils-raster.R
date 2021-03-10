@@ -34,9 +34,12 @@ raster_isRaster <- function(raster) {
 #' @export
 #' @keywords internal
 #'
-#' @title Create raster layer times
+#' @title Generate raster layer times
 #'
-#' @param raster A RasterBrick.
+#' @description Get the numeric time variable of a Raster* using its netCDF
+#' source (v2) to generate the layer time names for the Raster* object.
+#'
+#' @param raster A Raster* object.
 #'
 #' @return \code{POSIXct} time.
 #'
@@ -71,6 +74,9 @@ raster_generateTime <- function(
 #' @keywords internal
 #' @title Inherit File path across Raster objects
 #'
+#' @description Copy the source file location from one Raster* to another to
+#' provide pseudo object-inheritance. Recommended for internal use only.
+#'
 #' @param from The raster to copy path from.
 #' @param to the raster to copy path to.
 #'
@@ -85,9 +91,12 @@ raster_copyfn <- function(from, to, ...) {
 #' @export
 #' @title Get the time-stamp(s) of a Raster object
 #'
+#' @description Get the time-stamp(s) of a raster object via the Raster* object
+#' layer names in \code{POSIXct} format and UTC timezone.
+#'
 #' @param raster A Raster* object.
 #'
-#' @return POSIXct vector
+#' @return \code{POSIXct} vector
 raster_getTime <- function(raster) {
 
   time <- as.numeric(gsub("X", "", names(raster)))
