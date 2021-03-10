@@ -1,3 +1,8 @@
+# AirFireModeling 0.3.3
+
+* Revamped time-layer names in Raster* objects.
+* Added new function `raster_getTime()` to help end-users determine Raster* object times.
+
 # AirFireModeling 0.3.2
 
 * 'bluesky_download()' is more tolerant of Bluesky output version matching, now 
