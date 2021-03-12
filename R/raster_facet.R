@@ -153,16 +153,6 @@ raster_facet <- function(
   # Common for a ful US map
   aspectRatio <- 1.3
 
-  if ( timezone %in% c("UTC", "GMT") ) {
-    # Shorthand timestamp when there are lots of plots
-    labellerFUN <- .createTimeStamps
-  } else {
-    # Human friendly when they ask for it (though it may not always fit)
-    labellerFUN <- .createTimeStrings
-    # NOTE:  Fancy R monkey-patch to modify the default behavior of a function
-    formals(labellerFUN) <- list(layerName = "", timezone = timezone, prefix = "")
-  }
-
   # ----- Create plot ----------------------------------------------------------
 
   # See: http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html
@@ -195,7 +185,10 @@ raster_facet <- function(
     ggplot2::facet_wrap(
       ~.data$variable,
       ncol = ncol,
-      labeller = ggplot2::labeller(.default = labellerFUN)
+      labeller = ggplot2::labeller(.default = function(x) {
+        time <- as.numeric(gsub("X", "", x))
+        return(as.POSIXct(time, tz = timezone, origin = lubridate::origin))
+      })
     ) +
     scale_colors +
     ggplot2::labs(
@@ -208,34 +201,6 @@ raster_facet <- function(
     ggplot2::theme_classic()
 
   return(gg)
-
-}
-
-# ===== Internal Functions =====================================================
-
-# Just like raster_createTimeStamps but gets the name passed in
-.createTimeStrings <- function(
-  layerName = NULL,
-  timezone = "UTC",
-  prefix = ""
-) {
-
-  layerTime <- raster_createLayerNameTimes(layerName)
-  timeString <- paste0(prefix, strftime(layerTime, format = "%Y-%m-%d %H:00 %Z", tz = timezone))
-
-  return(timeString)
-
-}
-
-# Just like raster_createTimeStamps but gets the name passed in
-.createTimeStamps <- function(
-  layerName = NULL
-) {
-
-  layerTime <- raster_createLayerNameTimes(layerName)
-  timeString <- strftime(layerTime, format = "%Y%m%d%H", tz = "UTC")
-
-  return(timeString)
 
 }
 
