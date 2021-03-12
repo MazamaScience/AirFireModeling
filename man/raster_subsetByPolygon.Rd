@@ -26,7 +26,7 @@ setModelDataDir('~/Data/BlueSky')
 # Load model data
 rasterList <- raster_load(
   modelName = "PNW-4km",
-  modelRun = c(2019100800, 2019100900, 2019101000, 2019101100),
+  modelRun = c(2020091300, 2020091400, 2020091500, 2020091600),
   xlim = c(-125, -116.5),
   ylim = c(42, 46.2)
 )
@@ -43,7 +43,7 @@ OregonList <- raster_subsetByPolygon(
 raster_ggmap(
   OregonList,
   palette = "Spectral",
-  breaks = c(-1, 0, 1, 2, 4, 8, 16, 32, Inf),
+  breaks = c(-1, 0, 4, 8, 16, 32, 64, 128, Inf),
   direction = -1
 )
 }

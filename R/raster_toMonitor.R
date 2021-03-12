@@ -28,7 +28,7 @@
 #' # Load model data
 #' rasterList <- raster_load(
 #'   modelName = c("PNW-1.33km", "PNW-4km"),
-#'   modelRun = c(2021020900),
+#'   modelRun = c(2020091300),
 #'   xlim = c(-125, -115),
 #'   ylim = c(42, 50)
 #' )
@@ -51,6 +51,13 @@
 #' PWFSLSmoke::monitor_timeseriesPlot(
 #'   model_Portland[[2]],
 #'   type = 'l', col = 'dodgerblue', add = TRUE
+#' )
+#'
+#' legend(
+#'   x = "topright",
+#'   legend = names(model_Portland),
+#'   lwd = c(1, 1),
+#'   col= c("salmon", "dodgerblue")
 #' )
 #' }
 #'

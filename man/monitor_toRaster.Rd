@@ -28,7 +28,7 @@ setModelDataDir('~/Data/BlueSky')
 # Load model data
 rasterList <- raster_load(
   modelName = c("PNW-4km"),
-  modelRun = c(2019100900),
+  modelRun = c(2020091300),
   xlim = c(-125, -117),
   ylim = c(45.5, 49)
 )
@@ -36,8 +36,8 @@ rasterList <- raster_load(
 # Load monitor data
 ws_monitor <-
   PWFSLSmoke::monitor_load(
-    startdate = 2019100901,
-    enddate = 2019101223
+    startdate = 2020091301,
+    enddate = 2020091600
   ) \%>\%
   PWFSLSmoke::monitor_subset(stateCodes = "WA")
 

@@ -84,16 +84,16 @@ setModelDataDir('~/Data/BlueSky')
 
 # Kincade fire
 rasterBrick <- raster_aggregate(
-  modelName = "CANSAC-4km",
-  firstModelRun = 2019102700,
-  lastModelRun = 2019103100,
-  xlim = c(-124, -121.5),
-  ylim = c(37.5, 39)
+  modelName = "PNW-4km",
+  firstModelRun = 2020091300,
+  lastModelRun = 2020091700,
+  xlim = c(-123.5, -121.5),
+  ylim = c(44.0, 46.0)
 )
 
 raster_facet(
   rasterBrick,
-  title = "Kincade Fire -- 2019102700 through 2019103100",
+  title = "Oregon Labor Day Fires -- 2020091300 through 2020091700",
   ncol = 12,
   palette = 'Spectral',
   col_county = 'gray95',

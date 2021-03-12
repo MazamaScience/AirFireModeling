@@ -89,7 +89,7 @@ Below is an example of loading a model using the two functions:
 # Single model and modelRun
 raster <- raster_load(
   modelName = 'PNW-1.33km', 
-  modelRun = 20200325,
+  modelRun = 2020091300,
   xlim = c(-125, -115),
   ylim = c(42, 50)
 )
@@ -97,7 +97,7 @@ raster <- raster_load(
 # Multiple models at once
 rasterList <- raster_load(
   modelName = c('PNW-1.33km', 'PNW-4km'), 
-  modelRun = 20200325,
+  modelRun = 2020091300,
   xlim = c(-125, -115),
   ylim = c(42, 50)
 )
@@ -128,7 +128,7 @@ A single map will be plotted for a single model.
 # Create a map from a RasterBrick
 raster_ggmap(
   raster, 
-  index = 7
+  index = 12
 )
 ```
 
@@ -140,13 +140,13 @@ A batch map will be plotted for a batch model.
 # Create a map from a list of RasterBricks
 raster_ggmap(
   rasterList, 
-  index = 7
+  index = 12
 )
 
 # Could plot a single one with
 #raster_ggmap(
 #  rasterList[[1]],
-#  index = 7
+#  index = 12
 #)
 ```
 
@@ -194,7 +194,7 @@ model_Portland <- raster_toMonitor(
 )
 
 PWFSLSmoke::monitor_timeseriesPlot(
-  model_Portland[[1]],
+  model_Portland[[2]],
   type = 'l', col = 'salmon'
 )
 title("15 Grid cells near Portland")
@@ -219,19 +219,19 @@ domain.
 # All PWFSLSmoke monitors within 20 km of Portland, OR
 Portland_monitors <-
   monitor_load(
-    startdate = 2019100900,
-    enddate = 2019101023
+    startdate = 2020091300,
+    enddate = 2020091523
   ) %>%
   monitor_subsetByDistance(
     longitude = -122.68,
     latitude = 45.52,
-    radius = 20
+    radius = 24
   )
 
 # Create a Portland area RasterBrick
 rasterList <- raster_load(
   modelName = "PNW-4km",
-  modelRun = 2019101000,
+  modelRun = 2020091300,
   xlim = c(-123.08, -122.28),
   ylim = c(45.22, 45.92)
 )
@@ -251,7 +251,7 @@ PWFSLSmoke::monitor_leaflet(
 # Leaflet map of rasterized monitors
 raster_leaflet(
   raster = Portland_rasterBrick,
-  index = 32,
+  index = 12,
   palette = "aqi",
   direction = 1
 )

@@ -76,7 +76,7 @@ setModelDataDir('~/Data/BlueSky')
 # Load consecutive model runs
 rasterList <- raster_load(
   modelName = "PNW-4km",
-  modelRun = c(2019100900, 2019101000),
+  modelRun = c(2020091300, 2020091400),
   xlim = c(-125, -117),
   ylim = c(42, 47)
 )
@@ -84,15 +84,17 @@ rasterList <- raster_load(
 # Create a leaflet map
 raster_leaflet(
   raster = rasterList[[1]],
-  index = 3
+  index = 3,
+  palette = "aqi",
+  direction = 1
 )
 
 # Create a leaflet map comparing two times from the same run
 raster_leaflet(
   raster = rasterList[[1]],
-  index = 15,
+  index = 12,
   compare = rasterList[[1]],
-  index2 = 18,
+  index2 = 36,
   timezone = "America/Los_Angeles"
 )
 
@@ -101,16 +103,16 @@ raster_leaflet(
 # Load consecutive model runs
 rasterList <- raster_load(
   modelName = c("PNW-4km", "PNW-1.33km"),
-  modelRun = 2019100900,
+  modelRun = 2020091300,
   xlim = c(-125, -117),
   ylim = c(42, 47)
 )
 
 raster_leaflet(
   raster = rasterList[[1]],
-  index = 15,
+  index = 12,
   compare = rasterList[[2]],
-  index2 = 15,
+  index2 = 12,
   timezone = "America/Los_Angeles",
   opacity = 0.3
   )

@@ -30,7 +30,7 @@
 #' # Load model data
 #' rasterList <- raster_load(
 #'   modelName = "PNW-4km",
-#'   modelRun = c(2019100900),
+#'   modelRun = c(2020091300),
 #'   xlim = c(-125, -117),
 #'   ylim = c(42, 47)
 #' )
@@ -46,21 +46,21 @@
 #' raster_facet(
 #'   rasterList[[1]],
 #'   index = seq(3,72,12),
-#'   title = "PNW-4km -- run 2019100900",
+#'   title = "PNW-4km -- run 2020091300",
 #'   timezone = "America/Los_Angeles"
 #' )
 #'
-#' # Kincade fire
+#' # Oregon Labor Day Fires
 #' rasterList <- raster_load(
-#'   modelName = "CANSAC-4km",
-#'   modelRun = c(2019102700),
-#'   xlim = c(-124, -121.5),
-#'   ylim = c(37.5, 39)
+#'   modelName = "PNW-4km",
+#'   modelRun = c(2020091300),
+#'   xlim = c(-123.5, -121.5),
+#'   ylim = c(44.0, 46.0)
 #' )
 #'
 #' raster_facet(
 #'   rasterList[[1]],
-#'   title = "Kincade Fire",
+#'   title = "Oregon Labor Day Fires",
 #'   ncol = 12
 #' )
 #'
