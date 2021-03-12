@@ -15,6 +15,7 @@ raster_copyfn(from, to, ...)
 raster
 }
 \description{
-Inherit File path across Raster objects
+Copy the source file location from one Raster* to another to
+provide pseudo object-inheritance. Recommended for internal use only.
 }
 \keyword{internal}

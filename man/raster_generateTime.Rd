@@ -2,18 +2,19 @@
 % Please edit documentation in R/utils-raster.R
 \name{raster_generateTime}
 \alias{raster_generateTime}
-\title{Create raster layer times}
+\title{Generate raster layer times}
 \usage{
 raster_generateTime(raster = NULL)
 }
 \arguments{
-\item{raster}{A RasterBrick.}
+\item{raster}{A Raster* object.}
 }
 \value{
 \code{POSIXct} time.
 }
 \description{
-Create raster layer times
+Get the numeric time variable of a Raster* using its netCDF
+source (v2) to generate the layer time names for the Raster* object.
 }
 \examples{
 \donttest{

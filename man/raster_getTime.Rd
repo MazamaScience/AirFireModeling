@@ -4,14 +4,17 @@
 \alias{raster_getTime}
 \title{Get the time-stamp(s) of a Raster object}
 \usage{
-raster_getTime(raster)
+raster_getTime(raster, tz = "UTC")
 }
 \arguments{
 \item{raster}{A Raster* object.}
+
+\item{tz}{A desired timezone. Default \code{'UTC'}.}
 }
 \value{
-POSIXct vector
+\code{POSIXct} vector
 }
 \description{
-Get the time-stamp(s) of a Raster object
+Get the time-stamp(s) of a raster object via the Raster* object
+layer names in \code{POSIXct} format and UTC timezone.
 }
