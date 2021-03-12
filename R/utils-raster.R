@@ -95,11 +95,12 @@ raster_copyfn <- function(from, to, ...) {
 #' layer names in \code{POSIXct} format and UTC timezone.
 #'
 #' @param raster A Raster* object.
+#' @param tz A desired timezone. Default \code{'UTC'}.
 #'
 #' @return \code{POSIXct} vector
-raster_getTime <- function(raster) {
+raster_getTime <- function(raster, tz = "UTC") {
 
   time <- as.numeric(gsub("X", "", names(raster)))
-  return(as.POSIXct(time, tz = "UTC", origin = lubridate::origin))
+  return(as.POSIXct(time, tz = tz, origin = lubridate::origin))
 
 }
