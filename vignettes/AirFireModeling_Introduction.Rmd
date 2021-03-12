@@ -1,7 +1,7 @@
 ---
 title: "Introduction to AirFireModeling"
 author: "Mazama Science"
-date: "2020-04-02"
+date: "2021-03-12"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction to AirFireModeling}

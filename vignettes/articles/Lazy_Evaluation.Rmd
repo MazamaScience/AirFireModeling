@@ -1,7 +1,7 @@
 ---
 title: "Lazy Evaluation"
 author: "Mazama Science"
-date: "2020-07-09"
+date: "2021-03-12"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Lazy Evaluation}
@@ -122,8 +122,8 @@ _RasterBrick_ produced by a BlueSky model run:
 library(AirFireModeling)
 setModelDataDir("~/Data/BlueSky")
 
-# Load the BlueSky model run file for October 9th, 2019
-modelRun <- bluesky_load("PNW-4km", 2019100900)
+# Load the BlueSky model run file for September 13'th, 2020
+modelRun <- bluesky_load("PNW-4km", 2020091300)
 modelRun
 ```
 
@@ -131,15 +131,15 @@ modelRun
 _RasterLayers_ of the _RasterBrick_ by referencing layer names:
 
 ```{r}
-print(modelRun$X1570582800)
+print(modelRun$X1599958800)
 ```
 
 Let's inspect the memory used by these _RasterLayers_ before and after they are 
 used in expressions. 
 
 ```{r}
-raster <- modelRun$X1570582800
-editedRaster <- modelRun$X1570582800 + 0 # Cell values must be loaded now
+raster <- modelRun$X1599958800
+editedRaster <- modelRun$X1599958800 + 0 # Cell values must be loaded now
 
 pryr::object_size(raster)
 pryr::object_size(editedRaster)
@@ -188,8 +188,8 @@ extents of your request through the `xlim` and `ylim` parameters.
 Let's compare an area-optimized raster with an unoptimized one:
 
 ```{r optimization_initial_comparison}
-unoptimizedModelRun <- bluesky_load("PNW-4km", 2019100900)
-optimizedModelRun   <- bluesky_load("PNW-4km", 2019100900,
+unoptimizedModelRun <- bluesky_load("PNW-4km", 2020091300)
+optimizedModelRun   <- bluesky_load("PNW-4km", 2020091300,
                                     xlim = c(-123, -122),
                                     ylim = c(45, 46))
 
@@ -224,8 +224,8 @@ PWFSLSmoke::initializeMazamaSpatialUtils()
 
 # Load model data
 rasterList <- raster_load(
-  modelName = "PNW-1.33km",
-  modelRun = 2019100900,
+  modelName = "PNW-4km",
+  modelRun = 2020091300,
   xlim = c(-123, -122),
   ylim = c(45, 46)
 )
@@ -242,7 +242,7 @@ PWFSLSmoke::monitor_timeseriesPlot(
   type = 'l',
   col = 'salmon',
   hourInterval = 3,
-  shadedNight = TRUE, 
+  shadedNight = TRUE 
 )
-title("Portland PM2.5 values, BlueSky Run: 2019100900")
+title("Portland PM2.5 values, BlueSky Run: 2020091300")
 ```

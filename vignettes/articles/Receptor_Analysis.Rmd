@@ -1,11 +1,11 @@
 ---
 title: "Receptor Analysis"
 author: "Mazama Science"
-date: "2020-07-08"
+date: "2021-03-12"
 output: rmarkdown::html_vignette
 params:
-  longitude: -118
-  latitude: 34
+  longitude: -122.68
+  latitude: 45.52
   radius: 10
   count: 20
 vignette: >

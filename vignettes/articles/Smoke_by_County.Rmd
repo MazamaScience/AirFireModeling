@@ -1,7 +1,7 @@
 ---
 title: "Smoke by County"
 author: "Mazama Science"
-date: "2020-04-06"
+date: "2021-03-12"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Smoke by County}
@@ -54,12 +54,12 @@ library(AirFireModeling) # For base package support
 setModelDataDir("~/Data/BlueSky")
 
 state_PNW_4km <- 
-  bluesky_load(modelName = 'PNW-4km', modelRun = 2018110900) %>%
+  bluesky_load(modelName = 'PNW-4km', modelRun = 2020091300) %>%
   raster::crop(state_SPDF) %>%
   raster_subsetByPolygon(state_SPDF)
 
 # A quick ggplot map from the AirFireModeling package
-raster_ggmap(state_PNW_4km, index = 1)
+raster_ggmap(state_PNW_4km, index = 12)
 ```
 
 ### Thematic mapping with tmap
@@ -76,9 +76,9 @@ library(tmap)
 # County boundaries with raster overlay
 tm_shape(county_SPDF) +
   tm_polygons(col = 'white') +
-  tm_shape(state_PNW_4km[[1]]) +
+  tm_shape(state_PNW_4km[[12]]) +
   tm_raster(
-    title = "Layer 1",
+    title = "Layer 12",
     palette = 'Greys',
     alpha = 0.5,
     breaks = c(-Inf,0, 12, 35, 55, 150, 250, 350, Inf),
@@ -151,7 +151,7 @@ names(countyMean_SPDF) <- c(
 # Simple plot for 2018-11-09 03:00
 tm_shape(countyMean_SPDF) + 
   tm_polygons(
-    col = "2018-11-09 01:00:00",
+    col = "2020-09-13 12:00:00",
     breaks = c(0, 20, 50, 100, 200, 500, Inf),
     border.col = "white"
   )

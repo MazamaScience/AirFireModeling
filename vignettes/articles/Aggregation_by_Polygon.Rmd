@@ -1,7 +1,7 @@
 ---
 title: "Aggregation by Polygon"
 author: "Mazama Science"
-date: "2020-04-06"
+date: "2021-03-12"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Aggregation by Polygon}
@@ -82,7 +82,7 @@ library(AirFireModeling) # For base package support
 setModelDataDir("~/Data/BlueSky")
 
 WA_PNW_4km <- 
-  bluesky_load(modelName = 'PNW-4km', modelRun = 2018110900) %>%
+  bluesky_load(modelName = 'PNW-4km', modelRun = 2020091300) %>%
   raster::crop(WA) %>%
   raster_subsetByPolygon(WA)
 
@@ -114,7 +114,7 @@ WA_counties_improved <-
 names(WA_counties_improved)
 ```
 
-The columns of the form `X1541725200` are all raster layers whose names encode
+The columns of the form `X1599966000` are all raster layers whose names encode
 the UTC time. These can be extracted with:
 
 ```{r raster_createLay}
@@ -205,7 +205,7 @@ We can create a highly customized map using the *sp* package plotting functions.
 # Use a fun palette with 9 levels (10 breaks)
 library(wesanderson)
 paletteFUN <- wes_palette("Zissou1", 9, type = "continuous")
-breaks <- c(0, 10, 20, 50, 100, 200, 500, 1000, 2000, Inf)
+breaks <- c(0, 50, 100, 200, 500, 1000, 2000, 5000, 10000, Inf)
 
 # Use the same intervals to generate a new vector colors
 binCode <- .bincode(countySums, breaks)
@@ -278,12 +278,12 @@ library(plotly)
 
 # add hover text HTML field
 sf_WA_counties_improved$hover <- 
-  with(sf_WA_counties_improved, paste(name, '<br>', "Cumulative PM2.5: ", PM_sum))
+  with(sf_WA_counties_improved, paste(countyName, '<br>', "Cumulative PM2.5: ", PM_sum))
 
 # Create the interactive map
 interactive_map <- plot_ly(
   sf_WA_counties_improved, 
-  split = ~name, 
+  split = ~countyName, 
   hoveron = 'fills', 
   text = ~hover,
   color = ~PM_sum, 

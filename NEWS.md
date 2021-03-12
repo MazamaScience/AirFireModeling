@@ -2,6 +2,7 @@
 
 * Revamped time-layer names in Raster* objects.
 * Added new function `raster_getTime()` to help end-users determine Raster* object times.
+* Updated examples to use Oregon Labor Day Fires from 2020.
 
 # AirFireModeling 0.3.2
 
