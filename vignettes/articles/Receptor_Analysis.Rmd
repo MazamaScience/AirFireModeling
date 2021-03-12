@@ -286,9 +286,6 @@ for ( i in seq_len(nrow(modelDF)) ) {
   }
   
 } # END of modelDF loop
-# Create a single ws_monitor object
-fakeMonitors <- monitor_combine(fakeMonitorList)
-fakeAverages <- monitor_combine(fakeAverageList)
 ```
 
 ## Timeseries Plots
@@ -302,7 +299,13 @@ visualizations:
 
 2. The second plots PM 2.5 readings separated by model run and colored by model:
 
-```{r plot_timeseries}
+```{r plot_timeseries, eval = FALSE}
+
+# TODO:  Reset "eval = TRUE" when this starts working for Jon
+# Create a single ws_monitor object
+fakeMonitors <- monitor_combine(fakeMonitorList)
+fakeAverages <- monitor_combine(fakeAverageList)
+
 library(AirMonitorPlots)
 
 tlim <- c(startdate, enddate)

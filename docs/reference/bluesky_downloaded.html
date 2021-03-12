@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -37,7 +41,6 @@
 
 <meta property="og:title" content="List downloaded models — bluesky_downloaded" />
 <meta property="og:description" content="List downloaded models" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -55,7 +58,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -69,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">AirFireModeling</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.3</span>
       </span>
     </div>
 
@@ -136,12 +139,12 @@
     <p>List downloaded models</p>
     </div>
 
-    <pre class="usage"><span class='fu'>bluesky_downloaded</span>(
-  <span class='kw'>modelDataDir</span> <span class='kw'>=</span> <span class='fu'><a href='getModelDataDir.html'>getModelDataDir</a></span>(),
-  <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='st'>".nc"</span>,
-  <span class='kw'>full</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>bluesky_downloaded</span><span class='op'>(</span>
+  modelDataDir <span class='op'>=</span> <span class='fu'><a href='getModelDataDir.html'>getModelDataDir</a></span><span class='op'>(</span><span class='op'>)</span>,
+  pattern <span class='op'>=</span> <span class='st'>".nc"</span>,
+  full <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -170,51 +173,48 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>AirFireModeling</span>)
-<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span>(<span class='st'>'~/Data/BlueSky'</span>)
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>AirFireModeling</span><span class='op'>)</span>
+<span class='fu'><a href='setModelDataDir.html'>setModelDataDir</a></span><span class='op'>(</span><span class='st'>'~/Data/BlueSky'</span><span class='op'>)</span>
 
-<span class='no'>filePath</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='bluesky_download.html'>bluesky_download</a></span>(<span class='kw'>modelName</span> <span class='kw'>=</span> <span class='st'>"PNW-4km"</span>, <span class='kw'>modelRun</span> <span class='kw'>=</span> <span class='fl'>2019100900</span>)</div><div class='output co'>#&gt; <span class='message'>Auto-detected PNW-4km BlueSky Output Version: 1.0.0</span></div><div class='input'><span class='fu'><a href='bluesky_toCommonFormat.html'>bluesky_toCommonFormat</a></span>(<span class='no'>filePath</span>)</div><div class='output co'>#&gt; [1] "/Users/jonathan/Data/BlueSky/PNW-4km_2019100900_v2.nc"</div><div class='input'><span class='fu'>bluesky_downloaded</span>()</div><div class='output co'>#&gt;  [1] "CANSAC-1.33km_2019102900_v2.nc"                   
-#&gt;  [2] "CANSAC-4km_2019102700_v2.nc"                      
-#&gt;  [3] "CANSAC-4km_2019102712_v2.nc"                      
-#&gt;  [4] "CANSAC-4km_2019102800_v2.nc"                      
-#&gt;  [5] "CANSAC-4km_2019102812_v2.nc"                      
-#&gt;  [6] "CANSAC-4km_2019102900_v2.nc"                      
-#&gt;  [7] "CANSAC-4km_2019102912_v2.nc"                      
-#&gt;  [8] "CANSAC-4km_2019103000_v2.nc"                      
-#&gt;  [9] "CANSAC-4km_2019103012_v2.nc"                      
-#&gt; [10] "CANSAC-4km_2019103100_v2.nc"                      
-#&gt; [11] "CANSAC-4km_2020060300_v2.nc"                      
-#&gt; [12] "CANSAC-4km_2020062200_v2.nc"                      
-#&gt; [13] "GFS-0.15deg-CanadaUSA-p25deg-68N_2019102900_v2.nc"
-#&gt; [14] "NAM-3km_2019102900_v2.nc"                         
-#&gt; [15] "NAM-3km_2020060300_v2.nc"                         
-#&gt; [16] "NAM84-0.15deg_2019102900_v2.nc"                   
-#&gt; [17] "NAM84-0.15deg_2020060900.nc"                      
-#&gt; [18] "PNW-1.33km_2019100900_v2.nc"                      
-#&gt; [19] "PNW-1.33km_2020032500_v2.nc"                      
-#&gt; [20] "PNW-1.33km_2020063000.nc"                         
-#&gt; [21] "PNW-4km_2018110900_v2.nc"                         
-#&gt; [22] "PNW-4km_2019100800_v2.nc"                         
-#&gt; [23] "PNW-4km_2019100900_v2.nc"                         
-#&gt; [24] "PNW-4km_2019101000_v2.nc"                         
-#&gt; [25] "PNW-4km_2019101100_v2.nc"                         
-#&gt; [26] "PNW-4km_2019101500_v2.nc"                         
-#&gt; [27] "PNW-4km_2020032500_v2.nc"                         
-#&gt; [28] "PNW-4km_2020060300_v2.nc"                         
-#&gt; [29] "PNW-4km_2020070200_v2.nc"                         
-#&gt; [30] "PNW-4km_2020070300_v2.nc"                         
-#&gt; [31] "PNW-4km_2020070700_v2.nc"                         </div><div class='input'># }
+<span class='va'>filePath</span> <span class='op'>&lt;-</span> <span class='fu'><a href='bluesky_download.html'>bluesky_download</a></span><span class='op'>(</span>modelName <span class='op'>=</span> <span class='st'>"PNW-4km"</span>, modelRun <span class='op'>=</span> <span class='fl'>2020091300</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Auto-detected PNW-4km BlueSky Output Version: 2.0.0</span></div><div class='input'><span class='fu'><a href='bluesky_toCommonFormat.html'>bluesky_toCommonFormat</a></span><span class='op'>(</span><span class='va'>filePath</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "/Users/jonathancallahan/Data/BlueSky/PNW-4km_2020091300_v2.nc"</div><div class='input'><span class='fu'>bluesky_downloaded</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;  [1] "CANSAC-1.33km_2019102900_v2.nc"                   
+#&gt;  [2] "CANSAC-1.33km_2021031112_v2.nc"                   
+#&gt;  [3] "CANSAC-1.33km_2021031200_v2.nc"                   
+#&gt;  [4] "CANSAC-4km_2019102700_v2.nc"                      
+#&gt;  [5] "CANSAC-4km_2019102900_v2.nc"                      
+#&gt;  [6] "CANSAC-4km_2021031112_v2.nc"                      
+#&gt;  [7] "CANSAC-4km_2021031200_v2.nc"                      
+#&gt;  [8] "GFS-0.15deg-CanadaUSA-p25deg-68N_2019102900_v2.nc"
+#&gt;  [9] "NAM-3km_2019102900.nc"                            
+#&gt; [10] "NAM84-0.15deg_2019102900_v2.nc"                   
+#&gt; [11] "PNW-1.33km_2019100900.nc"                         
+#&gt; [12] "PNW-1.33km_2020032500_v2.nc"                      
+#&gt; [13] "PNW-1.33km_2020091300_v2.nc"                      
+#&gt; [14] "PNW-1.33km_2021031112_v2.nc"                      
+#&gt; [15] "PNW-1.33km_2021031200_v2.nc"                      
+#&gt; [16] "PNW-4km_2019100900_v2.nc"                         
+#&gt; [17] "PNW-4km_2020032500_v2.nc"                         
+#&gt; [18] "PNW-4km_2020091300_v2.nc"                         
+#&gt; [19] "PNW-4km_2020091312_v2.nc"                         
+#&gt; [20] "PNW-4km_2020091400_v2.nc"                         
+#&gt; [21] "PNW-4km_2020091412_v2.nc"                         
+#&gt; [22] "PNW-4km_2020091500_v2.nc"                         
+#&gt; [23] "PNW-4km_2020091512_v2.nc"                         
+#&gt; [24] "PNW-4km_2020091600_v2.nc"                         
+#&gt; [25] "PNW-4km_2020091612_v2.nc"                         
+#&gt; [26] "PNW-4km_2020091700_v2.nc"                         
+#&gt; [27] "PNW-4km_2021010800_v2.nc"                         
+#&gt; [28] "PNW-4km_2021031112_v2.nc"                         
+#&gt; [29] "PNW-4km_2021031200_v2.nc"                         </div><div class='input'><span class='co'># }</span>
 
 </div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -225,7 +225,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

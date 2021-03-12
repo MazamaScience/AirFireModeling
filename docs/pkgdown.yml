@@ -1,10 +1,11 @@
-pandoc: 2.3.1
-pkgdown: 1.4.1
+pandoc: 2.10.1
+pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   AirFireModeling_Introduction: AirFireModeling_Introduction.html
-  Aggregation_by_Polygon: articles/Aggregation_by_Polygon.html
-  Lazy_Evaluation: articles/Lazy_Evaluation.html
-  Receptor_Analysis: articles/Receptor_Analysis.html
-  Smoke_by_County: articles/Smoke_by_County.html
+  articles/Aggregation_by_Polygon: Aggregation_by_Polygon.html
+  articles/Lazy_Evaluation: Lazy_Evaluation.html
+  articles/Receptor_Analysis: Receptor_Analysis.html
+  articles/Smoke_by_County: Smoke_by_County.html
+last_built: 2021-03-12T20:41Z
 
